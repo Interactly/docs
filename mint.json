@@ -1,0 +1,64 @@
+{
+    "$schema": "https://mintlify.com/schema.json",
+    "name": "Interactly API",
+    "logo": {
+        "dark": "/logo/logo.jpeg",
+        "light": "/logo/logo.jpeg"
+    },
+    "favicon": "/logo/logo.jpeg",
+    "colors": {
+        "primary": "#7e57c2",
+        "light": "#7e57c2",
+        "dark": "#7e57c2",
+        "anchors": {
+            "from": "#7e57c2",
+            "to": "#7e57c2"
+        }
+    },
+    "topbarLinks": [
+        {
+            "name": "Support",
+            "url": "documentation/support"
+        }
+    ],
+    "topbarCtaButton": {
+        "name": "Dashboard",
+        "url": "https://dashboard-qa.interactly.ai"
+    },
+    "tabs": [
+        {
+            "name": "API Reference",
+            "url": "api-reference",
+            "openapi": "https://api-qa.interactly.ai/api-docs/api.json"
+        }
+    ],
+    "anchors": [
+        {
+            "name": "Swagger",
+            "icon": "code",
+            "url": "https://api-qa.interactly.ai/api-docs"
+        }
+    ],
+    "navigation": [
+        {
+            "group": "General",
+            "pages": [
+                "documentation/introduction",
+                "documentation/support",
+                "documentation/dashboard"
+            ]
+        },
+        {
+            "group": "Getting Started",
+            "pages": [
+                "api-reference/api-keys"
+            ]
+        }
+    ],
+    "api": {
+        "playground": {
+            "disableProxy": true
+        }
+    },
+    "footerSocials": {}
+}
