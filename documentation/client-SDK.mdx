@@ -1,0 +1,102 @@
+# Interactly Client SDK
+
+This package lets you make calls directly to Interactly in your webapp.
+
+
+## Installation
+
+
+Install the package:
+```json
+$ npm i @interactly-ai/web
+```
+
+## Importing
+
+Import the package:
+```javascript
+import Interactly from '@interaclty-ai/web';
+```
+
+Then, create a new instance of the Interactly class, passing your Public Key and Api base url as parameters to the constructor:
+
+```javascript
+const Interactly = new Interactly({
+  apiToken: 'your-api-token',
+  server: 'server-base-url'
+});
+```
+You can find your public key and Api base url in the [Dashboard](https://dashboard-qa.interactly.ai/api-keys).
+
+***
+
+## Usage
+
+### `.start()`
+
+You can start a call by calling the `start` method and passing an `assistantId` as a parameter:
+
+```javascript
+await Interactly.start('your-assistant-id');
+```
+
+### `.stop()`
+
+You can stop the call by calling the `stop` method:
+
+```javascript
+await Interactly.stop();
+```
+
+This will stop the events listening and close the connection.
+
+
+## Events
+
+You can listen to the following events:
+
+* call-start
+* call-end
+* message
+* error
+
+
+```javascript
+
+Interactly.on('call-start', () => {
+  console.log('Call has started');
+});
+
+Interactly.on('call-end', () => {
+  console.log('Call has stopped');
+});
+
+
+// Assistant messages and transcripts will be sent via messages
+Interactly.on('message', (message) => {
+  console.log(message);
+});
+
+Interactly.on('error', (e) => {
+  console.error(e);
+});
+```
+
+These events allow you to react to changes in the state of the call or speech.
+
+***
+
+## Resources
+
+<CardGroup cols={2}>
+<Card
+  title="NPM"
+  icon="npm"
+  href="https://www.npmjs.com/package/@interactly-ai/web" 
+>View Package on NPM.</Card>
+<Card
+  title="GitHub"
+  icon="github"
+  href="https://github.com/Interactly/client-sdk-web" 
+>View Package on GitHub.</Card>
+</CardGroup>

@@ -44,8 +44,14 @@
             "group": "General",
             "pages": [
                 "documentation/introduction",
-                "documentation/support",
-                "documentation/dashboard"
+                "documentation/support"
+            ]
+        },
+        {
+            "group": "Quickstart",
+            "pages": [
+                "documentation/dashboard",
+                "documentation/client-SDK"
             ]
         },
         {
