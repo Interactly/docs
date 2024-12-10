@@ -2,10 +2,13 @@
     "$schema": "https://mintlify.com/schema.json",
     "name": "Interactly API",
     "logo": {
-        "dark": "/logo/logo.jpeg",
-        "light": "/logo/logo.jpeg"
+        "dark": "/logo/logo_dark.svg",
+        "light": "/logo/logo_light.svg"
     },
-    "favicon": "/logo/logo.jpeg",
+    "favicon": "/logo/favicon.png",
+    "modeToggle": {
+        "default": "light"
+    },
     "colors": {
         "primary": "#7e57c2",
         "light": "#7e57c2",
