@@ -26,20 +26,20 @@
     ],
     "topbarCtaButton": {
         "name": "Dashboard",
-        "url": "https://dashboard-qa.interactly.ai"
+        "url": "https://dashboard.interactly.ai"
     },
     "tabs": [
         {
             "name": "API Reference",
             "url": "api-reference",
-            "openapi": "https://api-qa.interactly.ai/api-docs/api.json"
+            "openapi": "https://api.interactly.ai/api-docs/api.json"
         }
     ],
     "anchors": [
         {
             "name": "Swagger",
             "icon": "code",
-            "url": "https://api-qa.interactly.ai/api-docs"
+            "url": "https://api.interactly.ai/api-docs"
         }
     ],
     "navigation": [
