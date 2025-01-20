@@ -32,14 +32,14 @@
         {
             "name": "API Reference",
             "url": "api-reference",
-            "openapi": "https://api.interactly.ai/api-docs/api.json"
+            "openapi": "https://api-prod.interactly.ai/api-docs/api.json"
         }
     ],
     "anchors": [
         {
             "name": "Swagger",
             "icon": "code",
-            "url": "https://api.interactly.ai/api-docs"
+            "url": "https://api-prod.interactly.ai/api-docs"
         }
     ],
     "navigation": [
