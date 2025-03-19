@@ -1,0 +1,116 @@
+{
+    "$schema": "https://mintlify.com/docs.json",
+    "theme": "mint",
+    "name": "Interactly API",
+    "colors": {
+        "primary": "#7e57c2",
+        "light": "#7e57c2",
+        "dark": "#7e57c2"
+    },
+    "favicon": "/logo/favicon.png",
+    "navigation": {
+        "tabs": [
+            {
+                "tab": "Overview",
+                "pages": [
+                    "welcome"
+                ]
+            },
+            {
+                "tab": "Documentation",
+                "groups": [
+                    {
+                        "group": "General",
+                        "pages": [
+                            "general/introduction",
+                            "general/support"
+                        ]
+                    },
+                    {
+                        "group": "Quickstart",
+                        "pages": [
+                            "quickstart/dashboard",
+                            "quickstart/client-SDK"
+                        ]
+                    },
+                    {
+                        "group": "Calls",
+                        "pages": [
+                            "calls/call-features"
+                        ]
+                    },
+                    {
+                        "group": "Webhooks",
+                        "pages": [
+                            "webhooks/server-url",
+                            "webhooks/server-url/setting-server-urls",
+                            "webhooks/server-url/events",
+                            "webhooks/server-url/developing-locally"
+                        ]
+                    }
+                ]
+            },
+            {
+                "tab": "API Reference",
+                "openapi": {
+                    "source": "https://api-qa.interactly.ai/api-docs/api.json",
+                    "directory": "api-reference"
+                },
+                "groups": [
+                    {
+                        "group": "Getting Started",
+                        "pages": [
+                            "api-reference/api-keys"
+                        ]
+                    }
+                ],
+                "global": {
+                    "anchors": [
+                        {
+                            "anchor": "Swagger",
+                            "href": "https://api-qa.interactly.ai/api-docs",
+                            "icon": "code"
+                        },
+                        {
+                            "anchor": "OpenAPI",
+                            "href": "https://api-qa.interactly.ai/api-docs/api.json",
+                            "icon": "code"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "logo": {
+        "light": "/logo/logo_light.svg",
+        "dark": "/logo/logo_dark.svg"
+    },
+    "api": {
+        "playground": {
+            "display": "interactive",
+            "proxy": false
+        }
+    },
+    "appearance": {
+        "default": "light"
+    },
+    "navbar": {
+        "links": [
+            {
+                "label": "Website",
+                "href": "https://interactly.ai"
+            }
+        ],
+        "primary": {
+            "type": "button",
+            "label": "Dashboard",
+            "href": "https://dashboard-qa.interactly.ai"
+        }
+    },
+    "footer": {
+        "socials": {}
+    },
+    "seo": {
+        "indexing": "all"
+    }
+}
