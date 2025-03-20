@@ -1,0 +1,56 @@
+---
+title: Setting Server URLs
+subtitle: Learn about where you can set server URLs to handle call events.
+slug: server-url/setting-server-urls
+---
+
+Server URLs can be set at **2 levels** in Interactly:
+
+- **Assistant:** assistants can be configured with a server URL
+- **Tool:** Tool calls themselves can have a corresponding server URL
+
+Here's a breakdown of where you can set server URLs in Interactly:
+
+## Assistant
+
+Assistants themselves can have a server URL attached to them.
+
+There are **2 ways** this can be done:
+
+### In the Dashboard
+If you go to the [assistant section](https://dashboard.interactly.ai/assistants) of your dashboard, in the **"Advanced"** tab you will see a setting to set the assistant's server URL:
+
+<Frame caption="Setting server URL at the assistant level.">
+  <img src="/images/server-url/assistant-server-url-dashboard.png" />
+</Frame>
+
+### Via the API
+At [assistant creation](/api-reference/assistants/create-assistant) (or via an [update](/api-reference/assistants/update-assistant)) you can set the assistant's server URL.
+
+The server URL for an assistant is stored in the `assistant.server.url` field.
+
+## Tool Call
+
+The most granular level server URLs can be set is at the function call level. This can also be done either in the dashboard, or via code.
+
+### In the Dashboard
+In the [tools section](https://dashboard.interactly.ai/tools) of your dashboard, You can define multiple tools and give Server URLs to each of them.
+
+<Frame caption="Setting server URL at the tools level.">
+  <img src="/images/server-url/function-call-server-url-dashboard.png" />
+</Frame>
+
+Once tools are defined along with Server URLs, these tools can be attached to an assistant.
+If you go to the [assistant section](https://dashboard.interactly.ai/assistants) of your dashboard, in the **"Functions"** tab you will see a setting to select Assistant Tools:
+
+<Frame caption="Setting server URL at the tools level.">
+  <img src="/images/server-url/select-tools-under-assistant.png" />
+</Frame>
+
+### Via the API
+
+The server URL for a function call can be found on an assistant at `assistant.assistantToolIds`.
+
+You can either set the URL for a function call at [tool creation](/api-reference/tools/create-tool), or in an [tool update](/api-reference/tools/update-tool).
+
+The selected tools along with their server urls for an assistant is stored in the `assistant.assistantToolServers` field.

@@ -1,0 +1,86 @@
+---
+title: Live Call Control
+slug: calls/call-features
+---
+
+Interactly offers a main feature that provide enhanced control over live calls:
+
+## Call Control
+
+This feature allows you to inject conversation elements dynamically during an ongoing call.
+
+To use these features, you first need to obtain the URLs specific to the live call. These URLs can be retrieved by triggering a `/calls` endpoint, which returns the `controlUrl` within the `monitor` object.
+
+## Obtaining URLs for Call Control
+
+Initiate a call and retrieve the `controlUrl`, send a POST request to the `/calls/v1/conversations` endpoint. [Create Call API](/api-reference/calls/create-call)
+
+### Sample Request
+
+```bash
+curl 'https://api.interactly.ai/calls/v1/conversations' 
+-H 'authorization: Bearer YOUR_API_KEY' 
+-H 'content-type: application/json' 
+--data-raw '{
+  "assistantId": "5b0a4a08-133c-4146-9315-0984f8c6be80",
+  "customer": {
+    "number": "+12345678913"
+  },
+  "phoneNumberId": "42b4b25d-031e-4786-857f-63b346c9580f"
+}'
+```
+
+### Sample Response
+
+```json
+{
+    "id": "a12f9c88-c155-461f-9771-4d240cdc9a04",
+    "teamId": "1f7b1b1b1b1b1b1b1b1b1b1b",
+    "assistantId": "3f7b1b1b1b1b1b1b1b1b1b1b",
+    "callType": "web",
+    "direction": "inbound",
+    "startAt": "2020-10-05T00:00:00.000Z",
+    "endAt": "2020-10-05T00:00:00.000Z",
+    "userNumber": "+919867543210",
+    "assistantNumber": "+19867543211",
+    "status": "finished",
+    "phoneCallStatus": "ringing",
+    "callEndTriggerBy": "user",
+    "monitor": {
+      "controlUrl": "https://api.interactly.ai/calls/v1/convesations/7420f27a-30fd-4f49-a995-5549ae7cc00d/control"
+    },
+    "messages": [
+        {
+            "role": "user",
+            "text": "Hello! How can I help you?",
+            "timestamp": "2020-10-05T00:00:00.000Z"
+        }
+    ]
+}
+```
+
+## Call Control Feature
+
+Once you have the `controlUrl`, you can inject a message into the live call using a POST request. This can be done by sending a JSON payload to the `controlUrl`.
+
+Following call control features we support currently
+
+1. **say** - To speak a message
+2. **end** - To end the call
+3. **forward** - To forward the call
+
+Depending on the type of control you want to make over a call, schema will be different to provide additional information. Refer [Control Call API](/api-reference/calls/control-call)
+
+### Example: Injecting a Message
+
+```bash
+curl -X POST 'https://api.interactly.ai/calls/v1/convesations/7420f27a-30fd-4f49-a995-5549ae7cc00d/control' 
+-H 'content-type: application/json' 
+--data-raw '{
+  "type": "say",
+  "message": "Welcome to Interactly, this message was injected during the call."
+}'
+
+```
+
+The message will be spoken in real-time during the ongoing call.
