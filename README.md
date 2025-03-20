@@ -1,6 +1,6 @@
 # Interactly Docs
 
-API Documentation for interactly.ai
+Documentation for interactly.ai
 
 ## Steps to run locally
 
@@ -8,4 +8,5 @@ API Documentation for interactly.ai
 npm i -g mintlify
 
 mintlify dev
+
 ```
