@@ -18,7 +18,7 @@ Initiate a call and retrieve the `controlUrl`, send a POST request to the `/call
 ### Sample Request
 
 ```bash
-curl 'https://api.interactly.ai/calls/v1/conversations' 
+curl 'https://api-prod.interactly.ai/calls/v1/conversations'
 -H 'authorization: Bearer YOUR_API_KEY' 
 -H 'content-type: application/json' 
 --data-raw '{
@@ -47,7 +47,7 @@ curl 'https://api.interactly.ai/calls/v1/conversations'
     "phoneCallStatus": "ringing",
     "callEndTriggerBy": "user",
     "monitor": {
-      "controlUrl": "https://api.interactly.ai/calls/v1/convesations/7420f27a-30fd-4f49-a995-5549ae7cc00d/control"
+      "controlUrl": "https://api-prod.interactly.ai/calls/v1/convesations/7420f27a-30fd-4f49-a995-5549ae7cc00d/control"
     },
     "messages": [
         {
@@ -74,7 +74,7 @@ Depending on the type of control you want to make over a call, schema will be di
 ### Example: Injecting a Message
 
 ```bash
-curl -X POST 'https://api.interactly.ai/calls/v1/convesations/7420f27a-30fd-4f49-a995-5549ae7cc00d/control' 
+curl -X POST 'https://api-prod.interactly.ai/calls/v1/convesations/7420f27a-30fd-4f49-a995-5549ae7cc00d/control'
 -H 'content-type: application/json' 
 --data-raw '{
   "type": "say",
