@@ -3,9 +3,9 @@
     "theme": "mint",
     "name": "Interactly API",
     "colors": {
-        "primary": "#7e57c2",
-        "light": "#7e57c2",
-        "dark": "#7e57c2"
+        "primary": "#1E6EFF",
+        "light": "#1E6EFF",
+        "dark": "#1E6EFF"
     },
     "favicon": "/logo/favicon.png",
     "navigation": {
