@@ -38,7 +38,7 @@ During the call, the assistant will make multiple `POST` requests to the Server 
 {
   "message": {
     "type": "status-update",
-    "status": "ended",
+    "status": "completed",
     "call": { Call Object },
   }
 }
@@ -48,14 +48,10 @@ During the call, the assistant will make multiple `POST` requests to the Server 
 
 A call can have one of the following statuses:
 
-- `trying`: The call has been initiated.
-- `early-media`: The call is playing an early media message or tone.
-- `ringing`: The recipient's phone is ringing.
-- `in-progress`: The call is currently active.
-- `busy`: The recipient is unavailable to answer.
-- `no-answer`: The call was not answered.
-- `failed`: The call attempt was unsuccessful.
-- `completed`: The call has ended.
+- `queued`: The call has been initiated.
+- `ongoing`: The call has started.
+- `finished`: The call has ended.
+- `forwarded`: The call has forwarded.
 
 ### Conversation Status Updates
 
