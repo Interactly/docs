@@ -52,16 +52,47 @@
             },
             {
                 "tab": "API Reference",
-                "openapi": {
-                    "source": "https://api-qa.interactly.ai/api-docs/api.json",
-                    "directory": "api-reference"
-                },
                 "groups": [
                     {
                         "group": "Getting Started",
                         "pages": [
                             "api-reference/api-keys"
                         ]
+                    },
+                    {
+                        "group": "APIs",
+                        "openapi": {
+                            "source": "https://api-qa.interactly.ai/api-docs/common/api.json",
+                            "directory": "api-reference"
+                        }
+                    },
+                    {
+                        "group": "Campaigns",
+                        "openapi": {
+                            "source": "https://api-qa.interactly.ai/api-docs/campaigns/api.json",
+                            "directory": "api-reference/campaigns"
+                        }
+                    },
+                    {
+                        "group": "Workflows",
+                        "openapi": {
+                            "source": "https://api-qa.interactly.ai/api-docs/workflows/api.json",
+                            "directory": "api-reference/workflows"
+                        }
+                    },
+                    {
+                        "group": "Integrations",
+                        "openapi": {
+                            "source": "https://api-qa.interactly.ai/api-docs/integrations/api.json",
+                            "directory": "api-reference/integrations"
+                        }
+                    },
+                    {
+                        "group": "Prompts",
+                        "openapi": {
+                            "source": "https://api-qa.interactly.ai/api-docs/prompts/api.json",
+                            "directory": "api-reference/prompts"
+                        }
                     }
                 ],
                 "global": {
@@ -78,6 +109,12 @@
                         }
                     ]
                 }
+            },
+            {
+                "tab": "Changelog",
+                "pages": [
+                    "changelog/release-notes"
+                ]
             }
         ]
     },
