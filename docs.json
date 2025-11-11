@@ -52,16 +52,26 @@
             },
             {
                 "tab": "API Reference",
-                "openapi": {
-                    "source": "https://api-prod.interactly.ai/api-docs/api.json",
-                    "directory": "api-reference"
-                },
                 "groups": [
                     {
                         "group": "Getting Started",
                         "pages": [
                             "api-reference/api-keys"
                         ]
+                    },
+                    {
+                        "group": "APIs",
+                        "openapi": {
+                            "source": "https://api-prod.interactly.ai/api-docs/common/api.json",
+                            "directory": "api-reference"
+                        }
+                    },
+                    {
+                        "group": "Campaigns",
+                        "openapi": {
+                            "source": "https://api-prod.interactly.ai/api-docs/campaigns/api.json",
+                            "directory": "api-reference/campaigns"
+                        }
                     }
                 ],
                 "global": {
@@ -78,6 +88,12 @@
                         }
                     ]
                 }
+            },
+            {
+                "tab": "Changelog",
+                "pages": [
+                    "changelog/release-notes"
+                ]
             }
         ]
     },
