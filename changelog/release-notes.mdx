@@ -3,18 +3,130 @@ title: "Product updates"
 description: "New releases and improvements"
 rss: true
 noindex: true
+mode: center
 ---
+
 <Update label="November 11 2025" description="v1.0.0">
-  ## Campaigns improvements
 
-  ### **Webhooks** for campaign events
+## What's new in v1.0.0
 
-  You can now set up webhooks to get notified about important campaign events such as completion of campaigns and each call status like completed or failed. 
-  This allows you to integrate campaign events with your existing systems and workflows.
+### 1. Enable Debug mode (see **Enable Debug mode** section below)
 
-  Webhooks can be configured when [creating](/api-reference/campaigns/campaigns/create-campaigns#body-webhook) or [updating](/api-reference/campaigns/campaigns/patch-campaign-with-id) a campaign.
+Quickly turn on verbose developer logs from your profile so you can inspect detailed runtime information when diagnosing issues. When Debug mode is enabled the dashboard surfaces expanded logs and error traces useful for developers during troubleshooting.
 
-  Check the [campaign webhooks documentation](/api-reference/campaigns/campaigns/create-campaigns#body-webhook) to learn how to set up webhooks for your campaigns.
+See the [**Enable Debug mode**](#enable-debug-mode) section below for more details.
+
+### 2. TTS — new audio cache scopes (assistant & team) + clip deletion
+
+We added two new cache scope levels for TTS audio clips — **assistant** and **team** — so generated audio can be cached at the most appropriate scope for reuse and cost savings. The dashboard now also exposes the ability to delete existing audio clips so you can manage storage and refresh voices or content when needed.
+
+### 3. Campaign Webhooks
+
+You can now register webhooks to receive real-time notifications for important campaign lifecycle events (for example: campaign completion) and per-call status updates (for example: call completed, failed, or dropped). Webhooks may be configured when **creating** or **updating** a campaign, enabling easy integration with downstream systems and automation pipelines.
+
+### 4. Twilio SMS — Inbound & Outbound
+
+Dashboard toggle to enable Twilio SMS inbound and outbound functionality. This makes two-way SMS possible so your flows can receive replies and send messages via Twilio directly from the dashboard — useful for bi-directional support and conversational workflows.
+
+### 5. Vonage Number management
+
+Buy or import Vonage phone numbers directly from the dashboard. Note: you will need to provide your Vonage credentials when adding or importing numbers.
+
+### 6. Fixed: missed tool calls and trailing messages
+
+Resolved a bug where tool calls and messages at the end of conversations could be missed or dropped. This fix improves reliability for trailing-message flows and integrations that depend on final tool outputs.
+
+### 7. Stability & performance improvements
+
+General reliability and performance upgrades across the platform — faster page loads, reduced error rates, and smoother dashboard interactions.
+
+
+## Enable Debug mode
+
+Debug mode helps developers view detailed diagnostic logs and metadata for conversations, making it easier to analyze performance, latency, and behavior of both Assistant and User utterances.
+
+---
+
+### How to enable Debug mode
+
+You can enable Debug mode in two ways:
+
+1. **From the logo** — Click the **Interactly.ai** logo at the top-left corner.
+   ![Click On Interactly.ai Logo](/images/debug-mode/how-to-enable-debug-mode.png)
+
+2. **From your profile** — Click the **Profile** icon at the top-right and toggle **Debug mode** ON.
+   ![Click On Profile Icon](/images/debug-mode/how-to-turn-on-off-debug-mode.png)
+
+Once enabled, additional debug details will appear inside the **Call Logs** and **Conversation view**.
+
+---
+
+### Debug info in Call Logs
+
+Open any conversation from **Call Logs** after enabling Debug mode.
+You'll notice new metrics displayed at each **Assistant** and **User** utterance.
+![Click on Agent transcripts](/images/debug-mode/transcripts-agent-with-more-debug-info.png)
+
+#### Assistant utterance metrics
+
+* **AI: 1093 ms** — Time taken by the LLM to generate the response.
+* **TTS: 356 ms** — Time taken by the TTS engine to generate the audio clip.
+* **AD** — Audio Duration of that particular clip.
+
+#### User utterance metrics
+
+* **AD** — Audio Duration of the user's spoken input.
+* **VAD: 6 ms (Voice Activity Detection)** — Time the STT vendor waited after receiving the final word.
+* **AVAD: 800 ms (Additional Voice Activity Detection)** — Extra waiting time configured at the Assistant level under
+  **Advanced → Start Speaking Plan → Smart Endpointing OFF**.
+
+![Click On User utterances](/images/debug-mode/transcripts-user-with-more-debug-info.png)
+
+---
+
+### Accessing Meta Info — Assistant utterances
+
+To view detailed metadata, click on the **Assistant** key in the utterance view.
+![Accessing Meta Info](/images/debug-mode/accessing-meta-info-assistant-utterance.png)
+
+#### Key fields in meta info
+
+* **command** — Indicates whether the action is `Play` or `End`.
+
+  * `End` signals the call termination.
+* **messageId** — Unique ID for the Assistant's utterance.
+* **userMessageId** — The ID of the corresponding user message that triggered this response.
+
+#### AI Meta fields
+
+* **finish_reason** — Can be `stop`, `tool_calls`, or `length`.
+
+  * `stop`: Response finished naturally.
+  * `length`: Token limit reached.
+  * `tool_calls`: Model triggered a tool/function.
+* **queue_latency** — Time the request waited before model processing started.
+* **response_latency** — Time the model took to generate the response.
+* **trailing_messages** — Last 6 utterances passed to the LLM for context.
+
+#### Other useful fields
+
+* **audioDuration** — Duration of the generated audio clip.
+* **isBargein** — Whether the utterance was interrupted.
+* **isCachePlaying** — `true/false`; indicates if the clip was played from cache or generated fresh.
+* **model / vendor** — The TTS model and vendor used.
+
+---
+
+### Accessing Meta Info — User utterances
+
+Click on the **User** key in the utterance to view metadata for the user's input.
+![Click On User Key](/images/debug-mode/view-user-meta-data.png)
+
+#### Important fields
+
+* **messageId** — ID of the user message.
+* **previousBotMessageId** — ID of the last Assistant response before this message.
+* **skippedBotMessages** — List of interrupted Assistant messages skipped due to this utterance.
+* **confidence** — Confidence score returned by the STT engine for this transcript.
 
 </Update>
-
