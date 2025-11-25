@@ -6,6 +6,41 @@ noindex: true
 mode: center
 ---
 
+<Update label="November 25 2025" description="v1.1.0">
+
+## What's new in v1.1.0
+
+🚀 Updates & Improvements
+
+### 📞 Caller ID Fix for Outbound Forwarded Calls
+
+When an assistant‐initiated outbound call is forwarded to another recipient, the correct caller ID (assistant’s phone number) is now preserved. The receiving user will no longer see the forwarded user’s caller ID.
+
+### 🎨 UI Enhancements
+
+* **Call Logs:** Error Commands/Utterances are now visually highlighted in **red** for quick identification.
+* **Customer Logs:** Updated layout and improved readability for streamlined troubleshooting.
+* **Assistant STT Configuration:** UI support added for **Deepgram Flux** model configuration.
+
+### 🗣️ Assistant Behavior Enhancements
+
+* Added support for `<nonInterruptible>` tag to ensure uninterrupted prompt/audio playback by the assistant.
+* Webhook listeners now emit **LLM error events**, allowing better error tracking and observability.
+
+### 📚 Knowledge Base
+
+* Pagination and search capabilities added within the assistant’s Knowledge Base for faster navigation and scaling with larger datasets.
+
+### 🔄 Integration & Automation
+
+* Support added to run **cadence flow using Microsoft integration**.
+
+### 🛠️ General
+
+* Multiple bug fixes and performance improvements across the platform.
+
+</Update>
+
 <Update label="November 11 2025" description="v1.0.0">
 
 ## What's new in v1.0.0
