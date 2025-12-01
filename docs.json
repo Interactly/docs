@@ -62,35 +62,35 @@
                     {
                         "group": "APIs",
                         "openapi": {
-                            "source": "https://api-qa.interactly.ai/api-docs/common/api.json",
+                            "source": "https://api-dev.interactly.ai/api-docs/common/api.json",
                             "directory": "api-reference"
                         }
                     },
                     {
                         "group": "Campaigns",
                         "openapi": {
-                            "source": "https://api-qa.interactly.ai/api-docs/campaigns/api.json",
+                            "source": "https://api-dev.interactly.ai/api-docs/campaigns/api.json",
                             "directory": "api-reference/campaigns"
                         }
                     },
                     {
                         "group": "Workflows",
                         "openapi": {
-                            "source": "https://api-qa.interactly.ai/api-docs/workflows/api.json",
+                            "source": "https://api-dev.interactly.ai/api-docs/workflows/api.json",
                             "directory": "api-reference/workflows"
                         }
                     },
                     {
                         "group": "Integrations",
                         "openapi": {
-                            "source": "https://api-qa.interactly.ai/api-docs/integrations/api.json",
+                            "source": "https://api-dev.interactly.ai/api-docs/integrations/api.json",
                             "directory": "api-reference/integrations"
                         }
                     },
                     {
                         "group": "Prompts",
                         "openapi": {
-                            "source": "https://api-qa.interactly.ai/api-docs/prompts/api.json",
+                            "source": "https://api-dev.interactly.ai/api-docs/prompts/api.json",
                             "directory": "api-reference/prompts"
                         }
                     }
@@ -99,12 +99,12 @@
                     "anchors": [
                         {
                             "anchor": "Swagger",
-                            "href": "https://api-qa.interactly.ai/api-docs",
+                            "href": "https://api-dev.interactly.ai/api-docs",
                             "icon": "code"
                         },
                         {
                             "anchor": "OpenAPI",
-                            "href": "https://api-qa.interactly.ai/api-docs/api.json",
+                            "href": "https://api-dev.interactly.ai/api-docs/api.json",
                             "icon": "code"
                         }
                     ]
@@ -141,7 +141,7 @@
         "primary": {
             "type": "button",
             "label": "Dashboard",
-            "href": "https://dashboard-qa.interactly.ai"
+            "href": "https://dashboard-dev.interactly.ai"
         }
     },
     "footer": {
