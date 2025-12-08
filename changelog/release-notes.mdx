@@ -6,6 +6,94 @@ noindex: true
 mode: center
 ---
 
+<Update label="December 8 2025" description="v1.2.0">
+
+## What's new in v1.2.0
+
+🚀 Updates & Improvements
+
+### 🔧 Stability Improvements
+
+* Enhanced system reliability with comprehensive bug fixes and performance optimizations
+* Resolved known issues that were impacting call quality and user experience
+* Improved error handling and recovery mechanisms across the platform
+
+### 🎨 UI Enhancements
+
+* Refined user interface elements for better visual consistency and usability
+* Updated component styling and layouts for improved user experience
+* Enhanced accessibility features and responsive design improvements
+
+### 🎙️ Noise Suppression Configuration Updates
+
+**⚠️ Breaking Changes - Assistant Configuration**
+
+We've improved the noise suppression configuration with a more comprehensive and flexible approach. The following fields are now **removed**:
+
+```javascript
+// ❌ Removed - These fields are removed completely and no longer supported
+noiseSuppressor: Boolean
+noiseSuppressionKnob: Number
+```
+
+**New Configuration Structure**
+
+Replace the removed fields with the new `noiseSuppressorConfig` object:
+
+```javascript
+// ✅ NEW - Enhanced noise suppression configuration
+noiseSuppressorConfig: {
+  enabled: { type: Boolean, default: false },
+  suppressBackgroundNoise: { type: Boolean, default: true }, // MVNS flag
+  suppressBackgroundVoice: { type: Boolean, default: false }, // BVS flag
+  digitalGainControl: { type: Boolean, default: true }, // DGC flag
+  knobValue: { type: Number, default: 100 }
+}
+```
+
+#### Configuration Options Explained
+
+* **`enabled`** - Master toggle for noise suppression functionality
+* **`suppressBackgroundNoise`** - Controls Multi-Variate Noise Suppression (MVNS) to filter out ambient sounds
+* **`suppressBackgroundVoice`** - Controls Background Voice Suppression (BVS) to minimize interference from other speakers
+* **`digitalGainControl`** - Controls Digital Gain Control (DGC) for automatic volume adjustment
+* **`knobValue`** - Fine-tune suppression intensity from 0 (minimal) to 100 (maximum)
+
+#### Migration Guide
+
+**Before:**
+```javascript
+{
+  noiseSuppressor: true,
+  noiseSuppressionKnob: 80
+}
+```
+
+**After:**
+```javascript
+{
+  noiseSuppressorConfig: {
+    enabled: true,
+    suppressBackgroundNoise: true,
+    suppressBackgroundVoice: false,
+    digitalGainControl: true,
+    knobValue: 80
+  }
+}
+```
+
+<Callout type="warning">
+  **Migration Required**: Please update your assistant configurations to use the new `noiseSuppressorConfig` object. The deprecated fields will continue to work temporarily but will be removed in a future release.
+</Callout>
+
+### 🛠️ General
+
+* Performance improvements and system optimizations
+* Enhanced logging and monitoring capabilities
+* Security updates and compliance improvements
+
+</Update>
+
 <Update label="November 25 2025" description="v1.1.0">
 
 ## What's new in v1.1.0
