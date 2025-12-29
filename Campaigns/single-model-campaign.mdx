@@ -43,78 +43,7 @@ Provide **webhook configurations**.
 - **Subscribed Webhook Events** : We currently support call status and campaign report events to Subscribe.
       -  **Call Status**:  This contains all the individual calls of the campaign, it will trigger immediately when a call is either completed or failed.
 
-<CodeGroup dropdown>
-
-```javascript data.js
-const data = {
-  "event": "call_status",
-  "campaign": {
-    "id": "cmp_123456",
-    "teamId": "team_001",
-    "name": "November Outreach", 
-    "createdAt": "2025-11-05T08:10:11.129Z",
-    "updatedAt": "2025-11-05T08:10:11.129Z",
-    "processTimings": {
-      "launchAt": "2025-11-05T08:10:19.242Z",
-      "resumeAt": null,
-      "completedAt": "2025-11-05T08:10:19.242Z"
-    }
-  },
-  "call": {
-    "id": "call_001",
-    "status": "completed",
-    "outcome": "no_answer",
-    "conversationId": "conv_123e4567-e89b-12d3-a456-426614174000",
-    "assistantNumber": "+12058820192",
-    "phoneNumber": "+15105550123",
-    "collectedInformation": {
-      "leadName": "Jane Doe",
-      "zip": "94105"
-    },
-    "errorCode": null,
-    "errorMessage": null,
-    "createdAt": "2025-11-05T08:43:37.018Z",
-    "updatedAt": "2025-11-05T08:43:37.018Z"
-  }
-};
-```
-
-```python data.py
-data = {
-  "event": "call_status",
-  "campaign": {
-    "id": "cmp_123456",
-    "teamId": "team_001",
-    "name": "November Outreach", 
-    "createdAt": "2025-11-05T08:10:11.129Z",
-    "updatedAt": "2025-11-05T08:10:11.129Z",
-    "processTimings": {
-      "launchAt": "2025-11-05T08:10:19.242Z",
-      "resumeAt": null,
-      "completedAt": "2025-11-05T08:10:19.242Z"
-    }
-  },
-  "call": {
-    "id": "call_001",
-    "status": "completed",
-    "outcome": "no_answer",
-    "conversationId": "conv_123e4567-e89b-12d3-a456-426614174000",
-    "assistantNumber": "+12058820192",
-    "phoneNumber": "+15105550123",
-    "collectedInformation": {
-      "leadName": "Jane Doe",
-      "zip": "94105"
-    },
-    "errorCode": null,
-    "errorMessage": null,
-    "createdAt": "2025-11-05T08:43:37.018Z",
-    "updatedAt": "2025-11-05T08:43:37.018Z"
-  }
-}
-
-```
-
-```json data.json
+```json 
 {
   "event": "call_status",
   "campaign": {
@@ -148,97 +77,12 @@ data = {
 }
 ```
 
-```html data.html
-{
-  "event": "call_status",
-  "campaign": {
-    "id": "cmp_123456",
-    "teamId": "team_001",
-    "name": "November Outreach", 
-    "createdAt": "2025-11-05T08:10:11.129Z",
-    "updatedAt": "2025-11-05T08:10:11.129Z",
-    "processTimings": {
-      "launchAt": "2025-11-05T08:10:19.242Z",
-      "resumeAt": null,
-      "completedAt": "2025-11-05T08:10:19.242Z"
-    }
-  },
-  "call": {
-    "id": "call_001",
-    "status": "completed",
-    "outcome": "no_answer",
-    "conversationId": "conv_123e4567-e89b-12d3-a456-426614174000",
-    "assistantNumber": "+12058820192",
-    "phoneNumber": "+15105550123",
-    "collectedInformation": {
-      "leadName": "Jane Doe",
-      "zip": "94105"
-    },
-    "errorCode": null,
-    "errorMessage": null,
-    "createdAt": "2025-11-05T08:43:37.018Z",
-    "updatedAt": "2025-11-05T08:43:37.018Z"
-  }
-}
-```
-
-</CodeGroup>
 <ul style={{paddingLeft: '48px'}}>
      <li> **Campaign Report**: This contains the complete campaign report which contains the number of calls completed and number of calls failed. It will be triggered immediately after the campaign is completed. A campaign is completed only when all the calls are either completed or failed.</li>
    </ul>
 
 
-<CodeGroup dropdown>
-
-```javascript data.js
-const data = {
-  "event": "campaign_report",
-  "campaign": {
-    "id": "cmp_123456",
-    "teamId": "team_001",
-    "name": "November Campaign",
-    "createdAt": "2025-11-05T08:10:11.129Z",
-    "updatedAt": "2025-11-05T08:10:11.129Z",
-    "processTimings": {
-      "launchAt": "2025-11-05T08:10:19.242Z",
-      "resumeAt": null,
-      "completedAt": null
-    }
-  },
-  "report": {
-    "totalCalls": 42,
-    "completedCalls": 31,
-    "failedCalls": 11
-  }
-};
-```
-
-```python data.py
-data = {
-  "event": "campaign_report",
-  "campaign": {
-    "id": "cmp_123456",
-    "teamId": "team_001",
-    "name": "November Campaign",
-    "createdAt": "2025-11-05T08:10:11.129Z",
-    "updatedAt": "2025-11-05T08:10:11.129Z",
-    "processTimings": {
-      "launchAt": "2025-11-05T08:10:19.242Z",
-      "resumeAt": null,
-      "completedAt": null
-    }
-  },
-  "report": {
-    "totalCalls": 42,
-    "completedCalls": 31,
-    "failedCalls": 11
-  }
-}
-
-
-```
-
-```json data.json
+```json 
 {
   "event": "campaign_report",
   "campaign": {
@@ -261,32 +105,7 @@ data = {
 }
 
 ```
-
-```html data.html
-{
-  "event": "campaign_report",
-  "campaign": {
-    "id": "cmp_123456",
-    "teamId": "team_001",
-    "name": "November Campaign",
-    "createdAt": "2025-11-05T08:10:11.129Z",
-    "updatedAt": "2025-11-05T08:10:11.129Z",
-    "processTimings": {
-      "launchAt": "2025-11-05T08:10:19.242Z",
-      "resumeAt": null,
-      "completedAt": null
-    }
-  },
-  "report": {
-    "totalCalls": 42,
-    "completedCalls": 31,
-    "failedCalls": 11
-  }
-}
-
-```
-
-</CodeGroup>
+ 
 <ul style={{paddingLeft: '48px'}}>
      <li> **Custom HTTP Headers** : Here you can give your custom headers like **‘Authorization’**.</li>
    </ul>
