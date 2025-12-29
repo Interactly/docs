@@ -40,10 +40,10 @@
                         ]
                     },
                     {
-                        "group": "Campaigns",
+                        "group": "campaigns",
                         "pages": [
-                            "Campaigns/single-model-campaign",
-                            "Campaigns/multi-model-campaign"
+                            "campaigns/single-model-campaign",
+                            "campaigns/multi-model-campaign"
                         ]
                     },
                     {

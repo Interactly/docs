@@ -7,41 +7,41 @@ slug: campaigns/single-model-campaign
 Navigate to the dashboard, select  **campaigns tab**, and click **New campaign** to begin.
 
 <Frame caption="">
-  <img src="/images/Campaigns-images/single-model-campaign/create-new-campaign.png" />
+  <img src="/images/campaigns/create-new-campaign.png" />
 </Frame>
 
 Provide a name for the campaign and select the **'Create'** button. This will redirect you to the page displayed below.
 
 <Frame caption="">
-  <img src="/images/Campaigns-images/single-model-campaign/camaign-creation-page.png" />
+  <img src="/images/campaigns/camaign-creation-page.png" />
 </Frame>
 
-   The default selection is the **single model**. Choose an assistant from the **'Select Assistant Number'** dropdown menu.
+The default selection is the **single model**. Choose an assistant from the **'Select Assistant Number'** dropdown menu.
 
-   Provide your email address and press 'Enter' to confirm. We will use this address to notify you the moment the campaign is finished.
+Provide your email address and press 'Enter' to confirm. We will use this address to notify you the moment the campaign is finished.
 
-   The default time zone will be America/New York. You can select your time zone from the drop down menu.
+The default time zone will be America/New York. You can select your time zone from the drop down menu.
 
-  Provide **Date**, **Start Time** and **End Time**  fields.
+Provide **Date**, **Start Time** and **End Time**  fields.
 
-      - **Date**: It is the date on which the campaign runs.
-      - **Start Time**: At which the campaign will start processing.
-      - **End Time**: At which the campaign will finish running the calls.
+- **Date**: It is the date on which the campaign runs.
+- **Start Time**: At which the campaign will start processing.
+- **End Time**: At which the campaign will finish running the calls.
 
-   Set a value for **Max Parallel Calls**. It is the maximum number of parallel calls that can be run when the campaign is running. 
+Set a value for **Max Parallel Calls**. It is the maximum number of parallel calls that can be run when the campaign is running. 
 
-      - In My **organization → License**,  there will be an org limit set by the interactlya.ai  team. You can set the max parallel calls limit up to the Org limit value.
+- In My **organization → License**,  there will be an org limit set by the interactlya.ai  team. You can set the max parallel calls limit up to the Org limit value.
 
 <Frame caption="">
-  <img src="/images/Campaigns-images/single-model-campaign/org-limit.png" />
+  <img src="/images/campaigns/org-limit.png" />
 </Frame>
 
-  Provide **webhook configurations**.
+Provide **webhook configurations**.
 
-      - **Webhook URL** : It is the URL at which the webhooks are received .
-      - **Webhook Secret**: It is the optional value you can set so that for every webhook interactly will send it as an **“x-interactly-secret”** header for you to understand this webhook os from interactly.
-      - **Subscribed Webhook Events** : We currently support call status and campaign report events to Subscribe.
-            -  **Call Status**:  This contains all the individual calls of the campaign, it will trigger immediately when a call is either completed or failed.
+- **Webhook URL** : It is the URL at which the webhooks are received .
+- **Webhook Secret**: It is the optional value you can set so that for every webhook interactly will send it as an **“x-interactly-secret”** header for you to understand this webhook os from interactly.
+- **Subscribed Webhook Events** : We currently support call status and campaign report events to Subscribe.
+      -  **Call Status**:  This contains all the individual calls of the campaign, it will trigger immediately when a call is either completed or failed.
 
 <CodeGroup dropdown>
 
@@ -292,19 +292,19 @@ data = {
    </ul>
 
 
-   To upload the file with records first download the sample file.
+To upload the file with records first download the sample file.
 
-      **Sample file**: 
+### **Sample file**: 
 
-            - This file contains phone_number as the first field which is mandatory.
-            - This is the number to which the call will be made.
-            - Remaining fields are the fields that are added as dynamic variables in the prompt. Fill all the fields.
-            - You can add as many records as you want. 
-            - Once the file is ready click on upload file to upload the file.
-            - If there are any missing fields the file will not be uploaded and an error will be shown. You can **delete** the file by clicking on delete icon and upload again
+- This file contains phone_number as the first field which is mandatory.
+- This is the number to which the call will be made.
+- Remaining fields are the fields that are added as dynamic variables in the prompt. Fill all the fields.
+- You can add as many records as you want. 
+- Once the file is ready click on upload file to upload the file.
+- If there are any missing fields the file will not be uploaded and an error will be shown. You can **delete** the file by clicking on delete icon and upload again
 
 <Frame caption="">
-  <img src="/images/Campaigns-images/single-model-campaign/file-uploads.png" />
+  <img src="/images/campaigns/file-uploads.png" />
 </Frame>
 
 <ul style={{paddingLeft: '36px'}}>
@@ -312,56 +312,56 @@ data = {
    </ul>
 
 <Frame caption="">
-  <img src="/images/Campaigns-images/single-model-campaign/patient-appointments.png" />
+  <img src="/images/campaigns/patient-appointments.png" />
 </Frame>
 
 <ul style={{paddingLeft: '36px'}}>
      <li>You can upload more files while the campaign is running by clicking on “upload”.</li>
    </ul>
 
-    After providing all the details you can save the campaign to run later Or click on launch campaign to run the campaign.
+After providing all the details you can save the campaign to run later Or click on launch campaign to run the campaign.
 
-    When the campaign is launched you can see the below page.
-
-<Frame caption="">
-  <img src="/images/Campaigns-images/single-model-campaign/campainpage.png" />
-</Frame>
-
-  On clicking on the campaign , it will take you to the calls page. As shown below.
+When the campaign is launched you can see the below page.
 
 <Frame caption="">
-  <img src="/images/Campaigns-images/single-model-campaign/call-page.png" />
+  <img src="/images/campaigns-images/campainpage.png" />
 </Frame>
 
-   **Status** :
+On clicking on the campaign , it will take you to the calls page. As shown below.
 
-      - **Phone call status** :
+<Frame caption="">
+  <img src="/images/campaigns/call-page.png" />
+</Frame>
 
-            - The status of the call will be ‘received’ when the campaign is launched.Here status can move to either **ready** when the validation is successful  or **failed** when validation is failed.
-            - Then the calls will be moved to queued , which means the campaign time is matched.
-            - Then calls will be in ringing state and then processing to end state when the call is finished.
+### **Status** :
 
-      - **Campaign status**:
+#### **Phone call status** :
 
-            - Campaign will be in **processing** state  until the calls are running.
-            - Once all the calls are either completed or failed it will move to the completed state.
+      - The status of the call will be ‘received’ when the campaign is launched.Here status can move to either **ready** when the validation is successful  or **failed** when validation is failed.
+      - Then the calls will be moved to queued , which means the campaign time is matched.
+      - Then calls will be in ringing state and then processing to end state when the call is finished.
 
-   **Edit Campaign**:
+#### **Campaign status**:
+
+      - Campaign will be in **processing** state  until the calls are running.
+      - Once all the calls are either completed or failed it will move to the completed state.
+
+#### **Edit Campaign**:
 
       - After saving the campaign if you want to edit the campaign click on the 3 dots and select “Edit campaign”.
       - Save the campaign after making the changes.
 
-   **View Campaign Details**:
+#### **View Campaign Details**:
 
       - Click on the 3 dots and select the “view details” option to see the campaign details.
       - You can edit the campaign form this page also.  
 
 <Frame caption="">
-<img src="/images/Campaigns-images/single-model-campaign/view-campaign.png" />
+<img src="/images/campaigns/view-campaign.png" />
 </Frame> 
 
 
-   **Clone Campaign**:
+### **Clone Campaign**:
 
       - You  can duplicate a campaign  by clicking on “clone campaign”.
       - Give a name to the campaign and save it.
@@ -369,21 +369,21 @@ data = {
       - You can edit the campaign to make changes.
 
 <Frame caption="">
-<img src="/images/single-model-campaign/clone.png" />
+<img src="/images/campaigns/clone.png" />
 </Frame>
 
-   **Delete Campaign**:
+#### **Delete Campaign**:
 
       - Click on “delete campaign” , to delete the campaign.
       - The campaign along with the calls will be deleted.
       - Once a campaign is deleted , it can’t be restored.
 
-   **Pause the campaign**:
+#### **Pause the campaign**:
 
       - If you want to pause the campaign while the campaign is running, you can do that by clicking on the “pause campaign” from the three dots.
       - The calls that are already running will be continued and the calls that are in queued state will remain in queued until the campaign is resumed.
 	
-   **Stop Campaign**: 
+#### **Stop Campaign**: 
 
       - A campaign can be aborted by clicking on “stop campaign” .
       - All the calls that are not triggered will be aborted.
