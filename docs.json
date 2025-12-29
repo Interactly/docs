@@ -40,6 +40,13 @@
                         ]
                     },
                     {
+                        "group": "Campaigns",
+                        "pages": [
+                            "Campaigns/single-model-campaign",
+                            "Campaigns/multi-model-campaign"
+                        ]
+                    },
+                    {
                         "group": "Webhooks",
                         "pages": [
                             "webhooks/server-url",
