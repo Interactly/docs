@@ -47,6 +47,14 @@
                             "webhooks/server-url/events",
                             "webhooks/server-url/developing-locally"
                         ]
+                    },
+                    {
+                        "group": "Vendors",
+                        "pages": [
+                            "vendors/transcribers",
+                            "vendors/voices",
+                            "vendors/models"
+                        ]
                     }
                 ]
             },
