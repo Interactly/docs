@@ -1,0 +1,111 @@
+---
+title: Models
+subtitle: Available LLM model providers and configurations
+slug: models
+description: Complete list of supported Large Language Model (LLM) providers with their available models.
+---
+
+This page provides a comprehensive list of all supported Large Language Model (LLM) providers, along with their available model configurations.
+
+## Model Providers
+
+### OpenAI
+
+**ID:** `openai`
+
+**Description:** OpenAI
+
+**Available Models:**
+
+| Model Value |
+|-------------|
+| `gpt-4.1` |
+| `gpt-4.1-mini` |
+| `gpt-4.1-nano` |
+| `gpt-4o` |
+| `gpt-4o-mini` |
+| `gpt-4` |
+| `gpt-3.5-turbo` |
+
+
+---
+
+### Azure OpenAI
+
+**ID:** `azure`
+
+**Description:** Azure OpenAI
+
+**Available Models:**
+
+| Model Value |
+|-------------|
+| `gpt-4.1` |
+| `gpt-4.1-mini` |
+| `gpt-4.1-nano` |
+| `gpt-4o` |
+| `gpt-4o-mini` |
+| `gpt-4` |
+
+---
+
+### Custom LLM
+
+**ID:** `custom-llm`
+
+**Description:** Custom LLM
+
+**Available Models:**
+
+No predefined models. Custom LLM allows you to configure your own model endpoints.
+
+---
+
+### Gemini
+
+**ID:** `gemini`
+
+**Description:** Gemini
+
+**Available Models:**
+
+| Model Value |
+|-------------|
+| `gemini-2.5-pro` |
+| `gemini-2.5-flash` |
+| `gemini-2.0-flash` |
+| `gemini-2.0-flash-lite` |
+| `gemini-1.5-flash-latest` |
+| `gemini-1.5-pro-latest` |
+| `gemini-1.5-flash` |
+
+---
+
+### Bedrock
+
+**ID:** `bedrock`
+
+**Description:** Bedrock
+
+**Available Models:**
+
+| Model Value |
+|-------------|
+| `anthropic.claude-3-5-sonnet` |
+| `anthropic.claude-3-5-haiku` |
+| `meta.llama3-1-8b-instruct` |
+
+---
+
+## Usage Notes
+
+- All provider IDs should be used exactly as specified (case-sensitive)
+- Model values are provider-specific and must be used exactly as shown
+- Some providers may require additional configuration (e.g., API keys, endpoints)
+- Custom LLM provider allows you to configure your own model endpoints
+- Realtime models (e.g., `gpt-realtime`, `gpt-4o-mini-realtime-preview`) support streaming responses
+
+## Get Support
+
+Need help with model configuration? Reach out to us via `developers@interactly.ai` email. We're here to help!
+
