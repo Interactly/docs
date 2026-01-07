@@ -40,10 +40,11 @@
                         ]
                     },
                     {
-                        "group": "campaigns",
+                        "group": "Campaigns",
                         "pages": [
-                            "campaigns/single-model-campaign",
-                            "campaigns/multi-model-campaign"
+                            "campaigns/introduction",
+                            "campaigns/single-modal-campaign",
+                            "campaigns/multi-modal-campaign"
                         ]
                     },
                     {

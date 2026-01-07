@@ -1,0 +1,385 @@
+---
+title: Example 2 Topic-based Scoped Branching ChatBot
+subtitle: Workflows Topic-based Scoped Branching ChatBot example
+slug: workflows-example-2
+mode: wide
+---
+
+## High-Level Description
+
+This workflow demonstrates a more sophisticated multi-agent system with intelligent routing capabilities. A router agent analyzes user intent and directs the conversation to specialized agents (Insurance, Scheduling, or Payment). It showcases how to create a branching conversation flow where a single entry point can lead to multiple specialized paths based on user needs. A global end conversation agent can be triggered from anywhere, demonstrating universal exit handling.
+
+## New Concepts Introduced
+
+Building upon Example 1, this workflow introduces:
+
+ 1. **Global Workflow Configuration**:
+    - **Default Prompt Prefix**: System-level instructions automatically applied to all AI agents
+    - **Default Prompt Suffix**: Global guidelines automatically appended to all agent prompts
+    - **Workflow-Level AI Config**: Default AI model settings inherited by all agents
+ 2. **Multi-Agent Architecture with Router Pattern**:
+    - A dedicated Router agent that analyzes user intent
+    - Multiple specialized agents for different domains (insurance, scheduling, payment)
+    - Multiple conditional transitions from a single agent (router branches to 3 destinations)
+ 3. **Global Agents**:
+    - **is_global**: Makes an agent accessible from anywhere in the workflow
+    - **Global Conditions**: Conditions that are evaluated from every agent in the workflow
+    - **Cross-Workflow Exit Points**: Universal escape hatches (e.g., end conversation from any agent)
+ 4. **LLM-Powered Intent Routing**:
+    - Using natural language conditions as "routing tools"
+    - AI-based intent classification through conditional transitions
+    - Multiple mutually exclusive routing paths from a single decision point
+ 5. **Domain-Specific Agent Specialization**:
+    - Specialized system prompts for different agent roles
+    - Context-aware agents with specific capabilities and boundaries
+    - Role-based conversation handling
+
+## Workflow Diagram
+
+```Text
+┌─────────────────┐
+│  Greeting       │ (START)
+│  Agent          │
+└────────┬────────┘
+         │ DirectEdge
+         ▼
+┌─────────────────┐
+│  Router         │ ◄─┐
+│  Agent          │   │ Self-loop
+└────────┬────────┘   │ (clarify intent)
+         │            │
+         ├────────────┘
+         │
+         ├─ ConditionalEdge (Insurance Intent)
+         │
+         ├─ ConditionalEdge (Scheduling Intent)
+         │
+         └─ ConditionalEdge (Payment Intent)
+                │
+         ┌──────┴──────┬──────────────┐
+         ▼             ▼              ▼
+┌───────────────┐ ┌──────────────┐ ┌──────────────┐
+│  Insurance    │ │  Scheduling  │ │  Payment     │
+│  Agent        │ │  Agent       │ │  Agent       │
+│ (self-loop)   │ │ (self-loop)  │ │ (self-loop)  │
+└───────┬───────┘ └──────┬───────┘ └──────┬───────┘
+        │                │                │
+        └────────────────┴────────────────┘
+                         │
+                         │ Global Edge (from ANY agent)
+                         │ (when user says goodbye)
+                         ▼
+                 ┌─────────────────┐
+                 │  End            │ (GLOBAL)
+                 │  Conversation   │
+                 │  Agent          │
+                 └─────────────────┘
+```
+
+## Agent Details
+
+## Agent 1: Greeting Agent
+
+**Purpose**: Welcome the user and initiate the conversation.
+
+**Configuration**:
+
+ - **Name**: "Greeting Node"
+ - **Is Start**: Yes
+ - **Self Loop**: No
+ - **Wait for User Message**: No
+ - **AI Model**: GPT-4.1-NANO (30 tokens max, temperature 0.5)
+ - **Prompt**: "Welcome the user with a friendly message in less than 15 words. Greet them politely and ask them what they would like to ask or talk about."
+
+**Behavior**: Immediately generates a greeting and transitions to the router agent.
+
+-----
+
+## Agent 2: Router Agent
+
+**Purpose**: Analyze user intent and route to the appropriate specialized agent.
+
+**Configuration**:
+
+ - **Name**: "Router Node"
+ - **Self Loop**: Yes (can ask clarifying questions)
+ - **Wait for User Message**: Yes
+ - **AI Model**: Inherits workflow default (GPT-4.1-MINI, 300 tokens, temperature 0.2)
+ - **Prompt**:
+
+```Text
+You are a friendly "routing" agent whose specific role is to route to one of the other agent 
+nodes in the system. Until you are able to ascertain the intent of the user, ask them politely 
+for their intent and continue the conversation to gather more information.
+
+Call the appropriate routing tool to help route to the correct agent when the user's intent 
+matches one of the tools. If the user has clearly specified their intent, but it does not match 
+with any of the tools, just reply politely that their intent is not supported by the system.
+
+You support only the intents which are related to insurance, scheduling appointments or payments.
+```
+
+**Behavior**:
+
+ - Engages in conversation to understand user needs
+ - Loops until intent is clear
+ - Triggers appropriate routing when intent matches one of the three supported categories
+ - Politely declines if intent doesn't match
+
+**Example Interaction**:
+
+ - User: "I need help"
+ - Router: "I'd be happy to help! Are you looking for assistance with insurance, scheduling an appointment, or billing and payments?"
+ - User: "Billing"
+ - Router: → Triggers Payment Agent
+
+ ----
+
+## Agent 3: Insurance Agent
+
+**Purpose**: Handle all insurance-related queries with specialized knowledge.
+
+**Configuration**:
+
+ - **Name**: "Insurance ChatBot"
+ - **Self Loop**: Yes
+ - **Wait for User Message**: Yes
+ - **AI Model**: Inherits workflow default
+ - **Prompt**: Comprehensive insurance-focused system prompt (same as Example 1)
+
+**Behavior**: Provides insurance support while maintaining compliance and privacy guardrails. Inherits global prefix/suffix for consistent agent behavior.
+
+------
+
+## Agent 4: Scheduling Agent
+
+**Purpose**: Handle appointment scheduling, rescheduling, and cancellation requests.
+
+**Configuration**:
+
+ - **Name**: "Scheduling ChatBot"
+ - **Self Loop**: Yes
+ - **Wait for User Message**: Yes
+ - **AI Model**: Inherits workflow default
+ - **Prompt**: Specialized for provider scheduling and appointment management
+
+**Key Capabilities**:
+
+ - Schedule new appointments
+ - Reschedule existing appointments
+ - Cancel appointments
+ - Share clinic hours and preparation instructions
+ - Redirect to secure portals for verification
+
+**Behavior**: Assists with scheduling while maintaining HIPAA compliance and redirecting to secure systems for sensitive operations.
+
+-----
+
+## Agent 5: Payment Agent
+
+**Purpose**: Assist with billing inquiries and payment processing guidance.
+
+**Configuration**:
+
+ - **Name**: "Payment ChatBot"
+ - **Self Loop**: Yes
+ - **Wait for User Message**: Yes
+ - **AI Model**: Inherits workflow default
+ - **Prompt**: Specialized for billing and payment topics
+
+**Key Capabilities**:
+
+ - Explain billing terms and invoices
+ - Guide users through payment processes
+ - Help with failed payment issues
+ - Direct to secure payment portals
+ - Never collect sensitive payment information
+
+**Behavior**: Guides users through payment processes while maintaining PCI DSS and security standards.
+
+-----
+
+## Agent 6: End Conversation Agent (GLOBAL)
+
+**Purpose**: Provide a universal exit point accessible from any agent in the workflow.
+
+**Configuration**:
+
+ - **Name**: "End Conversation"  
+ - **Type**: Static Message  
+ - **Message**: "Thank you for chatting with CignaCare Assistant. Have a great day!"  
+ - **is_global**: True (accessible from anywhere)    
+ - **Global Condition**:  
+
+```Text
+Trigger this to route to the conversation ending agent if the user indicates they want to end 
+the conversation or says goodbye.
+Examples: "That's all for now, thank you.", "Goodbye!", "I don't have any more questions. Thanks!"
+```
+**Behavior**:
+
+ - Automatically triggered from ANY agent when user indicates goodbye
+ - No explicit transitions needed - framework handles global routing
+ - Provides consistent conversation ending experience
+
+## Conversation Flow Details
+
+## Transition 1: Greeting to Router
+
+**Type**: Direct Edge
+
+**Configuration**:
+
+ - **Source**: Greeting Node
+ - **Destination**: Router Node
+ - **Name**: "Go to Router Node"
+ - **Description**: "After starting the conversation, go to the router node to determine user intent."
+
+**Behavior**: Automatic transition after greeting completes.
+
+--------
+
+## Transition 2: Router to Insurance Agent
+
+**Type**: Conditional Edge
+
+**Configuration**:
+
+ - **Source**: Router Node
+ - **Destination**: Insurance ChatBot
+ - **Name**: "Insurance ChatBot"
+ - **Condition**: "Trigger this tool to route to an internal insurance agent. Take this route only when it is clear that the user wants help with insurance."
+
+**Behavior**: Activates when router detects insurance-related intent.
+
+-----
+
+## Transition 3: Router to Scheduling Agent
+
+**Type**: Conditional Edge
+
+**Configuration**:
+
+ - **Source**: Router Node
+ - **Destination**: Scheduling ChatBot
+ - **Name**: "Scheduling ChatBot"
+ - **Condition**: "Trigger this tool to route to an internal scheduling agent. Take this route only when it is clear that the user wants help with scheduling appointments."
+
+**Behavior**: Activates when router detects appointment/scheduling intent.
+
+
+-----
+
+## Transition 4: Router to Payment Agent 
+
+**Type**: Conditional Edge
+
+**Configuration**:
+
+ - **Source**: Router Node
+ - **Destination**: Payment ChatBot
+ - **Name**: "Payment ChatBot"
+ - **Condition**: "Trigger this tool to route to an internal payment agent. Take this route only when it is clear that the user wants help with billing, payments or invoices."
+
+**Behavior**: Activates when router detects billing/payment intent.
+
+-----
+
+ ## Global Transition: ANY Agent to End Conversation
+
+**Type**: Global Edge (automatically evaluated from all agents)
+
+**Purpose**: Allow conversation termination from any point in the workflow.
+
+**Behavior**:
+
+ - No explicit transition configuration needed
+ - Condition evaluated from every agent automatically
+ - When any agent receives a "goodbye" intent, the global condition triggers
+ - Workflow transitions to End Conversation agent regardless of current location
+
+## Workflow Execution Scenarios
+
+## Scenario 1: Insurance Query
+
+ 1. **Start** → Greeting Agent → "Hello! Welcome to CignaCare. What can I help you with?"
+ 2. **Greeting** → Router Agent
+ 3. **User**: "I have a question about my coverage"
+ 4. **Router**: Analyzes intent → Triggers Insurance Edge
+ 5. **Insurance Agent**: Handles query (self-loops for multi-turn)
+ 6. **User**: "Thanks, that's all!"
+ 7. **Global condition** triggers → End Conversation Agent
+
+## Scenario 2: Appointment Scheduling
+
+ 1. **Start** → Greeting Agent
+ 2. **Greeting** → Router Agent
+ 3. **User**: "I need to book an appointment"
+ 4. **Router**: Triggers Scheduling Edge
+ 5. **Scheduling Agent**: Assists with booking (self-loops)
+ 6. **User**: "Goodbye"
+ 7. **Global condition** → End Conversation Agent
+
+## Scenario 3: Clarification Needed
+
+ 1. **Start** → Greeting Agent
+ 2. **Greeting** → Router Agent
+ 3. **User**: "I need help"
+ 4. **Router**: Self-loops → "I'd be happy to help! Are you looking for insurance, scheduling, or payments?"
+ 5. **User**: "Billing question"
+ 6. **Router**: Triggers Payment Edge
+ 7. **Payment Agent**: Handles billing (self-loops)
+ 8. **User** says goodbye → **Global edge** → End Conversation
+
+## Key Takeaways
+
+### Multi-Agent Routing:
+
+ - How to create specialized agents and intelligently route between them
+ - Router pattern enables scalable intent handling
+ - LLM-powered conditional transitions act as routing mechanisms
+
+### Global Agents:
+
+ - Universal escape hatches accessible from anywhere
+ - Global conditions evaluated from all agents automatically
+ - Enables consistent behavior across the workflow
+
+### Workflow-Level Configuration:
+
+ - Set global defaults for AI models and prompts
+ - Apply system-wide instructions via prefix/suffix
+ - Reduce duplication through configuration inheritance
+
+## Scalable Architecture:
+
+ - Easy to add new specialized agents
+ - Router pattern separates intent classification from domain logic
+ - Seamless user experience despite complex routing
+
+### Comparison to Example 1:
+
+ - More complex branching (3 paths vs. 1)
+ - Global agent concept for universal exits
+ - Workflow-level configuration inheritance
+ - Router pattern for scalable intent handling
+ - Multiple specialized agents vs. single general agent
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

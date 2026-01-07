@@ -1,0 +1,498 @@
+---
+title: Example 7 Comprehensive Medical Appointment Workflow
+subtitle: Workflows Comprehensive Medical Appointment Workflow example
+slug: workflows-example-7
+mode: wide
+---
+
+## High-Level Description
+
+This workflow represents a **comprehensive production-ready example** that combines all the concepts from Examples 1-6 into a complete, sophisticated medical appointment scheduling and assessment system. It demonstrates how multiple agent types, edge types, structured data extraction patterns, and complex conditional routing work together in a real-world healthcare scenario. The workflow handles new patient intake, routine checkups, urgent care triage, and emergency redirection with appropriate scheduling and follow-up.
+
+## New Concepts Introduced
+
+This workflow consolidates all previous concepts and demonstrates:
+
+ 1. **Large-Scale Workflow Architecture**:
+    - 14 total agents (nodes) working in concert
+    - Multiple specialized sub-workflows within one system
+    - Real-world complexity and scale
+ 2. **All Edge Types in One Workflow**:
+    - **Direct Edges**: Simple sequential flow
+    - **Conditional Edges (Freeform)**: Intent-based routing
+    - **Conditional Edges (Expression)**: Data-driven routing
+    - **Companion Edges**: Parallel data extraction
+    - **Global Edges**: Universal access points
+ 3. **Multiple Companion Pairs**:
+    - Three different Say+Worker LLM combinations
+    - Each extracting different structured data
+    - Running in parallel during conversations
+ 4. **Complex Multi-Level Routing**:
+    - Initial intent router (3 paths: New Patient, Routine, Urgent)
+    - Secondary data-driven routing (wellness scores, urgency levels)
+    - Tertiary convergence (all paths lead to scheduling, then confirmation)
+ 5. Safety-Critical Global Agent:
+    - Emergency redirect accessible from anywhere
+    - Life-saving functionality with highest priority
+
+## Workflow Diagram
+```Text
+  ┌──────────────────┐
+  │  Start           │ (START)
+  │  Conversation    │
+  └────────┬─────────┘
+           │ DirectEdge
+           ▼
+  ┌──────────────────┐
+  │  Welcome &       │
+  │  Introduction    │
+  └────────┬─────────┘
+           │ DirectEdge
+           ▼
+  ┌──────────────────────────────┐
+  │  Appointment Type Router     │ (Say LLM, self-loop)
+  │  "What type of appointment?" │
+  └──┬───────────┬───────────┬───┘
+     │           │           │
+     │Conditional│Conditional│Conditional
+     │(Freeform) │(Freeform) │(Freeform)
+     │           │           │
+     ▼           ▼           ▼
+  ┌─────────┐ ┌─────────┐ ┌──────────────┐
+  │ New     │ │ Routine │ │ Urgent Care  │
+  │ Patient │ │ Checkup │ │ Triage       │
+  │ Intake  │ │ Pre-    │ │              │
+  └┬──────┬─┘ │ Assess  │ └┬───────────┬─┘
+   │      │   └┬──────┬─┘  │           │
+   │ Comp │    │ Comp │    │ Companion │
+   │ Edge │    │ Edge │    │ Edge      │
+   ▼      │    ▼      │    ▼           │
+   ┌──────┴─┐  ┌───────┴─┐ ┌────────────┴─┐
+   │New Pat │  │Routine  │ │Urgent Triage │
+   │Worker  │  │Worker   │ │Worker        │
+   └────────┘  └─────────┘ └──────────────┘
+     │          │ │ │        │   │
+     │          │ │ │        │   │
+     │   ┌──────┘ │ └───┐    │   │
+     │   │Wellness│     │    │   │
+     │   │>= 80   │< 80 │< 50│Urg│Routine
+     │   │        │     │    │   │
+     ▼   ▼        ▼     ▼    ▼   ▼
+┌────────┐ ┌──────────┐ ┌─────────┐
+│Routine │ │Next      │ │Same-Day │
+│Sched   │ │Available │ │Urgent   │
+│        │ │Sched     │ │Sched    │
+└───┬────┘ └────┬─────┘ └────┬────┘
+    │           │            │
+    └───────────┴────────────┘
+                │
+                ▼
+        ┌───────────────┐
+        │ Appointment   │
+        │ Confirmation  │
+        └───────────────┘
+        
+   ┌────────────────────────────┐
+   │  Emergency Redirect        │ (GLOBAL - from anywhere)
+   │  "Call 911 immediately!"   │
+   └────────────────────────────┘
+   
+   ┌────────────────────────────┐
+   │  End Conversation          │ (GLOBAL - from anywhere)
+   │  "Thank you, goodbye!"     │
+   └────────────────────────────┘
+```  
+## Comprehensive Agent Breakdown
+
+## Conversation Management Agents
+
+### Agent 1: Welcome & Introduction
+
+ - **Purpose**: Greet and explain the process
+ - **Type**: Say LLM
+ - **Model**: GPT-4.1-NANO
+ - **Prompt**: "Welcome to `{{clinic_name}}`. I'll help you schedule an appointment and complete a pre-visit assessment."
+
+----
+
+## Routing & Triage Agents
+
+### Agent 2: Appointment Type Router
+ - **Purpose**: Determine which type of appointment needed
+ - **Type**: Say LLM (self-loop)
+ - **Key Question**: "What brings you in today?"
+ - **Routes To**: New Patient Intake, Routine Assessment, or Urgent Triage
+ - **Routing Logic**: Freeform conditions based on intent
+
+### Supported Intents:
+ - New patient visits
+ - Routine checkups/physicals
+ - Urgent care needs
+
+ ----
+
+## Data Collection Agents (with Companion Workers)
+
+### Agent 3: New Patient Intake (Say LLM)
+ - **Purpose**: Collect essential new patient information
+ - **Information Gathered**:
+   - Full name, date of birth
+   - Insurance provider
+   - Reason for visit
+   - Known allergies
+   - Current medications
+
+### Agent 4: New Patient Data Extractor (Worker LLM - Companion)
+ - **Structured Schema**: NewPatientData
+ - **Fields**: full_name, date_of_birth, insurance_provider, visit_reason, allergies (array), current_medications (array)
+ - **Linked To**: New Patient Intake via Companion Edge
+
+---- 
+### Agent 5: Routine Checkup Assessment (Say LLM)
+ - **Purpose**: Pre-visit health assessment for routine appointments
+ - **Topics Covered**:
+   - Health concerns and symptoms
+   - Changes since last visit
+   - Medications and supplements
+   - Exercise and diet habits
+   - Sleep quality and stress levels
+   - Family health history
+
+### Agent 6: Routine Assessment Data Extractor (Worker LLM - Companion)
+ - **Structured Schema**: RoutineHealthData
+ - **Key Fields**:
+   - health_concerns (array)
+   - medications (array)
+   - exercise_frequency
+   - diet_quality (enum: excellent/good/fair/poor)
+   - sleep_quality (enum)
+   - stress_level (enum: low/moderate/high/very_high)
+   - **overall_wellness_score** (1-100) ← Used for routing!
+ - **Linked To**: Routine Checkup Assessment via Companion Edge
+ ----
+### Agent 7: Urgent Care Triage (Say LLM)
+ - **Purpose**: Assess symptom severity and urgency
+ - **Safety Protocol**: Immediately escalate emergency symptoms
+ - **Assessment Areas**:
+    - Main symptoms and onset
+    - Severity (1-10 scale)
+    - Recent injuries
+    - Temperature if measured
+
+### Agent 8: Urgent Triage Data Extractor (Worker LLM - Companion)
+
+ - **Structured Schema**: UrgentCareData
+ - **Key Fields**:
+    - primary_symptoms (array)
+    - symptom_onset
+    - severity_score (1-10)
+    - has_injury (boolean)
+    - temperature
+    - **urgency_level** (enum: emergency/urgent/semi_urgent/routine) ← Used for routing!
+    - triage_category
+ - **Linked To**: Urgent Care Triage via Companion Edge
+----
+## Safety-Critical Global Agent
+
+### Agent 9: Emergency Redirect (Global Static Message)
+ - **Purpose**: Immediate redirection to emergency services
+ - **Type**: Static Message (Global)
+ - **Message**: "🚨 STOP - This sounds like a medical emergency. Please call `{{emergency_number}}` immediately or go to your nearest emergency room. Do not wait for an appointment. Your safety is our top priority."
+ - **Trigger Condition** (Freeform - Global):
+    - Chest pain or pressure
+    - Difficulty breathing
+    - Severe bleeding
+    - Loss of consciousness
+    - Stroke symptoms
+    - Severe allergic reaction
+    - Severe head injury
+    - Suicidal thoughts
+ - **Dynamic Variable**: emergency_number: "911"
+ - **Accessible From**: ANY agent in the workflow
+ ----
+## Scheduling Agents
+
+### Agent 10: Same-Day Urgent Scheduling
+ - **Purpose**: Schedule same-day appointments for high-priority cases
+ - **Available Slots**: `{{urgent_care_time_slots}}` (e.g., "10:30 AM", "2:00 PM", "4:15 PM")
+ - **Arrival Instructions**: `{{urgent_arrival_instruction}}` (e.g., "15 minutes early")
+ - **Who Gets Here**:
+    - From Urgent Triage: urgency_level == "urgent" OR "semi_urgent"
+    - From Routine Assessment: overall_wellness_score < 50
+
+### Agent 11: Next Available Scheduling
+
+ - **Purpose**: Schedule next available appointments (semi-urgent)
+ - **Available Slots**: `{{next_available_slots}}` (e.g., "Tomorrow 9 AM", "Day after 2 PM")
+ - **Who Gets Here**:
+    - From Routine Assessment: 50 ≤ overall_wellness_score < 80
+    - From Urgent Triage: urgency_level == "routine"
+
+### Agent 12: Routine Appointment Scheduling
+ - **Purpose**: Schedule routine checkups and physicals
+ - **Available Dates**: `{{routine_available_slots}}` (several weeks out)
+ - **Recommendation**: Schedule `{{routine_recommendation}}` (e.g., "2-3 weeks in advance")
+ - **Who Gets Here**:
+    - From New Patient Intake: After collecting name + visit reason
+    - From Routine Assessment: overall_wellness_score ≥ 80
+-----
+
+## Confirmation & Exit Agents
+
+### Agent 13: Appointment Confirmation
+ - **Purpose**: Provide appointment summary and confirmation
+ - **Information Provided**:
+    - Patient name, appointment type, date/time
+    - Location: `{{clinic_name}}`, `{{clinic_address}}`
+    - What to bring (ID, insurance card, medications list)
+    - Confirmation method: `{{confirmation_method}}`
+    - Pre-visit instructions
+ - **Accessible From**: All three scheduling agents
+### Agent 14: End Conversation (Global Static Message)
+ - **Purpose**: Universal conversation exit
+ - **Type**: Static Message (Global)
+ - **Message**: `{{farewell_message}}`
+ - **Trigger Condition** (Freeform): User indicates they're done
+ - **Accessible From**: ANY agent
+
+## Complete Edge Configuration
+
+## Direct Edges (Sequential Flow)
+
+ 1. **Start Conversation → Welcome**: Begin the workflow
+ 2. **Welcome → Router**: After greeting, route based on intent
+ 3. **Same-Day Scheduling → Confirmation**: After scheduling same-day
+ 4. **Next Available Scheduling → Confirmation**: After scheduling next available
+ 5. **Routine Scheduling → Confirmation**: After scheduling routine
+
+## Conditional Edges - Freeform (Intent-Based)
+ 6. **Router → New Patient Intake**: "I'm a new patient"
+ 7. **Router → Routine Assessment**: "I need a checkup"
+ 8. **Router → Urgent Triage**: "I have urgent symptoms"
+ 9. **Scheduling Agents → Confirmation**: "After scheduling is complete" 
+
+## Companion Edges (Data Extraction)
+ 10. **New Patient Intake ↔ New Patient Worker**: Extract new patient data
+ 11. **Routine Assessment ↔ Routine Worker**: Extract health assessment data
+ 12. **Urgent Triage ↔ Urgent Worker**: Extract triage data
+
+## Conditional Edges - Expression (Data-Driven)
+ 13. **New Patient → Routine Scheduling**: isNonEmpty([[full_name]]) AND isNonEmpty([[visit_reason]])
+ 14. **Routine → Routine Scheduling**: isPresent([[overall_wellness_score]]) AND ([[overall_wellness_score]] >= 80)
+ 15. **Routine → Next Available**: isPresent([[overall_wellness_score]]) AND ([[overall_wellness_score]] < 80) AND ([[overall_wellness_score]] >= 50)
+ 16. **Routine → Same-Day**: isPresent([[overall_wellness_score]]) AND ([[overall_wellness_score]] < 50)
+ 17. **Urgent → Same-Day**: isPresent([[urgency_level]]) AND ([[urgency_level]] == 'urgent' OR [[urgency_level]] == 'semi_urgent')
+ 18. **Urgent → Next Available**: isPresent([[urgency_level]]) AND [[urgency_level]] == 'routine'
+
+## Global Edges (Universal Access)
+ 19. **ANY Agent → Emergency Redirect**: Emergency symptoms detected
+ 20. **ANY Agent → End Conversation**: User says goodbye
+
+## Key Execution Scenarios 
+
+## Scenario 1: New Patient with Routine Appointment
+```Text
+  Start → Welcome → Router
+
+Router: "What brings you in today?"
+User: "I'm a new patient, never been here before"
+
+→ Conditional (Freeform): New patient detected
+→ New Patient Intake + Companion Worker
+
+Intake: "Welcome! Can you provide your name and date of birth?"
+User: "Sarah Miller, born March 15, 1985"
+
+→ Worker extracts: {full_name: "Sarah Miller", date_of_birth: "03/15/1985"}
+
+Intake: "Thanks! Do you have insurance?"
+User: "Yes, Blue Cross Blue Shield. I'm coming in for an annual physical."
+
+→ Worker extracts: {
+  full_name: "Sarah Miller",
+  insurance_provider: "Blue Cross Blue Shield",
+  visit_reason: "annual physical"
+}
+
+→ Expression Check: isNonEmpty(full_name) AND isNonEmpty(visit_reason) = TRUE ✅
+→ Routing to Routine Scheduling
+
+Routine Scheduler: "Available dates: Next Monday 9 AM, Wednesday 2 PM, Friday 10:30 AM. Which works for you?"
+User: "Monday 9 AM sounds great"
+
+→ Conditional (Freeform): Scheduling complete
+→ Appointment Confirmation
+
+Confirmation: "📅 Appointment Summary:
+• Patient: Sarah Miller
+• Type: New Patient Annual Physical
+• Date & Time: Monday 9:00 AM
+• Location: HealthFirst Medical Center
+...
+Is there anything else?"
+
+User: "No, that's all. Thank you!"
+
+→ Global Edge Triggered: End Conversation
+
+End: "Thank you for choosing HealthFirst Medical Center. Your appointment is confirmed. Have a wonderful day!"
+```
+## Scenario 2: Urgent Care with Emergency Escalation
+```Text
+  Router: "What brings you in?"
+User: "I've been having chest pain for the last hour"
+
+→ Conditional (Freeform): Urgent symptoms → Urgent Triage
+
+Triage: "I'm here to help. Can you describe the pain?"
+User: "It's a sharp, severe pain in the center of my chest, and I'm having trouble breathing"
+
+→ Worker extracts: {
+  primary_symptoms: ["chest pain", "difficulty breathing"],
+  severity_score: 10,
+  urgency_level: "emergency"
+}
+
+→ GLOBAL EDGE TRIGGERED (highest priority)
+→ Emergency Redirect
+
+Emergency: "🚨 STOP - This sounds like a medical emergency. Please call 911 immediately or go to your nearest emergency room. Do not wait for an appointment. Your safety is our top priority."
+
+[Workflow ends - user directed to emergency services]
+```
+## Scenario 3: Routine Assessment with Wellness-Based Routing
+```Text
+  Router: "What brings you in?"
+User: "Just need my annual checkup"
+
+→ Conditional (Freeform): Routine detected → Routine Assessment
+
+Assessment: "Great! How have you been feeling overall?"
+User: "Pretty good. I exercise 5 times a week, eat healthy, sleep well, very low stress"
+
+→ Worker extracts: {
+  exercise_frequency: "5 times per week",
+  diet_quality: "excellent",
+  sleep_quality: "excellent",
+  stress_level: "low",
+  overall_wellness_score: 92
+}
+
+→ Expression Check (wellness >= 80): TRUE ✅
+→ Routine Scheduling
+
+Scheduler: "You're doing great! Available dates 2-3 weeks out: Monday 9 AM, Wednesday 2 PM, Friday 10:30 AM"
+User: "Monday works"
+
+→ Confirmation → End
+```
+## Scenario 4: Moderate Wellness Score → Expedited Scheduling
+```Text
+Assessment: "How are your health habits?"
+User: "Not great. I don't exercise much, diet could be better, stressed at work, not sleeping well"
+
+→ Worker extracts: {
+  exercise_frequency: "rarely",
+  diet_quality: "fair",
+  sleep_quality: "poor",
+  stress_level: "high",
+  overall_wellness_score: 42
+}
+
+→ Expression Check (wellness < 50): TRUE ✅
+→ Same-Day Urgent Scheduling
+
+Urgent Scheduler: "Based on your responses, I'd like to get you in today. Available times: 10:30 AM, 2:00 PM, 4:15 PM. Which works best?"
+User: "2 PM please"
+
+→ Confirmation → End
+```
+
+## Key Takeaways
+### Production-Ready Architecture:
+ - 14 agents handling complete appointment flow
+ - Real-world complexity and edge cases
+ - Safety-critical features (emergency redirect)
+ - Multiple data collection and routing points
+
+### All Edge Types Demonstrated:
+ - Direct: Sequential flow
+ - Conditional (Freeform): Intent recognition
+ - Conditional (Expression): Data-driven routing
+ - Companion: Parallel extraction
+ - Global: Universal access
+
+### Multiple Companion Pairs:
+ - Each data collection agent has a companion
+ - Different schemas for different purposes
+ - Structured data enables intelligent routing
+### Complex Routing Logic:
+ - **Level 1**: Intent-based (New/Routine/Urgent)
+ - **Level 2**: Data-driven (wellness scores, urgency levels)
+ - **Level 3**: Convergence (all → scheduling → confirmation)
+### Data-Driven Decision Making:
+ - Wellness scores determine scheduling urgency
+ - Triage levels route to appropriate care
+ - New patient status affects workflow path
+### Safety and User Experience:
+ - Emergency redirect from anywhere
+ - End conversation from anywhere
+ - Appropriate scheduling based on urgency
+ - Confirmation before exit
+### Real-World Application:
+ - Healthcare appointment scheduling
+ - Multi-level triage systems
+ - Patient intake and assessment
+ - Emergency detection and routing
+### Scalability Lessons:
+ - Modular agent design
+ - Reusable patterns (companion edges)
+ - Clear routing logic
+ - Global access for critical functions
+
+ This workflow demonstrates how all previous concepts combine into a sophisticated, production-ready conversational AI system.
+
+
+
+ 
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+ 
+
+
+
+
+ 
+    
+
+   
+   
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+    
+   
+
+     
+ 

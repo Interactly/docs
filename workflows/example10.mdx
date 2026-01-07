@@ -1,0 +1,545 @@
+---
+title: Example 10 Conversation Lifecycle Management with SMS Integration
+subtitle: Workflows Conversation Lifecycle Management with SMS Integration example
+slug: workflows-example-10
+mode: wide
+---
+
+## High-Level Description
+This workflow introduces **conversation lifecycle management** through specialized nodes that bookend conversations with explicit start and end actions. It demonstrates <span style={{color: "#FF6347"}}> Start Conversation Node</span> (which configures conversation parameters like voice mode),<span style={{color: "#FF6347"}}> End Conversation Node</span> (which processes the entire conversation transcript), and <span style={{color: "#FF6347"}}>Send SMS Node </span>(which sends conversation summaries via SMS). This example shows a complete healthcare assistant workflow that captures the full conversation, extracts a summary, and delivers it to the patient's phone.
+
+## New Concepts Introduced
+
+
+Building upon Examples 1-9, this workflow adds:
+
+ 1. ### Start Conversation Agent:  
+     - Explicit conversation initialization   
+     - Configure conversation mode (voice enabled/disabled)
+     - Set up conversation parameters 
+     - Always the first agent in workflow
+ 2. ### End Conversation Agent:   
+   
+     - Explicit conversation termination 
+     - Process entire conversation transcript 
+     - Extract summaries or insights from full dialogue
+     - Uses AI to analyze conversation history
+     - Can be global (accessible from anywhere)
+           
+ 3. ### Conversation Transcript Runtime Variables:  
+      
+     - <span style={{color: "#FF6347"}}>[[raw_conversation_transcript]]</span>: Full conversation history  
+     - <span style={{color: "#FF6347"}}>[[processed_transcript]]</span>: AI-processed summary   
+     - Available to downstream agents (like SMS sender)
+          
+ 4. ### Send SMS Agent:  
+
+     -  Send SMS messages to dynamic phone numbers
+     -  Support for dynamic variables and runtime variables
+     -  Useful for confirmations, summaries, reminders 
+     -  Can be disabled for testing
+       
+ 5. ### Complete Conversation Lifecycle:    
+     -  Start → Middle (conversations) → End → Post-processing (SMS)
+     -  Proper conversation management and 
+     -  cleanup  
+                 
+## Workflow Diagram
+  ```  
+┌────────────────────────────────────────┐
+│  Start Conversation                    │(START)
+└─────────────────┬──────────────────────┘
+                  │ DirectEdge
+                  ▼
+          ┌────────────────┐
+          │  Welcome &     │
+          │  Introduction  │
+          └────────┬───────┘
+                  │ DirectEdge
+                  ▼
+         ┌────────────────────┐
+         │  Router Agent      │
+         │  "What do you need │
+         │   help with?"      │
+         └──┬──────┬──────┬───┘
+            │      │      │
+      ┌─────┘      │      └──────┐
+      │            │             │
+      ▼            ▼             ▼
+┌──────────┐ ┌──────────┐ ┌──────────┐
+│Insurance │ │Scheduling│ │ Payment  │
+│ChatBot   │ │ChatBot   │ │ ChatBot  │
+└──────────┘ └──────────┘ └──────────┘
+      │            │             │
+      └────────────┴─────────────┘
+                   │ (Global Edge - "goodbye")
+                   ▼
+    ┌──────────────────────────────────────┐
+    │  End Conversation (GLOBAL)           │
+    │                                      │
+    │  process_transcript_prompt:          │
+    │  "Extract concise summary from:      │
+    │   [[raw_conversation_transcript]]"   │
+    │                                      │
+    │  Output Runtime Variable:            │
+    │  → processed_transcript              │
+    └───────────────┬──────────────────────┘
+                    │ DirectEdge
+                    ▼
+ ┌─────────────────────────────────────────┐
+ │  Send Summary via SMS                   │
+ │                                         │
+ │  To: `{{recipient_phone}}`                │
+ │  Message:                               │
+ │  "Conversation Summary:                 │
+ │   [[processed_transcript]]"             │
+ │                                         │
+ │  disabled: true (testing)               │
+ └─────────────────────────────────────────┘
+
+  ```
+
+## Node Details
+
+
+## Agent 1: Start Conversation ⭐ NEW
+
+**Purpose**: Initialize the conversation with specific parameters.
+### Configuration:
+
+   -  **Name**: "Start Conversation"  
+   -  **Type**: Start Conversation Agent  
+   -  **Is Start**: Yes(always first agent)  
+   -  **is_voice_conversation**: False ⭐
+
+### Voice Conversation Setting:  
+  
+   - **True**: Enables voice mode (phone calls, voice interfaces)  
+   - **False**: Text-only mode (chat, SMS)  
+   - This example uses **False** for text-based healthcare chat  
+
+### What It Does:
+ 
+   -  Sets up conversation parameters  
+   -  Initializes conversation context   
+   -  Configures voice/text mode  
+   -  Prepares for user interaction  
+
+------
+   
+## Agent 2: Welcome & Introduction
+
+**Purpose**: Greet user after conversation initialization.
+
+### Configuration:  
+ 
+   -  **Prompt**: "Welcome with a friendly message in less than 15 words. Ask them what they would like to talk about."  
+
+-----    
+## Agent 3: Router Agent
+
+**Purpose**: Determine user's intent and route to appropriate specialist.
+
+### Supported Intents:
+ 
+   -   Insurance questions  
+   -   Appointment scheduling
+   -   Payment/billing assistance
+
+
+**Routing Logic**: Freeform conditions based on user intent     
+
+-----
+## Specialist Agents (4-6): Insurance, Scheduling, Payment ChatBots
+### Agent 4: Insurance ChatBot 
+
+   -    **Purpose**: Answer insurance policy and claims questions    
+   -    **Specialization**: Cigna insurance products and benefits      
+   -    **Topics**: Coverage, deductibles, prior authorization, in-network providers        
+
+### Agent 5: Scheduling ChatBot
+   -    **Purpose:** Help with appointment booking and management  
+   -    **Specialization:** Provider scheduling  
+   -    **Actions:** Schedule, reschedule, cancel appointments  
+
+### Agent 6: Payment ChatBot
+   -   **Purpose:** Assist with billing and payment inquiries  
+   -   **Specialization:** Medical billing  
+   -   **Topics:** Billing statements, payment plans, copays, deductibles  
+ 
+   ----
+
+## Agent 7: End Conversation ⭐ NEW (Global)
+
+**Purpose**: Terminate conversation and extract summary.
+
+### Configuration:  
+   -   **Name**: "End Conversation"  
+   -   **Type**: End Conversation Agent  
+   -   **Is Global**: Yes (accessible from any agent)      
+   -   **Global Trigger Condition** (Freeform): 
+
+   ```text            
+   Trigger this edge when the user says goodbye, farewell, wants to exit the conversation, or indicates they are done with the conversation.
+   Examples: "That's all for now", "Goodbye!", "I don't have any more questions" 
+   ```
+
+### Transcript Processing Configuration⭐:
+
+
+   **process_transcript_prompt**:
+
+```text
+   You are a conversation summarization specialist. Your task is to extract a concise, informative summary from the conversation transcript below.
+
+   The summary should:      
+   1. Capture the main topics discussed     
+   2. Highlight key information exchanged       
+   3. Note any actions taken or decisions made      
+   4. Be clear and professional        
+   5. Be no longer than 3-4 sentences      
+
+   Below is the Raw Conversation Transcript with user and assistant turns:
+   [[raw_conversation_transcript]]
+
+   Provide only the summary without any additional commentary or formatting.
+``` 
+
+**process_transcript_llms_config**: GPT-4.1 (for high-quality summarization)  
+
+### How It Works
+   1. User says goodbye from any agent  
+   2. Global trigger activates End Conversation agent  
+   3. Agent receives <span style={{color: "#FF6347"}}>[[raw_conversation_transcript]]</span> (full dialogue)  
+   4. LLM processes transcript according to prompt  
+   5. Summary stored in <span style={{color: "#FF6347"}}> [[processed_transcript]]</span> runtime variable
+   6. Summary available for downstream nodes  
+
+**Runtime Variables Available**:
+
+   - **Input**: <span style={{color: "#FF6347"}}>[[raw_conversation_transcript]]</span>(full conversation)  
+   - **Output**: <span style={{color: "#FF6347"}}>[[processed_transcript]]</span>(LLM-generated summary)
+
+------
+
+## Agent 8: Send Summary via SMS ⭐ NEW
+**Purpose**: Send conversation summary to patient's phone number.  
+### Configuration:  
+    
+   -   **Name**: "Send Summary via SMS"  
+   -   **Type**: Send SMS Agent  
+   -   **destination_phone_number**: "`{{recipient_phone_number}}`" ⭐ (dynamic variable)  
+   -   **message**: "Conversation Summary: [[processed_transcript]]" ⭐ (runtime variable)  
+   -   **disabled**: true (for testing without actually sending SMS)  
+
+### Dynamic Variable:
+
+   -   <span style={{color: "#FF6347"}}>recipient_phone_number</span>: Provided at workflow runtime  
+   -   Example: "+1234567890"  
+   -   Would typically come from user profile or be collected during conversation  
+
+### Runtime Variable in Message:
+   -   <span style={{color: "#FF6347"}}>[[processed_transcript]]</span>: Summary from End Conversation agent  
+   -    Automatically injected into SMS message  
+   -    Contains LLM-generated summary of full conversation  
+
+### Message Example:
+  ```    
+Conversation Summary: Patient inquired about insurance coverage for annual physical. Confirmed in-network benefits include 100% coverage for preventive care. Recommended scheduling appointment within next 3 months. No further action required.
+```
+
+### Disabled Flag:
+   -  **true**: SMS not actually sent (useful for testing)   
+   -  **false**: SMS sent via configured provider   
+   -  Prevents accidental messages during development      
+
+------
+
+## Conversation Flow Details  
+
+## Transition 1: Start to Welcome  
+**Type**:Direct Edge **Description**: "After starting the conversation, proceed to the greeting node."   
+
+--------
+
+## Transition 2: Welcome to Router
+**Type**:Direct Edge **Description**: "After greeting the user, go to the router node to determine user intent."
+
+-------
+
+## Transitions 3-5: Router to Specialists
+**Type**: Conditional Edges (Freeform)
+
+### Router → Insurance:   
+   -  **Condition**: "User wants help with insurance"  
+   -  **Examples**: "I have a question about my coverage", "What's my deductible?"  
+### Router → Scheduling:   
+   -  **Condition**: "User wants help with scheduling appointments"  
+   -   **Examples**: "I need to book an appointment", "Can I reschedule my visit?"  
+## Router → Payment:  
+   -  **Condition**: "User wants help with billing, payments or invoices"  
+   -  **Examples**: "I don't understand my bill", "How do I pay?"  
+
+-----
+## Transition 6: Any Agent → End Conversation (Global)
+
+  **Type**: Global Conditional Edge (Freeform) **Trigger**: User indicates they're done **Accessible From**: Insurance ChatBot, Scheduling ChatBot, Payment ChatBot, Router 
+
+## Transition 7: End Conversation → Send SMS
+
+**Type**: Direct Edge **Description**: "After ending the conversation and extracting summary, send it via SMS."
+
+**Automatic Flow**:  
+   1.  End Conversation processes transcript  
+   2.  Creates <span style={{color: "#FF6347"}}>[[processed_transcript]]</span>   
+   3.  Automatically transitions to Send SMS  
+   4.  SMS uses processed_transcript in message  
+   5.  Message sent (or logged if disabled)  
+## Complete Workflow Execution Example
+
+## Scenario: Insurance Question with SMS Summary
+
+ ```Text
+[Workflow Starts]
+
+→ Start Conversation Node
+   • Initializes conversation
+   • Sets is_voice_conversation: False
+   • Prepares text-based chat mode
+
+→ [Automatic transition to Welcome]
+
+Welcome: "Hi! What would you like to talk about today?"
+
+→ [Automatic transition to Router]
+
+Router: "I'm here to help with insurance, scheduling, or payments. What brings you in today?"
+
+User: "I have a question about my insurance coverage"
+
+→ Conditional Edge Triggered: Insurance intent detected
+→ [Transition to Insurance ChatBot]
+
+Insurance: "I'd be happy to help with your insurance questions. What specifically would you like to know about your coverage?"
+
+User: "Does my plan cover annual physicals?"
+
+Insurance: "Yes! Your Cigna plan includes 100% coverage for preventive care like annual physicals when you see an in-network provider. There's no copay or deductible for these visits. Would you like help finding an in-network doctor?"
+
+User: "No thanks, I have a doctor already. When should I schedule it?"
+
+Insurance: "Great! I recommend scheduling within the next 3 months to stay current with your preventive care. Is there anything else I can help you with today?"
+
+User: "No, that's all. Thank you!"
+
+→ Global Edge Triggered: "that's all" indicates conversation end
+→ [Transition to End Conversation]
+
+End Conversation Node:
+   • Receives raw_conversation_transcript:
+     ```
+     USER: I have a question about my insurance coverage
+     ASSISTANT: I'd be happy to help with your insurance questions...
+     USER: Does my plan cover annual physicals?
+     ASSISTANT: Yes! Your Cigna plan includes 100% coverage...
+     USER: No thanks, I have a doctor already. When should I schedule it?
+     ASSISTANT: Great! I recommend scheduling within the next 3 months...
+     USER: No, that's all. Thank you!
+     ```
+   
+   • LLM processes transcript with prompt
+   • Generates summary:
+     ```
+     Patient inquired about insurance coverage for annual physical examinations. 
+     Confirmed that their Cigna plan provides 100% coverage for preventive care 
+     visits with in-network providers, with no copay or deductible. Recommended 
+     scheduling appointment within the next 3 months.
+     ```
+   
+   • Stores in processed_transcript runtime variable
+
+→ [Automatic transition to Send SMS]
+
+Send SMS Node:
+   • To: `{{recipient_phone_number}}` (e.g., "+15555551234")
+   • Message: "Conversation Summary: Patient inquired about insurance coverage for annual physical examinations. Confirmed that their Cigna plan provides 100% coverage for preventive care visits with in-network providers, with no copay or deductible. Recommended scheduling appointment within the next 3 months."
+   • Disabled: true (logged but not sent during testing)
+
+[Workflow Ends]
+
+Console Output (because disabled=true):
+"SMS would be sent to +15555551234: Conversation Summary: Patient inquired about..."
+
+```
+
+## Scenario: Multi-Topic Conversation with Comprehensive Summary
+```Text
+User: "I need help with a few things"
+
+Router → Insurance
+
+User: "First, what's my deductible for this year?"  
+Insurance: "Your annual deductible is $2,500. You've met $800 so far this year. You have $1,700 remaining."
+
+User: "Great. Also, I need to schedule my annual checkup"
+
+→ Agent recognizes topic switch  
+→ Could route to Scheduling ChatBot or handle inline  
+
+Insurance: "Let me connect you to our scheduling team for that."
+
+→ [Transition to Scheduling ChatBot]
+
+Scheduling: "I can help you schedule your annual checkup. What time works best for you?"
+
+User: "Next Tuesday morning if possible"
+
+Scheduling: "I have Tuesday at 9:00 AM available with Dr. Smith. Should I book that for you?"
+
+User: "Yes, please book it"
+
+Scheduling: "Perfect! You're scheduled for Tuesday, 9:00 AM with Dr. Smith for your annual checkup. You'll receive a confirmation email. Anything else?"
+
+User: "That's everything, thanks!"
+
+→ [Global End Conversation]
+
+End Conversation:  
+• Processes full multi-topic transcript  
+• Generates comprehensive summary:  
+
+Patient checked deductible status ($800 of $2,500 met, $1,700 remaining) 
+and successfully scheduled annual checkup for Tuesday 9:00 AM with Dr. Smith. 
+Confirmation email to be sent. No outstanding issues or follow-up required.
+
+→ [Send SMS with comprehensive summary]
+
+Result: Patient receives SMS with complete conversation summary covering both topics.
+```
+
+## Dynamic Variables Configuration
+
+```json
+{
+  "recipient_phone_number": "+15555551234"
+}
+```
+
+### In Production:  
+   - Would be populated from user profile  
+   - Could be collected during conversation  
+   - Updated at runtime based on authenticated user  
+
+## Key Takeaways
+
+### Start Conversation Agent:
+   - Explicit conversation initialization
+   - Configure voice mode (true/false)
+   - Always first agent in workflow
+   - Sets up conversation parameters
+   - Enables proper conversation lifecycle management
+
+### End Conversation Agent:
+   - Explicit conversation termination
+   - Process full transcript with AI
+   - Extract summaries, insights, or action items
+   - Make accessible globally for easy exit
+   - Output stored in runtime variables
+
+### Conversation Transcript Variables:
+   -  <span style={{color: "#FF6347"}}> [[raw_conversation_transcript]]</span>: Full dialogue (input to End Conversation)
+   - <span style={{color: "#FF6347"}}> [[processed_transcript]]</span>: AI-generated summary (output from End Conversation)
+   - Available to all downstream agents
+
+### Send SMS Agent:
+   - Send SMS to dynamic phone numbers
+   - Support dynamic variables (<span style={{color: "#FF6347"}}> `{{var}}`</span>) and runtime variables (<span style={{color: "#FF6347"}}> [[var]]</span>)
+   - Useful for: confirmations, summaries, reminders, alerts
+   - Can be disabled for testing
+### Complete Lifecycle:
+
+<pre style={{color: "#7FFFD4"}}>
+   Start Conversation
+   ↓
+   Conversation Flow (routing, specialists)
+      ↓
+   End Conversation (global - user says goodbye)
+      ↓
+   Process Transcript (LLM summarization)
+      ↓
+   Send SMS (deliver summary)
+      ↓
+   Workflow Complete
+</pre>
+
+### Use Cases:
+
+### Healthcare:
+
+   - Conversation summaries to patients
+   - Appointment confirmations via SMS
+   - Prescription reminders
+   - Test result notifications
+### Customer Service:
+
+   - Support ticket summaries
+   - Resolution confirmations
+   - Follow-up reminders
+### Sales:  
+
+   - Call summaries to prospects
+   - Quote confirmations
+   - Meeting reminders
+### Finance:   
+ 
+   - Transaction confirmations
+   - Account activity summaries
+   - Payment reminders
+### Benefits: 
+  
+   - **User Value**: Receive summary of conversation
+   - **Record Keeping**: Automated documentation
+   - **Follow-up**: Easy reference for patients
+   - **Compliance**: Audit trail of conversations
+   - **Accessibility**: SMS reaches users anywhere
+
+### Comparison to Previous Examples:
+   - Examples 1-9: No explicit conversation lifecycle management
+   - Example 10: Adds Start/End conversation nodes + SMS
+   - Enables proper conversation bookending and post-processing
+### Technical Advantages:   
+   - Clean conversation boundaries
+   - Centralized transcript processing
+   - Reusable summary generation
+   - Flexible delivery (SMS, email, etc.)
+   - Testing mode (disabled flag)
+### Best Practices:
+
+   - Always start with Start Conversation agent
+   - Make End Conversation global for easy exit
+   - Use clear summarization prompts
+   - Test SMS with disabled=true firs
+   - Validate phone numbers dynamically
+   - Provide opt-out mechanisms for SMS
+### Transcript Processing Patterns:
+
+### Summary Extraction:
+   ``` 
+  "Extract 3-4 sentence summary capturing main topics, key information, and action items"
+  ```
+### Action Items: 
+  ``` 
+  "List all action items, decisions, and next steps from the conversation"
+   ```
+    
+### Sentiment Analysis:
+   ```
+  "Analyze the overall tone and satisfaction level from the conversation"
+  ```
+### Compliance Check:
+   ```
+   "Verify that all required disclosures and disclaimers were provided during the conversation"
+   ```
+
+This workflow demonstrates how to properly manage conversation lifecycles, extract value from full conversation history, and deliver that value to users through multiple channels like SMS.
+

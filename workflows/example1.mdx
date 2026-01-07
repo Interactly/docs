@@ -1,0 +1,205 @@
+---
+title: Example 1 Insurance ChatBot
+subtitle: Workflows Insurance ChatBot example
+slug: workflows-example-1
+mode: wide
+---
+
+## High-Level Description
+
+This workflow demonstrates a simple insurance chatbot that greets the user and provides helpful information about Cigna health insurance services. It represents the foundational building block of conversational AI workflows, showcasing a basic structure with a greeting, a conversational assistant, and a natural conversation ending.
+
+## New Concepts Introduced
+
+As the first example in the progression, this workflow introduces the following fundamental concepts:
+
+ 1. **Conversational Agents** - AI assistants that can engage in natural dialogue with users
+ 2. **Multi-Turn Conversations** - Agents that can handle back-and-forth exchanges with users
+ 3. **Workflow Entry Points** - Where conversations begin
+ 4. **Message Waiting Behavior** - Some agents respond immediately, others wait for user input
+ 5. **Static Messages** - Pre-defined responses that don't require AI generation
+ 6. **Direct Transitions** - Automatic flow from one step to another
+ 7. **Conditional Transitions** - Smart routing based on what the user says
+ 8. **Natural Language Conditions** - Defining when transitions should happen using plain English
+ 9. **Specialized AI Models** - Different AI models optimized for different tasks (quick greetings vs. detailed responses)
+ 10. **Conversation Loops** - Allowing an agent to continue the conversation until a specific condition is met
+
+## Workflow Diagram
+
+```Text
+┌─────────────────┐
+│  Greeting Node  │ (START)
+│   (SayLLM)      │
+└────────┬────────┘
+         │ DirectEdge
+         │ "Go to Insurance ChatBot"
+         ▼
+┌─────────────────┐
+│  Insurance      │ ◄─┐
+│   ChatBot       │   │ Self-loop
+│   (SayLLM)      │ ──┘ (wait for user)
+└────────┬────────┘
+         │ ConditionalEdge
+         │ "End Conversation"
+         │ (when user says goodbye)
+         ▼
+┌─────────────────┐
+│  End            │
+│  Conversation   │
+│  (StaticMsg)    │
+└─────────────────┘
+```
+
+## Agent Details
+
+## Agent 1: Greeting Agent
+
+**Purpose**: Welcome the user and initiate the conversation.
+
+**Configuration**:
+
+ - **Name**: "Greeting Node"
+ - **Is Start**: Yes (this is where the workflow begins)
+ - **Self Loop**: No (doesn't repeat itself)
+ - **Wait for User Message**: No (responds immediately)
+ - **AI Model**: Lightweight model optimized for short responses (GPT-4.1-NANO, 30 tokens max)
+ - **Prompt**: "Welcome the user with a friendly message in less than 15 words. Greet them politely and ask them what they would like to ask or talk about."
+
+**Behavior**: When the workflow starts, this agent immediately generates a brief, friendly greeting asking the user what they need help with, then transitions to the insurance assistant.
+
+**Example Output**: "Hello! Welcome to CignaCare. What can I help you with today?"
+
+-----
+## Agent 2: Insurance Assistant
+
+**Purpose**: Provide comprehensive insurance support and answer user queries about Cigna health insurance services.
+
+**Configuration**:
+
+ - **Name**: "Insurance ChatBot"
+ - **Self Loop**: Yes (can continue the conversation)
+ - **Wait for User Message**: Yes (waits for user input)
+ - **AI Model**: More powerful model for detailed responses (GPT-4.1, 300 tokens max, temperature 0.2)
+ - **Prompt**: Comprehensive system prompt covering insurance support capabilities, safety guardrails, privacy compliance, and communication guidelines
+
+**Prompt Capabilities**: The insurance assistant is instructed to:
+ 1. **Purpose**: Explain insurance terms, benefits, coverage, claims, and guide to Cigna resources
+ 2. **Scope & Restrictions**: Stay within insurance topics, avoid medical advice and unrelated subjects
+ 3. **Safety & Emergency Guardrails**: Handle medical emergencies by directing to 911 or crisis lines
+ 4. **Privacy & Compliance**: Follow HIPAA principles, never request sensitive PII
+ 5. **Information Quality**: Use verified Cigna materials with conditional phrasing
+ 6. **Communication Style**: Professional, empathetic, concise (max 3 sentences per response)
+ 7. **Out-of-Scope Refusals**: Politely decline non-insurance topics
+ 8. **Example Interactions**: Reference examples for coverage questions, claims, emergencies, etc.
+
+**Behavior**: Engages in multi-turn conversation with the user, answering insurance-related questions while maintaining appropriate boundaries and compliance standards. Continues looping until the user indicates they want to end the conversation.
+
+**Example Interaction**:
+ - User: "Does my plan cover mental health therapy?"
+ - Assistant: "Most Cigna plans include mental health coverage, but benefits vary. Log in to your myCigna account to see your specific plan details. If you need immediate help, you can also call the number on your ID card for behavioral health support."
+
+-----
+
+## Agent 3: Farewell Agent
+
+**Purpose**: Conclude the conversation with a friendly goodbye.
+
+**Configuration**:
+
+ - **Name**: "End Conversation"
+ - **Type**: Static Message (no AI generation)
+ - **Message**: "Thank you for chatting with CignaCare Assistant. Have a great day!"
+
+**Behavior**: Outputs the pre-defined farewell message and terminates the workflow.
+
+## Conversation Flow Details
+
+## Transition 1: Greeting to Insurance Assistant
+
+**Type**: Direct Edge (Automatic)
+
+**Configuration**:
+
+ - **Source**: Greeting Node
+ - **Destination**: Insurance ChatBot
+ - **Name**: "Go to Insurance ChatBot"
+ - **Description**: "After starting the conversation, route to the insurance chatbot for assistance."
+
+**Purpose**: Automatically move from the greeting to the main assistant.
+
+**Behavior**: This is an unconditional transition that always executes after the greeting completes. No conditions need to be met - the flow automatically proceeds to the insurance assistant.
+
+-----
+
+## Transition 2: Insurance Assistant to Farewell
+
+**Type**: Conditional Edge (Smart Routing)
+
+**Configuration**:
+
+ - **Source**: Insurance ChatBot
+ - **Destination**: End Conversation
+ - **Name**: "End Conversation"
+ - **Description**: "Routes the call from the insurance chatbot to the end conversation node."
+ - **Condition** (natural language):
+
+ ```Text
+ Trigger this if the user indicates they want to end the conversation or says goodbye.
+Examples of such user inputs include:
+- "That's all for now, thank you."
+- "Goodbye!"
+- "I don't have any more questions. Thanks!"
+```
+
+**Purpose**: Detect when the user wants to end the conversation and provide a proper goodbye.
+
+**Behavior**:
+
+ - The AI analyzes each user message during the insurance assistant's conversation loop
+ - When it detects farewell intent (user wants to end), this transition activates
+ - The conversation moves to the Farewell Agent
+ - Otherwise, the Insurance Assistant's self-loop continues
+
+**User Experience**: Users can naturally end the conversation by saying goodbye in various ways, and the system intelligently recognizes their intent.
+
+## Workflow Execution Flow
+
+ 1. **Workflow Starts** → Greeting Node executes immediately**
+ 2. **Greeting Node** → Generates welcome message → DirectEdge → Insurance ChatBot
+ 3. **Insurance ChatBot** → Waits for user message
+ 4. **User Sends Message** → Insurance ChatBot generates response
+ 5. **Condition Check**:
+    - If user wants to continue → Self-loop back to step 3
+    - If user wants to end (condition met) → ConditionalEdge → End Conversation Node
+ 6. **End Conversation Node** → Outputs farewell message → Workflow terminates
+
+## Key Takeaways
+
+This foundational example demonstrates:
+
+### Workflow Basics:
+
+ - How to create a simple linear conversation flow with conditional branching
+ - The difference between agents that wait for user input vs. agents that respond immediately
+ - How self-loops enable conversational agents to maintain ongoing dialogues
+
+### Transition Types:
+
+ - **Direct Edges**: Unconditional, automatic transitions between agents
+ - **Conditional Edges**: Smart transitions that trigger based on conversation context
+ - How to define conditions using natural language
+
+### AI Configuration:
+
+ - Using different AI models for different purposes (lightweight for greetings, powerful for conversations)
+ - Configuring response length limits (tokens) and creativity levels (temperature)
+ - The importance of comprehensive system prompts for maintaining guardrails and compliance
+
+### Conversation Design:
+
+ - Creating specialized agents with clear purposes and boundaries
+ - Maintaining safety and privacy throughout conversations
+ - Providing natural conversation endings
+ 
+This workflow serves as the foundation for more complex workflows in subsequent examples.
+

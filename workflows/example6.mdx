@@ -1,0 +1,722 @@
+---
+title: Example 6 Companion Edges and Multi-Path Conditional Routing
+subtitle: Workflows Companion Edges and Multi-Path Conditional Routing example
+slug: workflows-example-6
+mode: wide
+---
+
+## High-Level Description
+
+This workflow introduces **Companion Edges** - a powerful pattern that links a conversational Say LLM agent with a Worker LLM agent for parallel structured data extraction. While the Say agent engages naturally with users, its companion Worker silently extracts structured data that can then drive sophisticated multi-path conditional routing. This example demonstrates an insurance risk assessment workflow that collects applicant information and routes to three different care paths (Standard Risk, Premium Client, or Elevated Risk) based on complex expression-based conditions.
+
+## New Concepts Introduced
+
+Building upon Examples 1-5, this workflow adds:
+
+ 1. **Companion Edge**:
+    - Links a Say LLM agent with a Worker LLM agent 
+    - Worker runs "in the background" during Say agent's conversation
+    - Enables conversational UX + structured data extraction simultaneously
+    - No configuration needed beyond linking the two agents
+ 2. **Multiple Conditional Branches from Single Source**: 
+    - Three different conditional edges from the assessment agent
+    - Order matters: more specific conditions checked first
+    - Prevents conflicts between overlapping conditions
+    - Enables complex decision trees
+ 3. **Advanced Expression-Based Routing**:
+    - Complex boolean logic with AND/OR operators
+    - Multiple field checks in single expression
+    - Numeric comparisons with threshold values
+    - String enum equality checks
+ 4. **Global End Conversation Agent**:
+    - Accessible from any agent in the workflow
+    - Uses freeform condition to detect conversation ending intent
+    - Provides consistent exit experience across all paths
+
+## Workflow Diagram
+```Text
+  ┌─────────────────┐
+  │  Greeting       │ (START)
+  │  Agent          │
+  └────────┬────────┘
+           │ DirectEdge
+           ▼
+┌──────────────────────────────────┐       ┌─────────────────────────────┐
+│  Insurance Risk Assessor         │◄──────│  Assessment Companion LLM   │
+│  (Say LLM)                       │       │  (Worker LLM)               │
+│                                  │       │                             │
+│  Converses naturally with user   │       │  Extracts Structured Data:  │
+│  Asks about:                     │       │  ┌────────────────────────┐ │
+│  • Name, age, occupation         │       │  │ • applicant_name       │ │
+│  • Coverage amount desired       │       │  │ • age                  │ │
+│  • Health conditions             │       │  │ • coverage_amount      │ │
+│  • Lifestyle factors             │       │  │ • has_preexisting      │ │
+│                                  │       │  │ • condition_severity   │ │
+└──────────────┬───────────────────┘       │  │ • occupation           │ │
+               │                           │  │ • risk_factors         │ │
+               │ (Companion Edge)          │  │ • lifestyle_score      │ │
+               │                           │  └────────────────────────┘ │
+               │                           └─────────────────────────────┘
+               │
+               ├─────────────────┬─────────────────┬───────────────────┐
+               │                 │                 │                   │
+               │ Conditional     │ Conditional     │ Conditional       │
+               │ (Premium)       │ (Standard)      │ (Elevated)        │
+               ▼                 ▼                 ▼                   │
+    ┌──────────────────┐  ┌──────────────┐  ┌──────────────────┐       │
+    │  Premium Client  │  │  Standard    │  │  Elevated Risk   │       │
+    │  Path            │  │  Risk Path   │  │  Path            │       │
+    │                  │  │              │  │                  │       │
+    │  High coverage   │  │  Low risk    │  │  Medical         │       │
+    │  Low risk        │  │  Low coverage│  │  underwriting    │       │
+    │  VIP benefits    │  │  Standard    │  │  needed          │       │
+    └──────────────────┘  │  approval    │  └──────────────────┘       │
+                          └──────────────┘                             │
+                                                                       │
+                          ┌────────────────────────────────────────────┘
+                          │ Global Edge (from anywhere)
+                          ▼
+                    ┌──────────────────┐
+                    │  End             │
+                    │  Conversation    │
+                    │  (Global Static) │
+                    └──────────────────┘
+```
+## Agent Details
+## Agent 1: Greeting Agent
+**Purpose**: Welcome users to the insurance risk assessment portal.
+
+**Configuration**:
+
+ - **Name**: "Greeting Node"
+ - **Is Start**: Yes
+ - **Self Loop**: No
+ - **Wait for User Message**: No
+ - **AI Model**: GPT-4.1-NANO (50 tokens max, temperature 0.5)
+ - **Prompt**:
+
+```Text 
+  Welcome the user to the insurance risk assessment portal in less than 20 words. 
+  Ask them to provide information about their insurance application.
+  Use the greeting: `{{greeting_phrase}}`
+  Mention that we are from `{{company_name}}`.
+```
+### Dynamic Variables:
+ - greeting_phrase: "Welcome to our Insurance Risk Assessment Portal!"
+ - company_name: "Premier Insurance Group"
+
+----
+
+## Agent 2: Insurance Risk Assessor (Say LLM) 
+
+**Purpose**: Conduct a conversational risk assessment interview with the applicant.  
+
+**Configuration**:
+ - **Name**: "Insurance Risk Assessor"
+ - **Type**: Say LLM Agent
+ - **Self Loop**: Yes (continues gathering information)
+ - **Wait for User Message**: Yes
+ - **AI Model**: GPT-4.1 (300 tokens max, temperature 0.2)
+ - **Prompt**:
+```Text
+  You are an internal agent specialized in insurance risk assessment. Your specific job is to collect and evaluate insurance application information.
+
+Engage in a natural conversation with the applicant and try to gather the following information in a friendly, conversational manner:
+- Full name
+- Age (must be a number)
+- Desired coverage amount in dollars (must be a number)
+- Whether they have pre-existing medical conditions (yes/no)
+- If yes, the severity level: none, mild, moderate, or severe
+- Their occupation
+- Any risk factors: smoking, high-risk occupation (police, firefighter, pilot, etc.), dangerous hobbies (skydiving, racing, etc.)
+- Lifestyle health score (1-100) based on their exercise habits, diet quality, and sleep patterns
+```
+### Behavior:
+ - Conducts friendly, empathetic interview
+ - Asks open-ended questions about health and lifestyle
+ - Does NOT mention data extraction or structured output
+ - Continues looping until enough information is collected
+
+----
+
+## Agent 3: Assessment Companion LLM (Worker LLM) ⭐ NEW
+
+**Purpose**: Silently extract structured data from the conversational assessment.
+
+**Configuration**:
+ - **Name**: "Assessment Companion LLM"
+ - **Type**: Worker LLM Agent
+ - **Linked via Companion Edge**: To Insurance Risk Assessor
+ - **Self Loop**: No
+ - **Wait for User Message**: No
+ - **AI Model**: GPT-4.1 (temperature 0.0 for deterministic extraction)
+ - **Prompt**: Empty string
+ - **Structured Output Schema**:
+ ```Json
+  {
+  "name": "InsuranceRiskAssessment",
+  "description": "Extract and assess insurance application information based on chat history...",
+  "input_schema": {
+    "title": "InsuranceApplicationData",
+    "type": "object",
+    "properties": {
+      "applicant_name": {
+        "type": "string",
+        "description": "Full name of the insurance applicant"
+      },
+      "age": {
+        "type": "integer",
+        "description": "Applicant's age in years"
+      },
+      "coverage_amount": {
+        "type": "integer",
+        "description": "Requested coverage amount in dollars"
+      },
+      "has_preexisting_conditions": {
+        "type": "boolean",
+        "description": "Whether the applicant has any pre-existing medical conditions"
+      },
+      "condition_severity": {
+        "type": "string",
+        "enum": ["none", "mild", "moderate", "severe"],
+        "description": "Severity level of pre-existing conditions if any"
+      },
+      "occupation": {
+        "type": "string",
+        "description": "Applicant's occupation or job type"
+      },
+      "risk_factors": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "List of identified risk factors"
+      },
+      "lifestyle_score": {
+        "type": "integer",
+        "description": "Lifestyle health score from 1-100"
+       }
+     },
+    "required": []
+    }
+  }
+```
+### How Companion Edges Work:
+ 1. **Automatic Linkage**: Companion edge connects Say LLM to Worker LLM 
+ 2. **Parallel Execution**: Worker runs alongside Say agent
+ 3. **Shared Context**: Worker sees all conversation history
+ 4. **Silent Operation**: User never sees Worker's activity
+ 5. **Data Availability**: Structured output becomes available for routing conditions
+
+### Benefits:
+ - Best of both worlds: natural conversation + structured data
+ - User experiences seamless dialogue
+ - System gets reliable, structured information
+ - No need to interrupt conversation for data entry
+
+------
+
+## Agent 4: Premium Client Path
+**Purpose**: Provide VIP concierge service for high-value, low-risk applicants.
+
+**Configuration**:
+ - **Name**: "Premium Client Path"
+ - **Type**: Say LLM Agent
+ - **Self Loop**: Yes
+ - **Wait for User Message**: Yes
+ - **AI Model**: GPT-4.1 (300 tokens max, temperature 0.2)
+ - **Prompt**:
+```Text
+  You are a specialized internal agent providing concierge underwriting services for premium insurance clients.
+You are speaking with a client who qualifies for premium concierge service.
+
+Their profile indicates:
+- Excellent health and lifestyle factors
+- Substantial coverage request
+- Premium tier eligibility
+
+Tell them about their Premium Benefits:
+1. Dedicated underwriter assigned immediately
+2. Expedited approval within `{{premium_approval_time}}`
+3. Access to premium rates and exclusive riders
+4. Concierge service for all your insurance needs
+5. Priority customer support
+6. Complimentary annual policy reviews
+
+A premium services representative will contact you within `{{premium_contact_time}}` to discuss your customized coverage options.
+
+Finish by asking how you may further assist them today.
+```
+**Dynamic Variables**:
+ - premium_approval_time: "48 hours"
+ - premium_contact_time: "4 business hours"
+
+**Who Gets Routed Here**:
+ - High coverage (≥ $1M)
+ - Age < 65
+ - Excellent health (none or mild conditions only)
+ - High lifestyle score (≥ 75)
+
+----
+## Agent 5: Standard Risk Path
+**Purpose**: Handle straightforward applications with standard processing.
+**Configuration**:
+ - **Name**: "Standard Risk Path"
+ - **Type**: Say LLM Agent
+ - **Self Loop**: Yes
+ - **Wait for User Message**: Yes
+ - **AI Model**: GPT-4.1
+ - **Prompt**:
+
+```Text
+  You are a friendly internal agent specialized in handling standard risk insurance applicants.
+
+You are speaking with a client who qualifies for the Standard Risk tier with preferred rates.
+
+Their profile indicates:
+- Good health status
+- Low-risk lifestyle
+- Age and coverage within standard parameters
+
+Next steps:
+1. Tell them that you will send them a personalized quote within `{{standard_quote_time}}`
+2. Tell them that the standard approval process takes `{{standard_approval_time}}`
+3. Tell them that they may be eligible for `{{discount_program}}` discounts
+
+End with: Thank you for choosing `{{company_name}}` and check if they have any other questions.
+```
+
+**Dynamic Variables**:
+ - standard_quote_time: "24 hours"
+ - standard_approval_time: "3-5 business days"
+ - discount_program: "wellness"
+ - company_name: "Premier Insurance Group"
+
+### Who Gets Routed Here: 
+
+ - Age < 50
+ - Coverage < $500K
+ - Good health (none or mild conditions)
+ - Good lifestyle score (≥ 70)
+
+----
+
+## Agent 6: Elevated Risk Path
+**Purpose**: Handle applications requiring additional medical underwriting.
+
+**Configuration**:
+ - **Name**: "Elevated Risk Path"
+ - **Type**: Say LLM Agent
+ - **Self Loop**: Yes
+ - **Wait for User Message**: Yes
+ - **AI Model**: GPT-4.1
+ - **Prompt**:
+```Text
+ You are an internal agent specialized in handling elevated risk insurance applicants requiring medical underwriting.
+You are speaking with a client whose application requires additional medical underwriting review.
+
+Based on the assessment of the client, you know that:
+- Some health considerations need evaluation
+- Additional documentation may be required
+- Coverage may be offered with adjusted premiums
+
+Next steps would be to tell them the following:
+1. Our underwriting team will contact you within `{{elevated_contact_time}}`
+2. You may need to provide medical records or schedule a health exam
+3. Approval process typically takes `{{elevated_approval_time}}`
+4. We'll work with you to find the best coverage options
+
+Tell them that you appreciate their patience. And finish by asking if they have any questions about the underwriting process.
+```
+**Dynamic Variable****:
+ - elevated_contact_time: "48 hours"
+ - elevated_approval_time: "2-3 weeks"
+### Who Gets Routed Here:
+ - Moderate or severe health conditions
+ - Lower lifestyle score (< 70)
+
+-----
+## Agent 7: End Conversation (Global)
+
+**Purpose**: Allow users to exit from any point in the conversation.
+
+**Configuration**:
+ - **Name**: "End Conversation"
+ - **Type**: Static Message
+ - **Is Global**: Yes (accessible from all agents)
+ - **Message**: "`{{farewell_message}}`"
+ - **Global Condition** (freeform):
+```Text
+ Trigger this to route to the conversation ending agent when the patient clearly indicates they want to end the conversation, such as by saying "no", "that's all", "thank you", or similar phrases.
+```
+**Dynamic Variable**:
+ - farewell_message: "Thank you for your interest in our insurance services. We look forward to serving you. Have a great day!"
+## Conversation Flow Details
+
+## Transition 1: Greeting to Assessment
+
+**Type**: Direct Edge  
+
+**Configuration**:  
+
+ - **Source**: Greeting Node
+ - **Destination**: Insurance Risk Assessor
+ - **Name**: "Go to Risk Assessment"
+ - **Description**: "After greeting, route to the risk assessment interview."
+
+----
+
+## Transition 2: Assessment with Companion (Companion Edge) ⭐
+**Type**: Companion Edge  
+
+**Configuration**:  
+
+ - **Source**: Insurance Risk Assessor (Say LLM)
+ - **Destination**: Assessment Companion LLM (Worker LLM)
+ - **Name**: "Assessment Companion Edge"
+ - **Description**: "Companion edge to link the assessment SayLLM node with its structured data extraction companion LLM node."
+**How It Works**:
+ 1. User interacts with Insurance Risk Assessor (conversational)
+ 2. Behind the scenes, Assessment Companion LLM extracts structured data
+ 3. Both agents see the same conversation history
+ 4. Say LLM provides responses; Worker provides structured data
+ 5. Structured data becomes available for conditional routing
+
+### Visual Flow:
+```Text
+User ←→ Say LLM Agent (visible conversation)
+            ↓ (shares context)
+        Worker LLM (invisible extraction)
+            ↓
+        Structured Data → Available for routing conditions
+```
+----
+
+## Transition 3: Assessment to Premium Client (Conditional - Expression)
+
+**Type**: Conditional Edge
+
+**Configuration**:
+ - **Source**: Insurance Risk Assessor
+ - **Destination**: Premium Client Path
+ - **Name**: "Route to Premium Client"
+ - **Description**: "Routes high-value, low-risk clients to premium concierge service."
+ - **Condition Expression**:
+```Text
+([[coverage_amount]] >= 1000000) AND 
+([[age]] < 65) AND 
+([[condition_severity]] == 'none' OR [[condition_severity]] == 'mild') AND 
+([[lifestyle_score]] >= 75)
+```
+### Condition Breakdown
+
+ - [[coverage_amount]] >= 1000000: Requesting $1M+ coverage
+ - [[age]] < 65: Under 65 years old
+ - [[condition_severity]] == 'none' OR  [[condition_severity]] == 'mild': Excellent health
+ - [[lifestyle_score]] >= 75: High lifestyle score
+ - **All conditions must be true** (AND logic)
+
+### Why This is Checked First:
+ - Most specific and exclusive criteria
+ - Prevents premium clients from being routed to standard path
+ - Order matters in conditional routing
+----
+
+## Transition 4: Assessment to Standard Risk (Conditional - Expression)
+**Type**: Conditional Edge
+
+**Configuration**:
+
+ - **Source**: Insurance Risk Assessor
+ - **Destination**: Standard Risk Path
+ - **Name**: "Route to Standard Risk"
+ - **Description**: "Routes to standard risk path for low-risk applicants with modest coverage needs."
+ - **Condition Expression**:
+```Text
+  ([[age]] < 50) AND 
+([[coverage_amount]] < 500000) AND 
+([[condition_severity]] == 'none' OR [[condition_severity]] == 'mild') AND 
+([[lifestyle_score]] >= 70)
+```
+**Condition Breakdown**:
+ - [[age]] < 50: Younger applicant
+ - [[coverage_amount]] < 500000: Lower coverage amount
+ - Good health (none or mild conditions)
+ - Decent lifestyle score (≥ 70)
+
+**Why This is Checked Second**:
+ - More specific than elevated risk (catch-all)
+ - Less exclusive than premium path
+ - Captures typical healthy applicants
+
+----
+
+## Transition 5: Assessment to Elevated Risk (Conditional - Expression)
+
+**Type**: Conditional Edge
+
+**Configuration**:
+
+ - **Source**: Insurance Risk Assessor
+ - **Destination**: Elevated Risk Path
+ - **Name**: "Route to Elevated Risk"
+ - **Description**: "Routes to elevated risk path for cases needing additional underwriting review."
+ - **Condition Expression**:
+```Text
+  ([[condition_severity]] == 'moderate' OR [[condition_severity]] == 'severe') AND 
+([[lifestyle_score]] < 70)
+``` 
+**Condition Breakdown**:
+ - Moderate or severe health conditions
+ - Lower lifestyle score (< 70)  
+
+**Why This is Checked Last**:
+ - Acts as a catch-all for cases not meeting premium or standard criteria
+ - Broader criteria than the other paths
+
+----
+
+## Transition 6: End Conversation (Global Edge)
+**Type**: Global Conditional Edge
+
+**Configuration**:
+
+ - Source: ANY agent in the workflow
+ - Destination: End Conversation
+ - Condition Type: Freeform (natural language)
+ - Condition: "When user indicates they want to end conversation"
+ 
+**Accessible From**:
+ - Premium Client Path
+ - Standard Risk Path
+ - Elevated Risk Path
+ - Insurance Risk Assessor
+
+## Complete Workflow Execution Example
+
+## Scenario 1: Premium Client Path
+
+```Text
+[Workflow Starts]
+
+Greeting: "Welcome to our Insurance Risk Assessment Portal! We're Premier Insurance Group. Please share your application information."
+
+→ [Transition to Insurance Risk Assessor]
+
+Assessor: "I'd be happy to help you today. Let's start with your name and age."
+
+User: "I'm Jennifer Martinez, 42 years old"
+
+→ Companion Worker extracts: {applicant_name: "Jennifer Martinez", age: 42}
+
+Assessor: "Great, Jennifer. What coverage amount are you considering, and can you tell me about your overall health?"
+
+User: "I'm looking for $2 million in coverage. I'm very healthy, no medical issues. I exercise daily and eat well."
+
+→ Companion Worker extracts: {
+  applicant_name: "Jennifer Martinez",
+  age: 42,
+  coverage_amount: 2000000,
+  has_preexisting_conditions: false,
+  condition_severity: "none",
+  lifestyle_score: 90
+}
+
+→ Expression Evaluation (Premium Path):
+   (2000000 >= 1000000) AND (42 < 65) AND ("none" == "none") AND (90 >= 75)
+   = true AND true AND true AND true = TRUE ✅
+
+→ [Transition to Premium Client Path]
+
+Premium Agent: "Congratulations, Jennifer! You qualify for our Premium Concierge Service. You'll receive:
+• Dedicated underwriter assigned immediately
+• Expedited approval within 48 hours
+• Premium rates and exclusive riders
+• Priority customer support
+• Complimentary annual policy reviews
+
+A premium representative will contact you within 4 hours. How else may I assist you?"
+
+User: "That sounds great, thank you!"
+
+→ [Global End Conversation Triggered]
+
+End: "Thank you for your interest in our insurance services. We look forward to serving you. Have a great day!"
+```
+## Scenario 2: Standard Risk Path
+
+```Text
+Assessor: "Hello! Can you tell me about yourself and what you're looking for?"
+
+User: "I'm Tom Chen, 35, looking for $300,000 life insurance"
+
+→ Companion extracts: {applicant_name: "Tom Chen", age: 35, coverage_amount: 300000}
+
+Assessor: "Thanks, Tom. How would you describe your health and lifestyle?"
+
+User: "I'm healthy, no conditions. I exercise a few times a week."
+
+→ Companion extracts: {
+  age: 35,
+  coverage_amount: 300000,
+  condition_severity: "none",
+  lifestyle_score: 72
+}
+
+→ Premium Check: (300000 >= 1000000) = false ❌
+→ Standard Check: (35 < 50) AND (300000 < 500000) AND ("none" == "none") AND (72 >= 70)
+   = true AND true AND true AND true = TRUE ✅
+
+→ [Transition to Standard Risk Path]
+
+Standard Agent: "Great news, Tom! You qualify for Standard Risk with preferred rates:
+• Personalized quote within 24 hours
+• Approval in 3-5 business days
+• May be eligible for wellness discounts
+
+Thank you for choosing Premier Insurance Group. Any questions?"
+```
+
+## Scenario 3: Elevated Risk Path
+
+ ```Text
+Assessor: "What brings you in for insurance today?"
+
+User: "I'm Sarah Johnson, 58, need $750K coverage. I have diabetes but it's controlled."
+
+→ Companion extracts: {age: 58, coverage_amount: 750000, condition_severity: "moderate"}
+
+Assessor: "How is your overall lifestyle - exercise, diet, stress levels?"
+
+User: "Honestly, could be better. I don't exercise much."
+
+→ Companion extracts: {
+  age: 58,
+  coverage_amount: 750000,
+  condition_severity: "moderate",
+  lifestyle_score: 55
+}
+
+→ Premium Check: ("moderate" == "none" OR "moderate" == "mild") = false ❌
+→ Standard Check: ("moderate" == "none" OR "moderate" == "mild") = false ❌
+→ Elevated Check: ("moderate" == "moderate") AND (55 < 70) = true AND true = TRUE ✅
+
+→ [Transition to Elevated Risk Path]
+
+Elevated Agent: "Thank you for sharing, Sarah. Your application will need additional medical underwriting:
+• Our team will contact you within 48 hours
+• May need medical records or health exam
+• Approval typically takes 2-3 weeks
+• We'll work to find the best coverage options
+
+We appreciate your patience. Questions about the underwriting process?"
+ ```
+
+## Key Takeaways
+
+### Companion Edges:
+ - Link Say LLM with Worker LLM for parallel operation
+ - Enable natural conversation + structured data extraction
+ - Worker operates invisibly to the user
+ - Structured data automatically available for routing
+ - No additional configuration beyond the edge itself
+### Multi-Path Conditional Routing:
+ - Multiple conditional edges from single source agent
+ - **Order matters**: Check most specific conditions first
+ - Prevents routing conflicts
+ - Enables sophisticated decision trees
+ - All use expression language for deterministic routing
+### Advanced Expression Language:
+ - Complex boolean logic: (A AND B) OR (C AND D)
+ - Numeric comparisons: >= 1000000, < 50
+ - String equality: == "none", == "severe"
+ - Multiple field checks in one expression
+ - Deterministic evaluation
+### Global Nodes:
+ - Accessible from anywhere in the workflow
+ - Provide consistent functionality (like exit)
+ - Use freeform or expression conditions
+ - Improve user experience with universal access points
+### Real-World Applications:
+ - **Insurance**: Risk-based application routing
+ - **Healthcare**: Triage and care path assignment
+ - **Finance**: Credit evaluation and product matching
+ - **Customer Service**: Priority routing based on account status
+ - **Sales**: Lead qualification and routing
+ - **HR**: Application screening and interview scheduling
+### Companion Edge Use Cases:
+ - Any workflow needing conversational UX + structured data
+ - Forms that should feel like conversations
+ - Customer intake processes
+ - Assessment and evaluation workflows
+ - Data collection with analysis
+### Comparison to Previous Examples:
+ - Example 4: Worker LLM alone (no conversation)
+ - Example 5: Expression language for routing
+ - Example 6: Companion edges (Say + Worker together) + multi-path routing
+ - Combines best of both: natural conversation AND precise routing
+### Technical Benefits:
+ - Clean separation of concerns (conversation vs. data)
+ - Reliable structured data for business logic
+ - Natural user experience
+ - Flexible routing based on extracted data
+ - Scalable to complex workflows
+
+### Design Pattern:
+
+```Text
+Say LLM (conversation) ←→ User
+    ↓ Companion Edge
+Worker LLM (extraction)
+    ↓ Structured Data
+Multiple Conditional Edges (routing)
+    ↓
+Specialized Agents (tailored experiences)
+```
+
+This pattern is the foundation for building sophisticated, data-driven conversational workflows that maintain excellent user experience while enabling complex business logic.
+
+
+
+
+ 
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+ 
+
+
+ 
+ 
+ 
+
+  
+ 
+ 
+
+
+
+
+
+ 
+
+
+
+       
+        
+      
+    
+
+
+
+
+
