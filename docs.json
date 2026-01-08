@@ -40,12 +40,28 @@
                         ]
                     },
                     {
+                        "group": "Campaigns",
+                        "pages": [
+                            "campaigns/introduction",
+                            "campaigns/single-modal-campaign",
+                            "campaigns/multi-modal-campaign"
+                        ]
+                    },
+                    {
                         "group": "Webhooks",
                         "pages": [
                             "webhooks/server-url",
                             "webhooks/server-url/setting-server-urls",
                             "webhooks/server-url/events",
                             "webhooks/server-url/developing-locally"
+                        ]
+                    },
+                    {
+                        "group": "Vendors",
+                        "pages": [
+                            "vendors/transcribers",
+                            "vendors/voices",
+                            "vendors/models"
                         ]
                     }
                 ]

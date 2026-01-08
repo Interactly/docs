@@ -1,0 +1,383 @@
+---
+title: Multi-Modal Campaign
+subtitle: Create comprehensive campaigns with voice calls and messaging capabilities
+slug: campaigns/multi-modal-campaign
+description: Learn how to set up multi-modal campaigns that combine AI voice calls with pre-call and post-call SMS messaging for enhanced engagement
+---
+
+# About
+
+Multi-modal campaigns provide a comprehensive communication approach by combining voice calls with SMS messaging capabilities. These campaigns enable you to send pre-call notifications, conduct AI-powered phone conversations, and follow up with targeted post-call messages based on call outcomes.
+
+<Info>
+Multi-modal campaigns include **all single-modal campaign features** plus advanced messaging capabilities. For voice-only campaigns, consider [Single-Modal Campaigns](/campaigns/single-modal-campaign).
+</Info>
+
+## What Makes It Multi-Modal?
+
+Multi-modal campaigns extend voice interactions with messaging at multiple touchpoints:
+
+<Card title="Complete Communication Journey" icon="workflow">
+- 🔔 **Pre-call SMS notifications**
+- 📞 **AI-powered voice calls**
+- 📨 **Outcome-based follow-up messages**
+- 📊 **Enhanced tracking and analytics**
+</Card>
+
+## Key Advantages
+
+<AccordionGroup>
+  <Accordion title="Enhanced Engagement" icon="heart">
+    - **Higher connection rates**: Pre-call SMS increases answer rates
+    - **Better preparation**: Recipients expect and prepare for calls
+    - **Continued engagement**: Post-call messages maintain connection
+    - **Flexible communication**: Accommodates different preferences
+  </Accordion>
+  
+  <Accordion title="Comprehensive Follow-up" icon="repeat">
+    - **Call answered**: Confirmation and next steps
+    - **Missed calls**: Reschedule options and information
+    - **Declined calls**: Alternative contact methods
+    - **Technical issues**: Support and retry information
+  </Accordion>
+  
+  <Accordion title="Advanced Workflow Management" icon="settings">
+    - **Conditional messaging**: Different messages for different outcomes
+    - **Dynamic variables**: Personalized content throughout journey
+    - **Timing control**: Precise scheduling for optimal engagement
+    - **Multi-channel tracking**: Complete customer journey visibility
+  </Accordion>
+</AccordionGroup>
+
+## When to Use Multi-Modal Campaigns
+
+### Perfect Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Appointment Management" icon="calendar">
+    - Medical appointment reminders with confirmation
+    - Service appointments with preparation instructions
+    - Meeting scheduling with agenda sharing
+  </Card>
+  
+  <Card title="Customer Engagement" icon="users">
+    - Customer surveys with follow-up resources
+    - Sales outreach with information sharing
+    - Support follow-up with documentation
+  </Card>
+  
+  <Card title="Complex Workflows" icon="workflow">
+    - Multi-step customer journeys
+    - Conditional communication paths
+    - Document or link sharing requirements
+  </Card>
+  
+  <Card title="Enhanced Compliance" icon="shield">
+    - Regulated industries requiring documentation
+    - Confirmation requirements
+    - Audit trail maintenance
+  </Card>
+</CardGroup>
+
+## Creating Your Multi-Modal Campaign
+
+<Steps>
+  <Step title="Access Campaign Dashboard">
+    1. Navigate to your Interactly dashboard
+    2. Click the **Campaigns** tab
+    3. Select **New Campaign** to begin
+    
+    <Frame caption="Creating a new multi-modal campaign">
+      <img src="/images/campaigns/create-new-campaign.png" />
+    </Frame>
+  </Step>
+  
+  <Step title="Name and Configure">
+    1. Provide a descriptive campaign name
+    2. Click **Create** to proceed
+    3. You'll be redirected to the configuration page
+    
+    <Frame caption="Multi-modal campaign configuration">
+      <img src="/images/campaigns/multi-page1.png" />
+    </Frame>
+  </Step>
+  
+  <Step title="Select Multi-Modal Type">
+    Choose **Multi-Modal** as your campaign type to unlock messaging features.
+    
+    <Note>
+    Multi-modal campaigns include all single-modal features plus pre-call and post-call messaging capabilities.
+    </Note>
+  </Step>
+</Steps>
+
+## Pre-Call Message Configuration
+
+Pre-call messages notify recipients about upcoming calls, improving answer rates and call preparation.
+
+<Accordion title="Enable Pre-Call Notifications">
+**Before Call Settings:**
+
+<Card title="Timing Configuration" icon="clock">
+- **Default**: 10 minutes before call
+- **Custom timing**: Set any duration (minimum 10 minutes)
+- **Flexible scheduling**: Align with your workflow needs
+</Card>
+
+**Message Configuration:**
+
+<CardGroup cols={2}>
+  <Card title="Message Type" icon="sms">
+    **SMS (Default)**
+    - Currently supported message type
+    - Direct delivery to mobile phones
+    - High open and read rates
+  </Card>
+  
+  <Card title="Dynamic Content" icon="variable">
+    **Personalization**
+    - Use campaign assistant variables
+    - Click variables to copy them
+    - Personalize each message
+  </Card>
+</CardGroup>
+
+<Frame caption="Pre-call message configuration">
+  <img src="/images/campaigns/pre-call-msg.png" />
+</Frame>
+
+**Example Pre-Call Message:**
+```
+Hi {{name}}, this is a reminder that we'll be calling you at {{phone}} in 10 minutes regarding your {{appointment_type}}. Please answer when {{company_name}} calls. Thank you!
+```
+</Accordion>
+
+## Post-Call Message Configuration
+
+Post-call messages provide targeted follow-up based on specific call outcomes, ensuring continued engagement regardless of call results.
+
+<Info>
+Configure different messages for each possible call outcome to maintain engagement and provide appropriate next steps.
+</Info>
+
+### Call Outcome Messaging
+
+<AccordionGroup>
+  <Accordion title="Call Answered" icon="check-circle">
+    **When the recipient successfully answers the call:**
+    
+    <Steps>
+      <Step title="Enable Feature">
+        Toggle on **"Call Answered"** to activate this messaging
+      </Step>
+      
+      <Step title="Craft Message">
+        Create a follow-up message that reinforces the conversation:
+        - Confirm discussed information
+        - Provide next steps or resources
+        - Include contact information for follow-up
+        - Use dynamic variables for personalization
+      </Step>
+    </Steps>
+    
+    <Frame caption="Call answered message configuration">
+      <img src="/images/campaigns/call-answered.png" />
+    </Frame>
+    
+    **Example Message:**
+    ```
+    Hi {{name}}, thank you for speaking with us about {{topic}}. As discussed, your next appointment is {{next_appointment_date}}. If you have questions, call {{support_number}}.
+    ```
+  </Accordion>
+  
+  <Accordion title="Call Not Answered" icon="phone-missed">
+    **When the call goes unanswered:**
+    
+    <Card title="Missed Call Strategy" icon="redo">
+    - Inform about the missed call
+    - Provide callback information  
+    - Offer alternative contact methods
+    - Include important information they missed
+    </Card>
+    
+    <Frame caption="Call not answered message configuration">
+      <img src="/images/campaigns/call-not-answered.png" />
+    </Frame>
+    
+    **Example Message:**
+    ```
+    Hi {{name}}, we tried calling you at {{time}} regarding {{purpose}}. Please call us back at {{callback_number}} or reply CALLBACK for us to try again.
+    ```
+  </Accordion>
+  
+  <Accordion title="Call Declined / Busy" icon="phone-slash">
+    **When the call is declined or recipient is busy:**
+    
+    <Card title="Respectful Follow-up" icon="calendar">
+    - Acknowledge their unavailability
+    - Offer rescheduling options
+    - Provide alternative contact methods
+    - Maintain professional tone
+    </Card>
+    
+    <Frame caption="Call declined/busy message configuration">
+      <img src="/images/campaigns/call-declined.png" />
+    </Frame>
+    
+    **Example Message:**
+    ```
+    Hi {{name}}, we understand you were busy when we called. Please reply with a good time to call back, or contact us at {{contact_number}} at your convenience.
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Additional Call Outcomes
+
+<AccordionGroup>
+  <Accordion title="Voicemail Left" icon="voicemail">
+    **When a voicemail is left for the recipient:**
+    
+    <Steps>
+      <Step title="Configure Assistant Analysis">
+        Set up voicemail detection in your AI assistant:
+        1. Go to your campaign's AI assistant settings
+        2. Open the **"Analysis"** tab
+        3. Configure **"Outcome Type"** and **"Outcome Field"**
+      </Step>
+      
+      <Step title="Automatic Messaging">
+        Messages are sent automatically when voicemail is detected:
+        - Uses the message from your outcome field configuration
+        - Informs recipient about the voicemail
+        - Provides callback information
+      </Step>
+    </Steps>
+    
+    <Frame caption="Assistant analysis configuration">
+      <img src="/images/campaigns/analysis-outcome.png" />
+    </Frame>
+    
+    <Tip>
+    Ensure your AI assistant is properly configured for voicemail detection to enable automatic voicemail notifications.
+    </Tip>
+  </Accordion>
+  
+  <Accordion title="Call Dropped / Technical Failure" icon="exclamation-triangle">
+    **When technical issues interrupt the call:**
+    
+    <Card title="Technical Issue Response" icon="wrench">
+    - Acknowledge the technical problem
+    - Apologize for the inconvenience
+    - Provide alternative contact methods
+    - Offer to retry the call
+    </Card>
+    
+    <Frame caption="Technical failure message configuration">
+      <img src="/images/campaigns/call-dropped.png" />
+    </Frame>
+    
+    **Example Message:**
+    ```
+    Hi {{name}}, we experienced a technical issue during our call. We apologize for the inconvenience. Please call {{support_number}} or we'll try calling you again shortly.
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Campaign Configuration & Launch
+
+<Info>
+Multi-modal campaigns include all the configuration options available in single-modal campaigns, plus the messaging features detailed above.
+</Info>
+
+### Standard Configuration
+
+Multi-modal campaigns inherit all single-modal campaign features:
+
+<CardGroup cols={2}>
+  <Card title="Assistant Selection" icon="robot">
+    Choose your AI assistant for voice conversations
+  </Card>
+  
+  <Card title="Scheduling" icon="calendar">
+    Set date, time, and timezone for campaign execution
+  </Card>
+  
+  <Card title="Contact Management" icon="users">
+    Upload contacts with required fields for both voice and SMS
+  </Card>
+  
+  <Card title="Notifications" icon="bell">
+    Configure email notifications for campaign status
+  </Card>
+</CardGroup>
+
+### Enhanced Contact Requirements
+
+For multi-modal campaigns, ensure your contact data includes:
+
+<Steps>
+  <Step title="Required Fields">
+    - **phone_number**: Primary contact number for voice calls
+    - **SMS-compatible number**: Ensure numbers can receive SMS
+  </Step>
+  
+  <Step title="Variable Fields">
+    - **Voice prompt variables**: For AI conversation personalization
+    - **SMS message variables**: For pre and post-call message personalization
+    - **Contact information**: Names, preferences, relevant context
+  </Step>
+  
+  <Step title="Data Validation">
+    - Verify all phone numbers support SMS
+    - Ensure all dynamic variables are populated
+    - Test with a small batch before full launch
+  </Step>
+</Steps>
+
+## Best Practices for Multi-Modal Campaigns
+
+<AccordionGroup>
+  <Accordion title="Message Timing" icon="clock">
+    - **Pre-call timing**: 10-30 minutes for appointments, 2-24 hours for general outreach
+    - **Post-call immediacy**: Send within 5 minutes of call completion
+    - **Business hours**: Respect SMS timing preferences and regulations
+  </Accordion>
+  
+  <Accordion title="Message Content" icon="message">
+    - **Clear and concise**: SMS has character limits, be direct
+    - **Personalization**: Use dynamic variables for relevant content
+    - **Call-to-action**: Include clear next steps in every message
+    - **Professional tone**: Maintain consistent brand voice across channels
+  </Accordion>
+  
+  <Accordion title="Compliance Considerations" icon="shield">
+    - **Opt-in requirements**: Ensure SMS consent where required
+    - **Unsubscribe options**: Include opt-out instructions
+    - **Time restrictions**: Follow local SMS timing regulations
+    - **Record keeping**: Maintain logs for compliance auditing
+  </Accordion>
+</AccordionGroup>
+
+## Monitoring Multi-Modal Performance
+
+<Card title="Enhanced Analytics" icon="chart-line">
+Multi-modal campaigns provide comprehensive tracking:
+- **Pre-call SMS delivery rates**
+- **Call answer rates** (with/without pre-call SMS)
+- **Post-call message engagement**
+- **Complete customer journey tracking**
+- **Outcome-based messaging effectiveness**
+</Card>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Single-Modal Campaigns" icon="phone" href="/campaigns/single-modal-campaign">
+    Compare with voice-only campaign approach
+  </Card>
+  
+  <Card title="Campaign Overview" icon="list" href="/campaigns/introduction">
+    Return to main campaigns documentation
+  </Card>
+
+</CardGroup>
