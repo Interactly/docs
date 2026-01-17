@@ -1,0 +1,234 @@
+---
+title: 'ElevenLabs TTS Configuration Guide'
+subtitle: 'Recommended settings for optimal ElevenLabs text-to-speech performance'
+description: 'Optimize your ElevenLabs text-to-speech settings for the best performance and quality'
+slug: elevenlabs-tts-recommended-configurations
+---
+
+## Overview
+
+ElevenLabs offers several TTS models optimized for different use cases. This guide will help you choose the right model and configure it properly for your needs.
+
+## Available TTS Models
+
+<CardGroup cols={2}>
+  <Card title="Flash v2.5" icon="bolt">
+    Ultra-low latency for real-time applications
+  </Card>
+  <Card title="Turbo v2.5" icon="gauge-high">
+    Balanced quality and speed
+  </Card>
+  <Card title="Flash v2" icon="language">
+    English-only, low latency
+  </Card>
+  <Card title="Turbo v2" icon="star">
+    English-only, balanced performance
+  </Card>
+</CardGroup>
+
+### Flash v2.5
+
+**Best for:** Real-time applications requiring ultra-low latency
+
+**Use cases:** 
+- Agents Platform
+- Interactive applications
+- Games requiring immediate response
+- Large-scale processing
+
+**Key benefits:**
+- ~75ms latency
+- 32 languages supported
+- 40,000 character limit
+- 50% lower price per character
+
+<Warning>
+Numbers aren't normalized by default. Consider using the `apply_text_normalization` parameter (Enterprise only) or have your LLM normalize text beforehand.
+</Warning>
+
+#### Understanding Text Normalization
+
+Text normalization converts text into a format that sounds more natural when spoken aloud. Without it, certain elements can be mispronounced or sound unnatural.
+
+<AccordionGroup>
+  <Accordion title="Phone Number Normalization">
+    **Input:** `123-456-7890`
+    
+    **Without normalization:** "one hundred twenty-three dash four hundred fifty-six dash seven thousand eight hundred ninety"
+    
+    **With normalization:** "one two three, four five six, seven eight nine zero"
+  </Accordion>
+
+  <Accordion title="Date Normalization">
+    **Input:** `2024-01-01`
+    
+    **Without normalization:** "two thousand twenty-four dash zero one dash zero one"
+    
+    **With normalization:** "January first, two thousand twenty-four"
+  </Accordion>
+
+  <Accordion title="Time Normalization">
+    **Input:** `14:30`
+    
+    **Without normalization:** "fourteen colon thirty"
+    
+    **With normalization:** "two thirty PM"
+  </Accordion>
+</AccordionGroup>
+
+**Model-specific normalization handling:**
+
+- **Multilingual v2:** Better at automatic normalization
+- **Flash v2.5/Turbo v2.5:** Numbers aren't normalized by default for speed
+- **Enterprise users:** Can enable `apply_text_normalization` parameter for v2.5 models
+
+<Tip>
+For best results with Flash models, preprocess your text using LLM prompts or regular expressions to normalize these elements before sending to TTS.
+</Tip>
+
+### Turbo v2.5
+
+**Best for:** Balanced quality and speed applications
+
+**Use cases:** When you need higher quality than Flash but can accept slightly higher latency (~250-300ms)
+
+**Key benefits:**
+- High quality voice generation
+- 32 languages supported
+- 40,000 character limit
+- 50% lower price per character
+
+**Ideal when:** You want Flash v2.5 use cases but prioritize quality over maximum speed
+
+### Flash v2
+
+**Best for:** English-only real-time applications
+
+**Use cases:**
+- Agents Platform (English only)
+- Interactive English applications
+
+**Key benefits:**
+- ~75ms latency
+- 30,000 character limit
+
+<Info>
+**Limitation:** English only
+</Info>
+
+### Turbo v2
+
+**Best for:** English-only balanced quality and speed
+
+**Use cases:** High-quality English voice generation with low latency
+
+**Key benefits:**
+- ~250-300ms latency
+- 30,000 character limit
+
+<Info>
+**Limitation:** English only
+</Info>
+
+## Voice Settings
+
+### Speaker Boost
+
+Speaker Boost enhances similarity to the original speaker, making the generated voice sound more like the source voice used for cloning.
+
+**Trade-offs:**
+- ✅ **Benefits:** Increased similarity to the original speaker
+- ❌ **Costs:** Higher computational load, increased latency
+- 📊 **Impact:** Generally produces subtle differences
+
+**When to use:**
+- Maximum similarity to the original voice is required
+- Latency is not a critical concern
+- Working with voices where subtle improvements are noticeable
+- High-quality, non-real-time applications
+
+**When to avoid:**
+- Real-time applications (like Agents Platform)
+- Using Flash models for low-latency needs
+- Computational cost outweighs the subtle benefits
+
+### Stability
+
+Controls the consistency and emotional variability of the voice generation.
+
+### Similarity
+
+Determines how closely the AI adheres to the original voice.
+
+### Style Exaggeration
+
+Amplifies the speaking style of the original voice.
+
+### Seed
+
+The seed value controls variations that ElevenLabs can generate for a single utterance, ranging from `0` to `4294967295`.
+
+<Note>
+According to ElevenLabs documentation: "If specified, our system will make a best effort to sample deterministically, such that repeated requests with the same seed and parameters should return the same result. Determinism is not guaranteed."
+</Note>
+
+<Warning>
+With many possible variations for the same utterance, there's always a chance that some variations may sound unnatural.
+</Warning>
+
+## Recommended Settings
+
+### Model Selection
+
+- ✅ **Use v2.5 models** over v2 for multilingual support and higher character limits
+- ⚡ **Choose Flash** for maximum speed (with slightly reduced quality)
+- 🎯 **Choose Turbo** for better quality with acceptable latency
+- 📝 Text normalization is not needed for v2 models; v2.5 models may need this option enabled
+
+### Voice Settings Configuration
+
+<CardGroup cols={1}>
+  <Card title="Speaker Boost" icon="volume-high">
+    **Recommendation:** Disabled by default
+    
+    Enable only if similarity isn't sufficient and you can accept the latency increase.
+    
+    *Applies to all models*
+  </Card>
+
+  <Card title="Stability" icon="balance-scale">
+    **Recommendation:** Start around `50`
+    
+    This provides a balanced middle ground for consistency.
+    
+    *Applies to all models*
+  </Card>
+
+  <Card title="Similarity" icon="copy">
+    **Recommendation:** Start around `75`
+    
+    Suitable for most use cases to balance quality and performance.
+    
+    *Applies to all models*
+  </Card>
+
+  <Card title="Style Exaggeration" icon="wand-magic-sparkles">
+    **Recommendation:** Keep at `0` most of the time
+    
+    Only increase if you need amplified speaking style.
+    
+    *Applies to all models*
+  </Card>
+
+  <Card title="Seed" icon="dice">
+    **Recommendation:** Use with caution
+    
+    Be aware that with many variations possible, some may sound unnatural.
+    
+    *Applies to all models*
+  </Card>
+</CardGroup> 
+
+Refer to ElevenLabs' official documentation for the latest updates and best practices.
+
+Refer to the [ElevenLabs Voices](./voices#text-to-speech-tts-vendors) page for details on selecting voices.
