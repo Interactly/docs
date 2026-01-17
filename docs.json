@@ -61,7 +61,8 @@
                         "pages": [
                             "vendors/transcribers",
                             "vendors/voices",
-                            "vendors/models"
+                            "vendors/models",
+                            "vendors/elevenlabs-TTS-recommended-configurations"
                         ]
                     }
                 ]
