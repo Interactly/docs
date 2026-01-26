@@ -48,6 +48,12 @@
                         ]
                     },
                     {
+                        "group": "Assistant Tools",
+                        "pages": [
+                            "assistant-tools/introduction"
+                        ]
+                    },
+                    {
                         "group": "Webhooks",
                         "pages": [
                             "webhooks/server-url",
