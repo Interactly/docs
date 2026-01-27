@@ -6,6 +6,87 @@ noindex: true
 mode: center
 ---
 
+<Update label="January 27 2026" description="v1.6.0">
+
+## What's new in v1.6.0
+
+🚀 Updates & Improvements
+
+### 📞 Campaign Call Validation Before Launch
+
+**Validate Calls Before Campaign Execution**
+
+We've introduced a new feature that allows you to validate campaign calls before the campaign is launched. Previously, validation occurred only after the campaign had been launched, but now you have the ability to validate calls beforehand, ensuring better quality control and error prevention.
+
+#### How to Use
+
+Enable call validation via API by setting the new `validateOnUpload` field:
+
+```javascript
+{
+  "validateOnUpload": true  // Enable pre-launch call validation
+}
+```
+
+#### Configuration Details
+
+* **Field Name:** `validateOnUpload`
+* **Type:** `Boolean`
+* **Default:** `false`
+* **Available via:** API
+
+<Callout type="info">
+  **Pro Tip**: Enabling `validateOnUpload` helps catch invalid phone numbers, formatting issues, and other potential problems before your campaign goes live, saving time and improving campaign success rates.
+</Callout>
+
+### 🎙️ Transcriber (STT) Fallback Support
+
+**Enhanced Speech-to-Text Reliability**
+
+We've added fallback support for transcribers (Speech-to-Text). You can now enable fallback transcribers to ensure continuous speech recognition even if the primary transcriber encounters issues.
+
+This enhancement provides:
+- **Improved Reliability** - Automatic failover to backup transcriber
+- **Uninterrupted Conversations** - Seamless transition during transcription issues
+- **Better Call Quality** - Reduced chances of missed or garbled transcriptions
+
+### 🔊 Self-Hosted Deepgram Transcriber Support
+
+**New Self-Hosted STT Option**
+
+We now support self-hosted Deepgram as a transcriber (STT) option, giving you more control over your speech-to-text infrastructure.
+
+#### Supported Models
+
+Currently supported models:
+- **Nova 2** - English language
+- **Nova 3** - English language
+
+<Callout type="info">
+  **Coming Soon**: We will be adding support for more models and additional languages in subsequent releases.
+</Callout>
+
+### 🤖 Gemini 3-Flash LLM Support
+
+**New LLM Model Option**
+
+We've added support for **Gemini 3-Flash** as an LLM model option for your assistants. This new model provides:
+
+- Fast response generation
+- High-quality conversational capabilities
+- Cost-effective performance for real-time interactions
+
+You can now select Gemini 3-Flash from the LLM model options when configuring your assistant.
+
+### 🛠️ Bug Fixes and Enhancements
+
+* Resolved various issues affecting system stability and performance
+* General improvements to call quality and user experience
+* Enhanced error handling across the platform
+* UI/UX refinements for better usability
+
+</Update>
+
 <Update label="December 9 2025" description="v1.3.0">
 
 ## What's new in v1.3.0
