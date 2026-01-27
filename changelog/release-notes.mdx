@@ -6,6 +6,208 @@ noindex: true
 mode: center
 ---
 
+<Update label="January 27 2026" description="v1.6.0">
+
+## What's new in v1.6.0
+
+🚀 Updates & Improvements
+
+### 📞 Campaign Call Validation Before Launch
+
+**Validate Calls Before Campaign Execution**
+
+We've introduced a new feature that allows you to validate campaign calls before the campaign is launched. Previously, validation occurred only after the campaign had been launched, but now you have the ability to validate calls beforehand, ensuring better quality control and error prevention.
+
+#### How to Use
+
+Enable call validation via API by setting the new `validateOnUpload` field:
+
+```javascript
+{
+  "validateOnUpload": true  // Enable pre-launch call validation
+}
+```
+
+#### Configuration Details
+
+* **Field Name:** `validateOnUpload`
+* **Type:** `Boolean`
+* **Default:** `false`
+* **Available via:** API
+
+<Callout type="info">
+  **Pro Tip**: Enabling `validateOnUpload` helps catch invalid phone numbers, formatting issues, and other potential problems before your campaign goes live, saving time and improving campaign success rates.
+</Callout>
+
+### 🎙️ Transcriber (STT) Fallback Support
+
+**Enhanced Speech-to-Text Reliability**
+
+We've added fallback support for transcribers (Speech-to-Text). You can now enable fallback transcribers to ensure continuous speech recognition even if the primary transcriber encounters issues.
+
+This enhancement provides:
+- **Improved Reliability** - Automatic failover to backup transcriber
+- **Uninterrupted Conversations** - Seamless transition during transcription issues
+- **Better Call Quality** - Reduced chances of missed or garbled transcriptions
+
+### 🔊 Self-Hosted Deepgram Transcriber Support
+
+**New Self-Hosted STT Option**
+
+We now support self-hosted Deepgram as a transcriber (STT) option, giving you more control over your speech-to-text infrastructure.
+
+#### Supported Models
+
+Currently supported models:
+- **Nova 2** - English language
+- **Nova 3** - English language
+
+<Callout type="info">
+  **Coming Soon**: We will be adding support for more models and additional languages in subsequent releases.
+</Callout>
+
+### 🤖 Gemini 3-Flash LLM Support
+
+**New LLM Model Option**
+
+We've added support for **Gemini 3-Flash** as an LLM model option for your assistants. This new model provides:
+
+- Fast response generation
+- High-quality conversational capabilities
+- Cost-effective performance for real-time interactions
+
+You can now select Gemini 3-Flash from the LLM model options when configuring your assistant.
+
+### 🛠️ Bug Fixes and Enhancements
+
+* Resolved various issues affecting system stability and performance
+* General improvements to call quality and user experience
+* Enhanced error handling across the platform
+* UI/UX refinements for better usability
+
+</Update>
+
+<Update label="December 9 2025" description="v1.3.0">
+
+## What's new in v1.3.0
+
+🚀 Updates & Improvements
+
+### 🔧 External API Tools - Full HTTP Method Support
+
+**Enhanced API Integration Capabilities**
+
+External API Tools now support all standard HTTP methods, providing complete flexibility for integrating with third-party services and APIs.
+
+#### What's Changed
+
+**Before:** Only `POST` method was supported by default for External API Tools.
+
+**Now:** Full support for all HTTP methods:
+- `GET` - Retrieve data from APIs
+- `POST` - Create new resources
+- `PUT` - Update existing resources completely
+- `PATCH` - Partial updates to existing resources
+- `DELETE` - Remove resources
+
+#### How to Use
+
+1. Navigate to the **Tools Section** in your dashboard
+2. Create or edit an External API Tool
+3. Select your desired HTTP method from the dropdown
+4. Configure the tool parameters as needed
+5. Attach the tool to your assistant
+
+This enhancement enables more sophisticated integrations with REST APIs, allowing your assistants to perform comprehensive CRUD operations and interact with a wider range of external services.
+
+### 📚 Knowledge Base Optimization
+
+**Improved Query Performance and Indexing**
+
+* **Enhanced Query Processing** - Optimized algorithms for faster knowledge base searches and more accurate results
+* **Advanced Indexing** - Improved indexing mechanisms that reduce response times and enhance search relevance
+* **Better Scalability** - Enhanced performance for larger knowledge bases with more documents and data
+
+These improvements result in faster knowledge retrieval during conversations and more accurate responses from your assistants.
+
+### 🎤 ElevenLabs Configuration Enhancement
+
+**New Streaming Latency Control**
+
+We've added granular control over ElevenLabs streaming optimization, giving you more precise control over the balance between quality and latency.
+
+#### New Configuration Field
+
+```javascript
+// New configurable field in ElevenLabs TTS settings
+optimizeStreamingLatency: Number // Range: 0 (max quality) to 4 (max speed)
+```
+
+#### Configuration Details
+
+* **Field Name:** `optimizeStreamingLatency`
+* **Value Range:** `0` to `4`
+* **New Default:** `0` (previously managed internally with value `3`)
+* **Configuration Methods:**
+  - Dashboard UI toggle
+  - API configuration support
+
+#### Latency Optimization Levels
+
+- **`0`** - Maximum quality, higher latency (recommended for most use cases)
+- **`1-2`** - Balanced quality and latency
+- **`3`** - Previous default - good balance
+- **`4`** - Maximum speed, optimized for real-time interactions
+
+<Callout type="info">
+  **Migration Note**: Existing configurations will automatically use the new default value of `0`. If you were relying on the previous behavior, you may want to set this to `3` to maintain the same performance characteristics.
+</Callout>
+
+### 📊 Per-Turn Latency Metrics
+
+**Enhanced Performance Monitoring**
+
+We've introduced detailed per-turn latency metrics for both user and assistant interactions, providing unprecedented visibility into conversation performance.
+
+#### New Metrics Available
+
+**User Turn Metrics:**
+- Audio Packets latency
+- Voice Activity Detection (VAD) latency
+- Speech-to-Text (STT) processing time
+- Total user turn processing duration
+
+**Assistant Turn Metrics:**
+- Large Language Model (LLM) response generation time
+- Text-to-Speech (TTS) processing duration
+- Total assistant response latency
+
+#### Where to Find These Metrics
+
+1. **Debug Mode Dashboard**
+   - Enable Debug mode from your profile or by clicking the Interactly.ai logo
+   - Click on individual user or assistant messages in Call Logs
+   - View detailed timing breakdowns for each interaction
+
+2. **Webhook Integration**
+   - Available in webhook subscription `message` events
+   - Real-time access to latency data for your applications
+   - Perfect for monitoring and analytics systems
+
+#### Use Cases
+
+- **Performance Optimization** - Identify bottlenecks in conversation flow
+- **Quality Monitoring** - Track response times across different configurations
+- **Analytics Integration** - Export timing data to your monitoring systems
+- **Debugging** - Diagnose latency issues in real-time conversations
+
+### 🛠️ Bug Fixes and Improvements
+
+* Resolved minor issues affecting call stability and user experience
+* Various UI/UX refinements for better user interaction
+
+</Update>
+
 <Update label="December 8 2025" description="v1.2.0">
 
 ## What's new in v1.2.0
