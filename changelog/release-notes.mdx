@@ -6,6 +6,239 @@ noindex: true
 mode: center
 ---
 
+<Update label="February 18 2026" description="v1.7.0">
+
+## What's new in v1.7.0
+
+🚀 Updates & Improvements
+
+### 🔐 Okta SSO Login Support
+
+**Enterprise Single Sign-On Integration**
+
+We've added support for Okta Single Sign-On (SSO), enabling seamless integration with enterprise identity providers. Okta SSO support is available for organizations that require enterprise authentication.
+
+<Callout type="info">
+  **Note**: Okta SSO is not enabled by default. If you need SSO support for your organization, please contact our support team and we'll enable it for you.
+</Callout>
+
+### 🎵 Hold-Call Tag Support
+
+**Pause Calls with Custom Hold Music**
+
+Custom LLM workflows can now trigger call holds with configurable hold music using the hold-call tag. This is useful for scenarios where you need to pause a call and play background music.
+
+#### How to Use
+
+Add the following XML tag to your custom LLM response:
+
+```xml
+<hold_call/><play_type>keyboard</play_type><play_duration>0.5</play_duration>
+```
+
+#### Configuration Details
+
+* **`<hold_call/>`** - Triggers the hold state
+* **`<play_type>`** - Type of hold music (e.g., `keyboard`, `music`)
+* **`<play_duration>`** - Duration in seconds to play hold audio
+
+When the hold-call tag is detected, the call will be paused and hold music will be played for the specified duration before the call resumes.
+
+
+### 🔍 Search KB and Assistants by ID
+
+**Resource Discovery by Object ID**
+
+Our dashboard portal now supports searching for knowledge bases, assistants, and workflows by their object IDs, in addition to existing search by name and description.
+
+#### Features
+
+* **Search by ID** - Find resources directly using their unique object IDs
+* **Quick Navigation** - Click search results to instantly navigate to the resource detail page
+* **Comprehensive Search** - Combine ID-based search with name and description searches for maximum flexibility
+
+This enhancement makes it faster to locate resources, especially in organizations with many assistants and knowledge bases.
+
+### 🔄 Redis Retry Handling for Connection Failures
+
+**Improved Infrastructure Resilience**
+
+We've enhanced our Redis connection handling to gracefully manage connection failures, particularly during cloud provider maintenance windows or temporary service interruptions with AWS Redis Cache and similar services.
+
+#### What's Improved
+
+* **Automatic Retry Logic** - Seamless recovery from temporary Redis connection failures
+* **Better Error Handling** - Improved internal error management to prevent cascade failures
+* **Enhanced Stability** - More reliable system operation during infrastructure maintenance
+* **Transparent Recovery** - Automatic reconnection without manual intervention
+
+<Callout type="info">
+  **Impact**: This improvement reduces system errors and improves overall platform reliability during cloud provider maintenance windows and temporary outages.
+</Callout>
+
+### 📨 Webhook for Concurrency-Failed Call Events
+
+**Improved Event Delivery for Failed Calls**
+
+We've fixed webhook delivery for calls that exceed your organization's concurrency limits. Previously, `end-of-call-report` and `status-update` webhooks were not delivered when calls hit concurrency limits.
+
+#### What's Fixed
+
+* **Concurrency Limit Events** - Webhooks are now delivered when calls fail due to concurrency limits
+* **Consistent Event Delivery** - Both `end-of-call-report` and status-update events with failed status are now reliably delivered
+* **Assistant-Level Configuration** - Webhooks are sent to configured webhook servers at the assistant level
+
+<Callout type="info">
+  **Pro Tip**: Monitor concurrency failure webhooks to track and optimize your concurrency limits.
+</Callout>
+
+### ✅ Campaign Pre-Call Validations
+
+**Validate Calls Before Campaign Launch**
+
+A new field called "Validate Call Data Before Launch" has been added to campaign creation and update workflows. This enables you to validate all calls before your campaign goes live.
+
+#### How to Use
+
+Enable call validation in your campaign settings:
+
+```javascript
+{
+  "validateOnUpload": true
+}
+```
+
+#### Benefits
+
+* **Quality Assurance** - Catch invalid data before campaign execution
+* **Early Error Detection** - Identify issues with phone numbers, formatting, and data integrity
+* **Webhook Notifications** - Failed validations are reported to your configured webhook server
+* **Available Everywhere** - Supported via both API and dashboard UI
+
+When enabled, all calls in your campaign are validated before the campaign launch time. Any failed validations will trigger webhook notifications to your configured endpoint, allowing you to address issues proactively.
+
+<Callout type="info">
+  **Recommendation**: Enable this feature to ensure campaign data quality and prevent execution delays.
+</Callout>
+
+### ⏰ Campaign Call Schedule Timing Overrides
+
+**Flexible Per-Call Schedule Configuration**
+
+Campaign calls now support schedule timing overrides, allowing individual calls within a campaign to use different timezones and execution times than the overall campaign schedule.
+
+#### How to Use
+
+Set override parameters per call during campaign upload:
+
+```javascript
+{
+  "override_timezone": "America/New_York",
+  "override_schedule": [
+    {
+      "startAt": "2025-09-27T12:00:00.000Z",
+      "endAt": "2025-09-27T20:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### Example Scenario
+
+Suppose your campaign is scheduled to run today and tomorrow from 9 AM to 6 PM:
+- **Overall Schedule**: Today & Tomorrow, 9 AM - 6 PM
+- **Override Example**: Some calls run only today 3 PM - 5 PM
+- **Override Example**: Other calls run only tomorrow 10 AM - 11 AM
+
+#### Configuration Methods
+
+* **API** - Using `override_timezone` and `override_schedule` fields
+* **Dashboard UI** - Campaign calls upload screen
+
+This gives each call in your campaign maximum flexibility for scheduling.
+
+### 🎙️ Campaign Assistants Overrides
+
+**Per-Call Assistant Configuration**
+
+Campaign calls can now override specific assistant features, allowing you to customize assistant behavior (voice, welcome message, and other configurations) for individual calls within a campaign.
+
+#### Override Assistant Configuration
+
+Partially override assistant settings for a specific call:
+
+```javascript
+{
+  "override_assistant": {
+    "voice": "custom-voice-id",
+    "welcomeMessage": "Custom greeting here",
+    // ... other assistant configuration fields
+  }
+}
+```
+
+#### Override Assistant Entirely
+
+Completely replace the campaign assistant with a different permanent assistant:
+
+```javascript
+{
+  "override_assistant_id": "assistant-uuid-here"
+}
+```
+
+#### Priority Rules
+
+* **Both Fields Provided** - `override_assistant_id` takes priority over `override_assistant`
+* **`override_assistant_id` Only** - Use a completely different assistant
+* **`override_assistant` Only** - Customize specific fields of the campaign assistant
+
+#### Configuration
+
+* **API** - Supported via API only
+* **UI** - Coming in future releases
+
+This feature enables fine-grained control over assistant behavior on a per-call basis within campaigns.
+
+### 📊 Campaign Calls Metadata Tracing
+
+**Custom Metadata for Call Tracking**
+
+Campaign calls now support custom metadata that you can use to track and correlate calls within your systems. Metadata can be configured during campaign call upload and is returned in webhook events.
+
+#### How to Use
+
+Configure metadata during campaign call upload:
+
+```javascript
+{
+  "override_metadata": {
+    "customerId": "customer-123",
+    "campaignPhase": "phase-2",
+    "externalRef": "external-id-456"
+  }
+}
+```
+
+#### Features
+
+* **Custom Tracking** - Define any metadata key-value pairs for your use case
+* **Webhook Integration** - Metadata is returned in all call-related webhooks
+* **Call Correlation** - Use metadata to correlate calls with your internal systems
+* **API Only** - Supported via API (`override_metadata` field)
+
+The metadata object values you provide will be passed to the call's metadata and returned in all subscribed webhook events, making it easy to track and correlate calls within your own systems.
+
+### 🐛 Bug Fixes and Improvements
+
+* Enhanced system stability and reliability across platform
+* Improved error handling for edge cases
+* Better performance optimization for large-scale operations
+* UI/UX refinements for improved user experience
+* Fixed various minor issues affecting call quality
+
+</Update>
+
 <Update label="January 27 2026" description="v1.6.0">
 
 ## What's new in v1.6.0
