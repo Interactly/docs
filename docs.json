@@ -50,10 +50,13 @@
                     {
                         "group": "Webhooks",
                         "pages": [
-                            "webhooks/server-url",
-                            "webhooks/server-url/setting-server-urls",
-                            "webhooks/server-url/events",
-                            "webhooks/server-url/developing-locally"
+                            "webhooks/events/introduction",
+                            "webhooks/events/status-update",
+                            "webhooks/events/conversation-update",
+                            "webhooks/events/end-of-call-report",
+                            "webhooks/events/hang",
+                            "webhooks/events/error",
+                            "webhooks/events/testing/ngrok-setup"
                         ]
                     },
                     {

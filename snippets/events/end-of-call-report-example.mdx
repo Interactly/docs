@@ -1,0 +1,339 @@
+## End of Call Report Event Example
+
+This is a complete example of an end-of-call-report webhook event payload.
+
+```json
+{
+    "message": {
+        "timestamp": 1772702523935,
+        "type": "end-of-call-report",
+        "call": {
+            "id": "WC-82015760-c3bd-427d-a23b-ba9b07e4ab85",
+            "teamId": "67c0231ae6880fe48ef929ee",
+            "assistantId": "697769ef5e6d94d5ad83e01e",
+            "callType": "web",
+            "direction": "inbound",
+            "startAt": "2026-03-05T09:21:20.063Z",
+            "endAt": "2026-03-05T09:22:01.739Z",
+            "userNumber": "web-Ramesh Naik",
+            "assistantNumber": "697769ef5e6d94d5ad83e01e",
+            "status": "finished",
+            "phoneCallStatus": "completed",
+            "phoneCallStatusReason": "Call is completed",
+            "callEndTriggerBy": "bot",
+            "assistantCallDuration": 41683,
+            "analysis": {
+                "summary": "",
+                "successEvaluation": "",
+                "guardrails": "DISABLED"
+            },
+            "recording": {
+                "s3Bucket": "interactly-qa-us-recordings",
+                "path": "67c0231ae6880fe48ef929ee/WC-82015760-c3bd-427d-a23b-ba9b07e4ab85.mp3"
+            },
+            "cost": {
+                "analysis": {
+                    "total": 0
+                },
+                "callDuration": 41.676,
+                "ttsGenCharsTotal": 118,
+                "inputTokensTotal": 485,
+                "outputTokensTotal": 32,
+                "interactlyCost": 0.006946,
+                "phoneCost": 0.0165,
+                "ttsVendorCost": 0.010620000000000001,
+                "sttVendorCost": 0.005348418610800001,
+                "llmVendorCost": 0.0003385,
+                "totalCost": 0.0397529186108
+            },
+            "assistantOverrides": {
+                "dynamicVariables": {
+                    "serial_number": ""
+                },
+                "variablesValidations": {
+                    "serial_number": "none"
+                }
+            },
+            "metadata": {},
+            "metrics": {
+                "callStats": {
+                    "userAudio": {
+                        "delayedChunksCount": 70,
+                        "latencyAvg": 105.05714285714286,
+                        "latencyTotal": 7354,
+                        "latencyIntervals": [
+                            {
+                                "max": 693,
+                                "count": 12,
+                                "avg": 151.75,
+                                "duration": 8189,
+                                "cumulativeDuration": 8189
+                            },
+                            {
+                                "max": 113,
+                                "count": 30,
+                                "avg": 96.16666666666667,
+                                "duration": 8000,
+                                "cumulativeDuration": 16189
+                            },
+                            {
+                                "max": 111,
+                                "count": 25,
+                                "avg": 97.6,
+                                "duration": 7999,
+                                "cumulativeDuration": 24188
+                            },
+                            {
+                                "max": 88,
+                                "count": 1,
+                                "avg": 88,
+                                "duration": 8000,
+                                "cumulativeDuration": 32188
+                            },
+                            {
+                                "max": 0,
+                                "count": 0,
+                                "avg": 0,
+                                "duration": 8000,
+                                "cumulativeDuration": 40188
+                            },
+                            {
+                                "max": 64,
+                                "count": 2,
+                                "avg": 60,
+                                "duration": 928,
+                                "cumulativeDuration": 41116
+                            }
+                        ],
+                        "cumulativeDuration": 41116,
+                        "droppedChunksCount": 0
+                    },
+                    "turns": {
+                        "user": 4,
+                        "bot": 4,
+                        "played": 4,
+                        "interrupted": 0,
+                        "skipped": 0
+                    },
+                    "turnsStats": {
+                        "userTurns": [
+                            {
+                                "start": 0,
+                                "end": 3861,
+                                "messageId": "user-1"
+                            },
+                            {
+                                "start": 5760,
+                                "end": 6786,
+                                "messageId": "user-2"
+                            },
+                            {
+                                "start": 7110,
+                                "end": 11769,
+                                "messageId": "user-3"
+                            },
+                            {
+                                "start": 32970,
+                                "end": 34289,
+                                "messageId": "user-4"
+                            }
+                        ],
+                        "botTurns": [
+                            {
+                                "start": 223,
+                                "end": 2131,
+                                "interrupted": false,
+                                "playedDuration": 1.908,
+                                "audioDuration": 1.442,
+                                "userMessageId": "welcome-1",
+                                "stopSpeakingReason": null
+                            },
+                            {
+                                "start": 15902,
+                                "end": 20080,
+                                "interrupted": false,
+                                "playedDuration": 4.178,
+                                "audioDuration": 3.207,
+                                "userMessageId": "user-3",
+                                "stopSpeakingReason": null
+                            },
+                            {
+                                "start": 20081,
+                                "end": 23159,
+                                "interrupted": false,
+                                "playedDuration": 3.078,
+                                "audioDuration": 2.371,
+                                "userMessageId": "user-3",
+                                "stopSpeakingReason": null
+                            },
+                            {
+                                "start": 39344,
+                                "end": 41110,
+                                "interrupted": false,
+                                "playedDuration": 1.766,
+                                "audioDuration": 1.303,
+                                "userMessageId": "user-4",
+                                "stopSpeakingReason": null
+                            }
+                        ],
+                        "botResponseTime": [
+                            4133,
+                            5055
+                        ],
+                        "bargeInCount": 0,
+                        "bargeInTimeAvg": 0
+                    },
+                    "ttsStats": {
+                        "responseTimeDistribution": {
+                            "0": 2,
+                            "100": 0,
+                            "200": 1,
+                            "300": 1,
+                            "600": 0,
+                            "1000": 0,
+                            "3000": 0,
+                            "5000": 0,
+                            "10000": 0
+                        },
+                        "totalRequests": 4,
+                        "latencyAvg": 163.75,
+                        "latencyTotal": 655,
+                        "errors": 0,
+                        "retries": 0,
+                        "apiRequests": 2,
+                        "apiLatencyTotal": 643,
+                        "apiLatencyAvg": 321.5,
+                        "cacheRequests": 2,
+                        "cacheLatencyTotal": 12,
+                        "cacheLatencyAvg": 6
+                    },
+                    "llmStats": {
+                        "responseCount": 1,
+                        "responseLatencyTotal": 2557.396173477173,
+                        "responseLatencyAvg": 2557.396173477173,
+                        "errors": 0,
+                        "hangups": 0,
+                        "responseTimeDistribution": {
+                            "0": 0,
+                            "100": 0,
+                            "300": 0,
+                            "600": 0,
+                            "1000": 0,
+                            "1500": 0,
+                            "2000": 1,
+                            "5000": 0,
+                            "10000": 0
+                        },
+                        "inputTokens": 485,
+                        "outputTokens": 32,
+                        "inputTokensAvg": 485,
+                        "outputTokensAvg": 32
+                    },
+                    "sttStats": {
+                        "responseTimeDistribution": {
+                            "0": 5,
+                            "100": 0,
+                            "200": 0,
+                            "300": 0,
+                            "600": 0,
+                            "1000": 0,
+                            "3000": 0,
+                            "5000": 0,
+                            "10000": 0
+                        },
+                        "responseCount": 5,
+                        "responseLatencyAvg": -309.3994399999998,
+                        "relativeLatencyAvg": -296.3994399999998,
+                        "responseLatencyTotal": -1546.9971999999989,
+                        "confidenceAvg": 0.6880248999999999,
+                        "connectionRetries": 0,
+                        "errors": 0,
+                        "confidenceDistribution": {
+                            "0": 1,
+                            "0.1": 0,
+                            "0.3": 0,
+                            "0.5": 0,
+                            "0.7": 3,
+                            "0.9": 0
+                        },
+                        "eouProbabilityDistribution": {
+                            "0": 0,
+                            "0.1": 0,
+                            "0.3": 0,
+                            "0.5": 0,
+                            "0.7": 0,
+                            "0.9": 0
+                        }
+                    }
+                }
+            }
+        },
+        "assistant": {
+            "_id": "697769ef5e6d94d5ad83e01e",
+            "name": "Mary Dental - main"
+        },
+        "messages": [
+            {
+                "messageId": "welcome-1",
+                "role": "assistant",
+                "text": "Welcome to Apollo clinic!!",
+                "timestamp": 1772702480279
+            },
+            {
+                "messageId": "user-1",
+                "role": "user",
+                "text": "Hello.",
+                "timestamp": 1772702485138
+            },
+            {
+                "messageId": "user-2",
+                "role": "user",
+                "text": "Can you book an appointment?",
+                "timestamp": 1772702488063
+            },
+            {
+                "messageId": "user-3",
+                "role": "user",
+                "text": "Actually, never mind.",
+                "timestamp": 1772702493047
+            },
+            {
+                "messageId": "user-3-response-1772702495604",
+                "role": "assistant",
+                "text": "Hi there! I'd be happy to help you book an appointment with Dr. Sam.",
+                "timestamp": 1772702495958
+            },
+            {
+                "messageId": "user-4",
+                "role": "user",
+                "text": "Goodbye.",
+                "timestamp": 1772702520000
+            },
+            {
+                "messageId": "user-4-response-1772702521000",
+                "role": "assistant",
+                "text": "Thank you for calling Apollo clinic. Have a great day!",
+                "timestamp": 1772702521303
+            }
+        ],
+        "phone": {
+            "provider": {
+                "name": ""
+            }
+        },
+        "customer": {
+            "number": "web-Ramesh Naik"
+        },
+        "analysis": {
+            "summary": "A user contacted Apollo clinic to book an appointment but decided against it and ended the conversation politely.",
+            "successEvaluation": "Fair",
+            "structuredData": {
+                "Name": "",
+                "phone number": "",
+                "serial_number": 0
+            },
+            "outcome": "No appointment booked"
+        }
+    }
+}
+```

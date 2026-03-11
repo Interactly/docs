@@ -1,0 +1,197 @@
+## Status Update Event Example
+
+This is a complete example of a status-update webhook event payload.
+
+```json
+{
+    "message": {
+        "timestamp": 1772702480032,
+        "type": "status-update",
+        "call": {
+            "id": "WC-82015760-c3bd-427d-a23b-ba9b07e4ab85",
+            "teamId": "67c0231ae6880fe48ef929ee",
+            "assistantId": "697769ef5e6d94d5ad83e01e",
+            "callType": "web",
+            "direction": "inbound",
+            "startAt": "2026-03-05T09:21:19.627Z",
+            "userNumber": "web-Ramesh Naik",
+            "assistantNumber": "697769ef5e6d94d5ad83e01e",
+            "status": "queued",
+            "phoneCallStatus": "in-progress",
+            "phoneCallStatusReason": "Call is in progress",
+            "callEndTriggerBy": "",
+            "assistantCallDuration": 0,
+            "analysis": {
+                "summary": "",
+                "successEvaluation": ""
+            },
+            "recording": {
+                "s3Bucket": "",
+                "path": ""
+            },
+            "assistantOverrides": {},
+            "metadata": {}
+        },
+        "assistant": {
+            "_id": "697769ef5e6d94d5ad83e01e",
+            "name": "Mary Dental - main",
+            "welcomeMessage": "Welcome to Apollo clinic!!",
+            "welcomeMessageMode": "automatic",
+            "welcomeMessageInterruptionsEnabled": false,
+            "endCallMessage": "",
+            "endCallToolDescription": "",
+            "endCallPhrases": [
+                "Goodbye",
+                "Bye"
+            ],
+            "bargeInEnabled": true,
+            "callForwardData": [],
+            "assistantKnowledgeBaseIds": [],
+            "assistantToolIds": [],
+            "assistantProvider": "gemini",
+            "assistantModel": "gemini-3-flash-preview",
+            "assistantLLMUrl": "",
+            "assistantSystemPrompt": "You here are a voice assistant for Apollo clinic clinic, located at 123 North Face Place, Anaheim, California. Your name is Rachel. The hours are 8 AM to 5PM daily, but they are closed on Sundays. Clinic phone number is 7706258801.\n\nThe practicing orthopedic doctor is Dr.Sam.\n\nToday's date is {{date}}.\nThis is your serial number {{serial_number}}, when they ask for serial number say {{serial_number}}\n\n\nYou are tasked with answering questions about the business, and booking appointments. If they wish to book an appointment, your goal is to gather necessary information from callers in a friendly and efficient manner like follows:\n\n1. Ask for their full name.\n2. Ask for their mobile number.\n3. Ask for their age.\n4. Ask for their place of birth.\n5. Ask for their body weight.\n6. Ask for the purpose of their appointment.\n7. Request their preferred date and time for the appointment.\n8. Then finally ask for their date of birth.\n9. Confirm the details(full name, purpose of appointment, and appointment time) with the caller, and then book the appointment.\n\nKnowledgebase:\nIf any questions are asked related to KB, try to answer them from the information in KB.\n- Keep all your responses short and simple by using casual language. Don't ramble too long.\n\nOnce the appointment is booked, do not forget to ask if they need assistance with anything else.\nIf nothing else from the user, then gracefully end the conversation by saying 'Goodbye'.",
+            "assistantTemperature": 0,
+            "assistantMaxTokens": 256,
+            "assistantResponseSplitter": "",
+            "assistantBackchannelingEnabled": false,
+            "assistantAnalysis": {
+                "summary": {
+                    "enabled": true,
+                    "prompt": "You are an expert note-taker. You will be given a transcript of a call. Summarize the call in 2-3 sentences. DO NOT return anything except the summary.",
+                    "provider": "",
+                    "model": "",
+                    "timeoutInSecs": 30
+                },
+                "successEvaluation": {
+                    "enabled": true,
+                    "prompt": "You are an expert call evaluator. You will be given a transcript of a call and the system prompt of the AI participant. Determine if the call was successful based on the objectives inferred from the system prompt. DO NOT return anything except the result.",
+                    "provider": "",
+                    "model": "",
+                    "rubric": "DescriptiveScale",
+                    "timeoutInSecs": 30,
+                    "rubricDescription": "A scale of Excellent, Good, Fair, Poor."
+                },
+                "structuredData": {
+                    "enabled": true,
+                    "prompt": "You are an expert data extractor. You will be given a transcript of a call. Extract structured data per the JSON Schema. DO NOT return anything except the structured data.",
+                    "provider": "",
+                    "model": "",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "Name": {
+                                "type": "string",
+                                "description": "Name of the patient"
+                            },
+                            "phone number": {
+                                "type": "string",
+                                "description": "phone number of a patient"
+                            },
+                            "serial_number": {
+                                "description": "this is the serial number",
+                                "type": "number"
+                            }
+                        },
+                        "required": [
+                            "Name",
+                            "phone number",
+                            "serial_number"
+                        ],
+                        "additionalProperties": false,
+                        "$defs": {}
+                    },
+                    "timeoutInSecs": 30
+                },
+                "guardrails": {
+                    "enabled": false,
+                    "prompt": "",
+                    "provider": "",
+                    "model": "",
+                    "timeoutInSecs": 30,
+                    "metrics": []
+                },
+                "phiRedaction": {
+                    "enabled": true,
+                    "prompt": "",
+                    "provider": "",
+                    "model": "",
+                    "timeoutInSecs": 30
+                },
+                "callbackUrl": "http://127.0.0.1:8506/internal/v1/conversations/analysis"
+            },
+            "assistantServer": {
+                "enabled": true,
+                "url": "https://c368-202-53-12-234.ngrok-free.app/events",
+                "timeoutSeconds": 20,
+                "secret": "",
+                "headers": {
+                    "Authorization": "Bearer 69a0087e9f4ab593ca5b8f83"
+                },
+                "messages": [
+                    "conversation-update",
+                    "status-update",
+                    "end-of-call-report"
+                ]
+            },
+            "config": {
+                "speech": {
+                    "stt": {
+                        "vendor": "deepgram",
+                        "language": "en-US",
+                        "languages": [
+                            "en-US",
+                            "hi"
+                        ],
+                        "profanityFilter": true,
+                        "interim": true,
+                        "hints": [],
+                        "deepgramOptions": {
+                            "model": "nova-3",
+                            "punctuate": true,
+                            "endpointing": 10,
+                            "smart_format": true,
+                            "numerals": true,
+                            "no_delay": true,
+                            "eagerEotThreshold": 0.5,
+                            "eotThreshold": 0.7,
+                            "eotTimeoutMs": 5000
+                        }
+                    },
+                    "ttsData": [
+                        {
+                            "vendor": "eleven-labs",
+                            "language": "en-US",
+                            "voice": "EiyHck4gkzXTAtzLbssU",
+                            "voiceName": "Nava (male)-cloned",
+                            "default": true,
+                            "config": {
+                                "modelId": "eleven_flash_v2",
+                                "modelName": "Eleven Flash v2",
+                                "stability": 0.5,
+                                "similarityBoost": 0.8,
+                                "speakerBoost": true,
+                                "applyTextNormalization": false,
+                                "styleExaggeration": 0,
+                                "optimizeStreamingLatency": 0,
+                                "seed": null,
+                                "speed": 1
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "phone": {
+            "provider": {
+                "name": ""
+            }
+        },
+        "customer": {
+            "number": "web-Ramesh Naik"
+        },
+        "analysis": {}
+    }
+}
+```

@@ -1,0 +1,26 @@
+## Call Object
+
+The `call` object contains comprehensive information about the call session.
+
+| Field                   | Type            | Description                                                              |
+| ----------------------- | --------------- | ------------------------------------------------------------------------ |
+| `id`                    | string          | Unique call identifier (e.g., "WC-82015760-c3bd-427d-a23b-ba9b07e4ab85") |
+| `teamId`                | string          | Organization/team identifier                                             |
+| `assistantId`           | string          | ID of the assistant handling this call                                   |
+| `callType`              | string          | Type of call: "web", "phone", etc.                                       |
+| `direction`             | string          | Call direction: "inbound" or "outbound"                                  |
+| `startAt`               | string          | ISO timestamp when call started                                          |
+| `endAt`                 | string          | ISO timestamp when call ended (only in end-of-call-report)               |
+| `userNumber`            | string          | User's phone number or identifier                                        |
+| `assistantNumber`       | string          | Assistant's number or identifier                                         |
+| `status`                | string          | Current call status: "queued", "ongoing", "finished", "forwarded"        |
+| `phoneCallStatus`       | string          | Detailed phone status: "in-progress", "completed", etc.                  |
+| `phoneCallStatusReason` | string          | Human-readable status reason                                             |
+| `callEndTriggerBy`      | string          | What triggered call end: "bot", "user", "system"                         |
+| `assistantCallDuration` | number          | Duration of call in milliseconds                                         |
+| `analysis`              | analysis-object | Call analysis results                                                    |
+| `recording`             | object          | Recording information with S3 bucket and path                            |
+| `assistantOverrides`    | object          | Dynamic variables and validation overrides                               |
+| `metadata`              | object          | Custom metadata associated with the call                                 |
+| `cost`                  | object          | Cost breakdown (only in end-of-call-report)                              |
+| `metrics`               | object          | Detailed call metrics (only in end-of-call-report)                       |

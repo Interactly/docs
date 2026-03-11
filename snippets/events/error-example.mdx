@@ -1,0 +1,133 @@
+## Error Event Examples
+
+This document contains examples of different types of error webhook events.
+
+## LLM Rate Limit Error
+
+```json
+{
+    "message": {
+        "timestamp": 1772702495000,
+        "type": "error",
+        "call": {
+            "id": "WC-82015760-c3bd-427d-a23b-ba9b07e4ab85",
+            "teamId": "67c0231ae6880fe48ef929ee",
+            "assistantId": "697769ef5e6d94d5ad83e01e",
+            "callType": "web",
+            "direction": "inbound",
+            "startAt": "2026-03-05T09:21:20.063Z",
+            "userNumber": "web-Ramesh Naik",
+            "assistantNumber": "697769ef5e6d94d5ad83e01e",
+            "status": "ongoing",
+            "phoneCallStatus": "in-progress",
+            "phoneCallStatusReason": "Call is in progress",
+            "callEndTriggerBy": "",
+            "assistantCallDuration": 15000,
+            "analysis": {
+                "summary": "",
+                "successEvaluation": ""
+            },
+            "recording": {
+                "s3Bucket": "",
+                "path": ""
+            },
+            "assistantOverrides": {},
+            "metadata": {}
+        },
+        "assistant": {
+            "_id": "697769ef5e6d94d5ad83e01e",
+            "name": "Mary Dental - main",
+            "assistantProvider": "openai",
+            "assistantModel": "gpt-4",
+            "assistantSystemPrompt": "You here are a voice assistant for Apollo clinic..."
+        },
+        "messages": [
+            {
+                "messageId": "welcome-1",
+                "role": "assistant",
+                "text": "Welcome to Apollo clinic!!",
+                "timestamp": 1772702480279
+            },
+            {
+                "messageId": "user-1",
+                "role": "user",
+                "text": "I need to schedule an appointment please",
+                "timestamp": 1772702490000
+            }
+        ],
+        "phone": {
+            "provider": {
+                "name": ""
+            }
+        },
+        "customer": {
+            "number": "web-Ramesh Naik"
+        },
+        "analysis": {},
+        "error": {
+            "type": "llm_error",
+            "code": "rate_limit_exceeded",
+            "message": "Rate limit exceeded for organization",
+            "provider": "openai",
+            "retryable": true,
+            "details": {
+                "limit_type": "requests_per_minute",
+                "current_usage": 150,
+                "limit": 100,
+                "reset_time": "2026-03-05T09:23:00Z"
+            }
+        }
+    }
+}
+```
+
+## STT Audio Quality Error
+
+```json
+{
+    "message": {
+        "timestamp": 1772702485000,
+        "type": "error",
+        "call": {
+            "id": "WC-82015760-c3bd-427d-a23b-ba9b07e4ab85",
+            "teamId": "67c0231ae6880fe48ef929ee",
+            "assistantId": "697769ef5e6d94d5ad83e01e",
+            "status": "ongoing"
+        },
+        "assistant": {
+            "_id": "697769ef5e6d94d5ad83e01e",
+            "name": "Mary Dental - main"
+        },
+        "messages": [
+            {
+                "messageId": "welcome-1",
+                "role": "assistant",
+                "text": "Welcome to Apollo clinic!!",
+                "timestamp": 1772702480279
+            }
+        ],
+        "phone": {
+            "provider": {
+                "name": ""
+            }
+        },
+        "customer": {
+            "number": "web-Ramesh Naik"
+        },
+        "analysis": {},
+        "error": {
+            "type": "stt_error",
+            "code": "audio_quality_insufficient",
+            "message": "Audio quality too low for accurate transcription",
+            "provider": "deepgram",
+            "retryable": false,
+            "details": {
+                "confidence_score": 0.12,
+                "noise_level": "high",
+                "signal_to_noise_ratio": -5,
+                "suggested_action": "request_user_repeat"
+            }
+        }
+    }
+}
+```
