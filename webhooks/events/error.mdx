@@ -1,0 +1,445 @@
+---
+title: "Error Event"
+description: "Notifications for LLM and STT processing errors"
+---
+
+import AssistantObject from "/snippets/objects/assistant-object.mdx";
+import CallObject from "/snippets/objects/call-object.mdx";
+import MessagesObject from "/snippets/objects/messages-object.mdx";
+import ErrorEventExample from "/snippets/events/error-example.mdx";
+
+The `error` event is triggered when critical errors occur during call processing, specifically when Large Language Model (LLM) or Speech-to-Text (STT) services fail.
+
+<Warning>
+  Error events indicate technical failures that may cause conversation interruptions or call termination. These require immediate attention for maintaining service quality.
+</Warning>
+
+## When It's Triggered
+
+This event is sent when:
+- **LLM Errors**: Language model API failures, timeouts, or service unavailability
+- **STT Errors**: Speech-to-text conversion failures or transcription service issues
+- **Authentication Issues**: API key problems or authorization failures
+- **Quota Exceeded**: Service limits reached for LLM or STT providers
+- **Network Errors**: Connectivity issues affecting external service calls
+
+## Error Categories
+
+### LLM Errors
+- Provider API downtime or maintenance
+- Rate limiting exceeded
+- Model capacity limitations
+- Invalid API keys or expired tokens
+- Malformed requests or unsupported parameters
+- Content filtering or safety violations
+
+### STT Errors
+- Audio quality too poor for transcription
+- Unsupported audio format or codec
+- Service provider outages
+- Network connectivity issues
+- Authentication or quota problems
+- Language detection failures
+
+## Event Structure
+
+```json
+{
+    "message": {
+        "timestamp": 1772702495000,
+        "type": "error",
+        "call": { /* Call Object */ },
+        "assistant": { /* Assistant Object */ },
+        "messages": [ /* Conversation until error */ ],
+        "phone": { /* Phone Object */ },
+        "customer": { /* Customer Object */ },
+        "analysis": { /* Empty during error */ },
+        "error": { /* Error Details */ }
+    }
+}
+```
+
+## Key Fields
+
+| Field               | Type    | Description                                |
+| ------------------- | ------- | ------------------------------------------ |
+| `message.type`      | string  | Always "error" for this event              |
+| `message.timestamp` | number  | Unix timestamp when error occurred         |
+| `error.type`        | string  | Error category: "llm_error" or "stt_error" |
+| `error.code`        | string  | Specific error code from provider          |
+| `error.message`     | string  | Human-readable error description           |
+| `error.provider`    | string  | Service provider that failed               |
+| `error.retryable`   | boolean | Whether the error can be retried           |
+
+<CallObject />
+
+<AssistantObject />
+
+<MessagesObject />
+
+## Example Payloads
+
+<CodeGroup>
+
+  ```json LLM Error
+  {
+    "message": {
+      "timestamp": 1772702495000,
+      "type": "error",
+      "call": {
+        "id": "WC-82015760-c3bd-427d-a23b-ba9b07e4ab85",
+        "status": "ongoing",
+        "assistantId": "697769ef5e6d94d5ad83e01e"
+      },
+      "assistant": {
+        "_id": "697769ef5e6d94d5ad83e01e",
+        "name": "Mary Dental - main",
+        "assistantProvider": "openai",
+        "assistantModel": "gpt-4"
+      },
+      "error": {
+        "type": "llm_error",
+        "code": "rate_limit_exceeded",
+        "message": "Rate limit exceeded for organization",
+        "provider": "openai",
+        "retryable": true,
+        "details": {
+          "limit_type": "requests_per_minute",
+          "current_usage": 150,
+          "limit": 100
+        }
+      },
+      "messages": [
+        {
+          "messageId": "user-1",
+          "role": "user",
+          "text": "I need to schedule an appointment",
+          "timestamp": 1772702490000
+        }
+      ]
+    }
+  }
+  ```
+
+  ```json STT Error
+  {
+    "message": {
+      "timestamp": 1772702485000,
+      "type": "error",
+      "call": {
+        "id": "WC-82015760-c3bd-427d-a23b-ba9b07e4ab85",
+        "status": "ongoing"
+      },
+      "error": {
+        "type": "stt_error",
+        "code": "audio_quality_insufficient",
+        "message": "Audio quality too low for accurate transcription",
+        "provider": "deepgram",
+        "retryable": false,
+        "details": {
+          "confidence_score": 0.12,
+          "noise_level": "high",
+          "suggested_action": "request_user_repeat"
+        }
+      }
+    }
+  }
+  ```
+
+  ```json Authentication Error
+  {
+    "message": {
+      "timestamp": 1772702488000,
+      "type": "error",
+      "call": {
+        "id": "WC-82015760-c3bd-427d-a23b-ba9b07e4ab85",
+        "status": "ongoing"
+      },
+      "error": {
+        "type": "llm_error",
+        "code": "authentication_failed",
+        "message": "Invalid API key or expired token",
+        "provider": "anthropic",
+        "retryable": false,
+        "details": {
+          "api_key_status": "expired",
+          "expiry_date": "2026-03-01T00:00:00Z"
+        }
+      }
+    }
+  }
+  ```
+
+</CodeGroup>
+
+## Error Handling Strategies
+
+### Automatic Retry Logic
+```python
+def handle_error_event(event_data):
+    error = event_data["message"]["error"]
+    call = event_data["message"]["call"]
+
+    if error["retryable"]:
+        # Implement exponential backoff
+        retry_count = get_retry_count(call["id"], error["type"])
+
+        if retry_count < MAX_RETRIES:
+            delay = min(2 ** retry_count, MAX_DELAY)
+            schedule_retry(call["id"], delay, error["type"])
+
+            logger.warning(f"Retrying {error['type']} for call {call['id']} "
+                          f"in {delay}s (attempt {retry_count + 1})")
+        else:
+            # Max retries exceeded - escalate
+            escalate_error(call["id"], error)
+    else:
+        # Non-retryable error - immediate escalation
+        escalate_error(call["id"], error)
+```
+
+### Provider Failover
+```python
+def implement_provider_failover(event_data):
+    error = event_data["message"]["error"]
+    call = event_data["message"]["call"]
+    assistant = event_data["message"]["assistant"]
+
+    if error["type"] == "llm_error":
+        # Switch to backup LLM provider
+        current_provider = assistant["assistantProvider"]
+
+        fallback_providers = {
+            "openai": "anthropic",
+            "anthropic": "google",
+            "google": "openai"
+        }
+
+        backup_provider = fallback_providers.get(current_provider)
+        if backup_provider:
+            switch_llm_provider(call["id"], backup_provider)
+            logger.info(f"Switched call {call['id']} from {current_provider} to {backup_provider}")
+
+    elif error["type"] == "stt_error":
+        # Switch to backup STT provider
+        switch_stt_provider(call["id"], "deepgram_nova")
+        logger.info(f"Switched STT provider for call {call['id']}")
+```
+
+### Graceful Degradation
+```python
+def handle_graceful_degradation(event_data):
+    error = event_data["message"]["error"]
+    call = event_data["message"]["call"]
+
+    if error["type"] == "llm_error":
+        # Use pre-defined fallback responses
+        fallback_responses = [
+            "I apologize for the technical difficulty. Let me connect you with a human agent.",
+            "I'm experiencing a temporary issue. Please hold while I transfer you.",
+            "Due to a technical problem, I'll need to forward your call to our support team."
+        ]
+
+        response = random.choice(fallback_responses)
+        send_fallback_message(call["id"], response)
+        initiate_human_handoff(call["id"])
+
+    elif error["type"] == "stt_error":
+        # Ask user to speak more clearly
+        send_clarification_message(call["id"],
+            "I'm having trouble hearing you clearly. Could you please repeat that?")
+```
+
+### Real-time Alerting
+```python
+def alert_on_error(event_data):
+    error = event_data["message"]["error"]
+    call = event_data["message"]["call"]
+
+    alert_severity = determine_severity(error)
+
+    alert_data = {
+        "alert_type": "service_error",
+        "severity": alert_severity,
+        "error_type": error["type"],
+        "error_code": error["code"],
+        "provider": error["provider"],
+        "call_id": call["id"],
+        "assistant_id": call["assistantId"],
+        "retryable": error["retryable"],
+        "timestamp": event_data["message"]["timestamp"]
+    }
+
+    if alert_severity == "critical":
+        send_immediate_alert(alert_data)
+        page_on_call_engineer(alert_data)
+    else:
+        log_error_for_analysis(alert_data)
+
+def determine_severity(error):
+    # Critical: Authentication failures, quota exceeded
+    # High: Provider outages, repeated failures
+    # Medium: Temporary network issues
+    # Low: Individual request failures
+
+    critical_codes = ["authentication_failed", "quota_exceeded", "service_unavailable"]
+    if error["code"] in critical_codes:
+        return "critical"
+    elif not error["retryable"]:
+        return "high"
+    else:
+        return "medium"
+```
+
+## Error Analysis and Monitoring
+
+### Error Rate Tracking
+```python
+def track_error_metrics(event_data):
+    error = event_data["message"]["error"]
+    call = event_data["message"]["call"]
+
+    # Track error rates by provider
+    metrics.increment("errors.total", tags={
+        "error_type": error["type"],
+        "provider": error["provider"],
+        "error_code": error["code"],
+        "assistant_id": call["assistantId"]
+    })
+
+    # Track error distribution over time
+    hour = datetime.fromtimestamp(
+        event_data["message"]["timestamp"] / 1000
+    ).hour
+
+    metrics.increment("errors.by_hour", tags={
+        "hour": hour,
+        "error_type": error["type"]
+    })
+```
+
+### Root Cause Analysis
+```python
+def analyze_error_patterns():
+    # Get recent errors
+    recent_errors = db.error_events.find({
+        "timestamp": {"$gte": datetime.utcnow() - timedelta(hours=24)}
+    })
+
+    analysis = {
+        "error_spike": detect_error_spikes(recent_errors),
+        "provider_health": assess_provider_health(recent_errors),
+        "assistant_issues": find_problematic_assistants(recent_errors),
+        "temporal_patterns": analyze_time_patterns(recent_errors)
+    }
+
+    # Generate actionable insights
+    for insight in generate_insights(analysis):
+        if insight["confidence"] > 0.8:
+            create_incident_ticket(insight)
+
+def detect_error_spikes(errors):
+    # Group errors by 10-minute windows
+    windows = defaultdict(int)
+    for error in errors:
+        window = error["timestamp"] // (10 * 60 * 1000) * (10 * 60 * 1000)
+        windows[window] += 1
+
+    # Detect unusual spikes
+    values = list(windows.values())
+    if values:
+        mean = statistics.mean(values)
+        stdev = statistics.stdev(values) if len(values) > 1 else 0
+        threshold = mean + (2 * stdev)
+
+        spikes = [(k, v) for k, v in windows.items() if v > threshold]
+        return spikes
+    return []
+```
+
+## Error Prevention
+
+### Proactive Monitoring
+```python
+# Set up early warning systems
+MONITORING_THRESHOLDS = {
+    "llm_error_rate": {
+        "warning": 0.02,   # 2% error rate
+        "critical": 0.05,  # 5% error rate
+        "window": "5m"
+    },
+    "stt_error_rate": {
+        "warning": 0.01,   # 1% error rate
+        "critical": 0.03,  # 3% error rate
+        "window": "5m"
+    },
+    "provider_response_time": {
+        "warning": 3000,   # 3 seconds
+        "critical": 5000,  # 5 seconds
+        "window": "1m"
+    }
+}
+```
+
+### Configuration Optimization
+```json
+{
+    "assistantProvider": "openai",
+    "assistantModel": "gpt-4o-mini",  // More reliable than newer models
+    "assistantMaxTokens": 150,        // Shorter responses = less prone to errors
+    "assistantTemperature": 0.3,      // Lower temperature = more consistent
+    "config": {
+        "speech": {
+            "stt": {
+                "vendor": "deepgram",
+                "model": "nova-2",      // Stable, well-tested model
+                "profanityFilter": true,
+                "hints": ["appointment", "doctor", "clinic"]  // Domain-specific hints
+            }
+        }
+    }
+}
+```
+
+### Error Recovery Testing
+```python
+def test_error_scenarios():
+    # Simulate various error conditions
+    test_scenarios = [
+        {"type": "rate_limit", "provider": "openai"},
+        {"type": "auth_failure", "provider": "anthropic"},
+        {"type": "audio_quality", "provider": "deepgram"},
+        {"type": "network_timeout", "provider": "elevenlabs"}
+    ]
+
+    for scenario in test_scenarios:
+        result = simulate_error_scenario(scenario)
+        assert_error_handling_works(result)
+```
+
+## User Communication
+
+When errors occur, transparent communication improves user experience:
+
+```python
+ERROR_USER_MESSAGES = {
+    "llm_error": [
+        "I'm experiencing a brief technical issue. Please give me a moment.",
+        "Let me think about that - I'm processing your request."
+    ],
+    "stt_error": [
+        "I didn't catch that clearly. Could you please repeat?",
+        "I'm having trouble hearing you. Could you speak a bit louder?"
+    ],
+    "quota_exceeded": [
+        "I'm currently at capacity. Let me transfer you to a human agent.",
+        "Due to high demand, I'll connect you with our support team."
+    ]
+}
+```
+
+<Card title="Related Events" icon="link">
+  Error events may be preceded by [hang events](/webhooks/events/hang) if processing delays occur before the error
+</Card>
+
+<ErrorEventExample />

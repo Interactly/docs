@@ -1,0 +1,57 @@
+## Analysis Object
+
+The `analysis` object contains AI-powered analysis results for the call.
+
+<Note>
+  Analysis data is primarily populated in `end-of-call-report` events. Other events may contain empty analysis objects that will be filled once the call completes.
+</Note>
+
+| Field               | Type   | Description                                                     |
+| ------------------- | ------ | --------------------------------------------------------------- |
+| `summary`           | string | AI-generated summary of the call conversation                   |
+| `successEvaluation` | string | Assessment of call success: "Excellent", "Good", "Fair", "Poor" |
+| `structuredData`    | object | Extracted structured data based on configured schema            |
+| `outcome`           | string | Call outcome classification                                     |
+| `guardrails`        | string | Guardrails evaluation result (or "DISABLED")                    |
+
+### Summary
+- Generated automatically if enabled in assistant configuration
+- Provides 2-3 sentence overview of what happened during the call
+- Uses configurable prompt and LLM model
+
+### Success Evaluation
+- Determines if call met objectives based on assistant's system prompt
+- Uses descriptive scale: Excellent, Good, Fair, Poor
+- Configurable evaluation criteria and rubric
+
+### Structured Data
+- Extracts specific data points according to predefined JSON schema
+- Commonly used for capturing:
+- Customer information (name, phone, email)
+- Appointment details
+- Call metadata
+- Custom business data
+
+### Example Structured Data Schema
+```json
+{
+    "type": "object",
+    "properties": {
+        "Name": {
+            "type": "string",
+            "description": "Name of the patient"
+        },
+        "phone number": {
+            "type": "string",
+            "description": "Phone number of patient"
+        },
+        "appointment_date": {
+            "type": "string",
+            "description": "Scheduled appointment date"
+        }
+    },
+    "required": [
+        "Name"
+    ]
+}
+```

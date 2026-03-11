@@ -1,0 +1,219 @@
+## Conversation Update Event Example
+
+This is a complete example of a conversation-update webhook event payload with multiple messages.
+
+```json
+{
+    "message": {
+        "timestamp": 1772702480281,
+        "type": "conversation-update",
+        "call": {
+            "id": "WC-82015760-c3bd-427d-a23b-ba9b07e4ab85",
+            "teamId": "67c0231ae6880fe48ef929ee",
+            "assistantId": "697769ef5e6d94d5ad83e01e",
+            "callType": "web",
+            "direction": "inbound",
+            "startAt": "2026-03-05T09:21:20.063Z",
+            "userNumber": "web-Ramesh Naik",
+            "assistantNumber": "697769ef5e6d94d5ad83e01e",
+            "status": "ongoing",
+            "phoneCallStatus": "in-progress",
+            "phoneCallStatusReason": "Call is in progress",
+            "callEndTriggerBy": "",
+            "assistantCallDuration": 0,
+            "analysis": {
+                "summary": "",
+                "successEvaluation": ""
+            },
+            "recording": {
+                "s3Bucket": "",
+                "path": ""
+            },
+            "assistantOverrides": {
+                "dynamicVariables": {
+                    "serial_number": ""
+                },
+                "variablesValidations": {
+                    "serial_number": "none"
+                }
+            },
+            "metadata": {}
+        },
+        "assistant": {
+            "_id": "697769ef5e6d94d5ad83e01e",
+            "name": "Mary Dental - main",
+            "welcomeMessage": "Welcome to Apollo clinic!!",
+            "assistantProvider": "gemini",
+            "assistantModel": "gemini-3-flash-preview"
+        },
+        "messages": [
+            {
+                "messageId": "welcome-1",
+                "role": "assistant",
+                "text": "Welcome to Apollo clinic!!",
+                "timestamp": 1772702480279,
+                "metrics": {
+                    "timeline": {
+                        "totalElapsedTimeMs": 2
+                    },
+                    "audio": {
+                        "totalAudioReceivedMs": 16
+                    },
+                    "llm": {},
+                    "tts": {
+                        "audioDurationMs": 1442,
+                        "queueLatencyMs": 0,
+                        "generationTimeMs": 7,
+                        "isCachePlaying": true
+                    },
+                    "interactlyPlayer": {
+                        "waitTimeMs": 7
+                    }
+                }
+            },
+            {
+                "messageId": "user-1",
+                "role": "user",
+                "text": "Hello.",
+                "timestamp": 1772702485138,
+                "metrics": {
+                    "timeline": {
+                        "offsetFromPreviousTurnMs": 4082,
+                        "totalElapsedTimeMs": 3861
+                    },
+                    "audio": {
+                        "delayedPacketsPerTurnCount": 12,
+                        "delayedPacketsCumulativeCount": -2,
+                        "lostPacketsCumulativeCount": 0,
+                        "audioDelayPerTurnMs": 194,
+                        "audioDelayCumulativeMs": -27,
+                        "offsetFromPreviousTurnMs": 3888,
+                        "totalAudioReceivedMs": 3888
+                    },
+                    "stt": {
+                        "timestampMs": 1772702484138,
+                        "startOffsetMs": 0,
+                        "endOffsetMs": 4200,
+                        "durationMs": 4200,
+                        "vadMs": 520,
+                        "relativeLatencyMs": -312,
+                        "confidence": 0.7364502
+                    },
+                    "interactlyEOU": {
+                        "turnDetectionTimeMs": 1000,
+                        "queueLatencyMs": 0
+                    }
+                },
+                "skippedAssistantMessages": []
+            },
+            {
+                "messageId": "user-2",
+                "role": "user",
+                "text": "Can you book an appointment?",
+                "timestamp": 1772702488063,
+                "metrics": {
+                    "timeline": {
+                        "offsetFromPreviousTurnMs": 2925,
+                        "totalElapsedTimeMs": 6786
+                    },
+                    "audio": {
+                        "delayedPacketsPerTurnCount": 1,
+                        "delayedPacketsCumulativeCount": -1,
+                        "lostPacketsCumulativeCount": 0,
+                        "audioDelayPerTurnMs": 13,
+                        "audioDelayCumulativeMs": -14,
+                        "offsetFromPreviousTurnMs": 2912,
+                        "totalAudioReceivedMs": 6800
+                    },
+                    "stt": {
+                        "timestampMs": 1772702487063,
+                        "startOffsetMs": 6490,
+                        "endOffsetMs": 7110,
+                        "durationMs": 620,
+                        "vadMs": -100,
+                        "relativeLatencyMs": -310,
+                        "confidence": 0.7314453
+                    },
+                    "interactlyEOU": {
+                        "turnDetectionTimeMs": 1000,
+                        "queueLatencyMs": 0
+                    }
+                },
+                "skippedAssistantMessages": []
+            },
+            {
+                "messageId": "user-3",
+                "role": "user",
+                "text": "For next week.",
+                "timestamp": 1772702493047,
+                "metrics": {
+                    "timeline": {
+                        "offsetFromPreviousTurnMs": 4982,
+                        "totalElapsedTimeMs": 11768
+                    },
+                    "audio": {
+                        "delayedPacketsPerTurnCount": -1,
+                        "delayedPacketsCumulativeCount": -1,
+                        "lostPacketsCumulativeCount": 0,
+                        "audioDelayPerTurnMs": -10,
+                        "audioDelayCumulativeMs": -24,
+                        "offsetFromPreviousTurnMs": 4992,
+                        "totalAudioReceivedMs": 11792
+                    },
+                    "stt": {
+                        "timestampMs": 1772702492045,
+                        "startOffsetMs": 7110,
+                        "endOffsetMs": 11990,
+                        "durationMs": 4880,
+                        "vadMs": 4480,
+                        "relativeLatencyMs": -198,
+                        "confidence": 0.2600708
+                    },
+                    "interactlyEOU": {
+                        "turnDetectionTimeMs": 1000,
+                        "queueLatencyMs": 1
+                    }
+                },
+                "skippedAssistantMessages": []
+            },
+            {
+                "messageId": "user-3-WcIrvV6mE7-1772702495604",
+                "role": "assistant",
+                "text": "Hi there! I'd be happy to help you book an appointment with Dr. Sam for next week. Could you please tell me your full name first?",
+                "timestamp": 1772702495958,
+                "metrics": {
+                    "timeline": {
+                        "totalElapsedTimeMs": 15681
+                    },
+                    "audio": {
+                        "totalAudioReceivedMs": 15696
+                    },
+                    "llm": {
+                        "timestampMs": 1772702495603,
+                        "queueLatencyMs": 3,
+                        "responseLatencyMs": 2557
+                    },
+                    "tts": {
+                        "audioDurationMs": 3207,
+                        "queueLatencyMs": 2,
+                        "generationTimeMs": 353,
+                        "isCachePlaying": false
+                    },
+                    "interactlyPlayer": {
+                        "waitTimeMs": 352
+                    }
+                }
+            }
+        ],
+        "phone": {
+            "provider": {
+                "name": ""
+            }
+        },
+        "customer": {
+            "number": "web-Ramesh Naik"
+        },
+        "analysis": {}
+    }
+}
+```

@@ -1,0 +1,32 @@
+## Assistant Object
+
+The `assistant` object contains the configuration and settings of the assistant handling the call.
+
+<Note>
+    In some webhook events, the assistant object may be truncated for brevity. The full assistant configuration is typically included in `status-update` events.
+</Note>
+
+| Field                                | Type    | Description                                             |
+| ------------------------------------ | ------- | ------------------------------------------------------- |
+| `_id`                                | string  | Unique assistant identifier                             |
+| `name`                               | string  | Display name of the assistant                           |
+| `welcomeMessage`                     | string  | Message played when call starts                         |
+| `welcomeMessageMode`                 | string  | How welcome message is triggered: "automatic", "manual" |
+| `welcomeMessageInterruptionsEnabled` | boolean | Whether users can interrupt welcome message             |
+| `endCallMessage`                     | string  | Message played when call ends                           |
+| `endCallPhrases`                     | array   | Phrases that trigger call termination                   |
+| `bargeInEnabled`                     | boolean | Whether users can interrupt assistant responses         |
+| `assistantProvider`                  | string  | LLM provider: "openai", "anthropic", "gemini", etc.     |
+| `assistantModel`                     | string  | Specific model being used                               |
+| `assistantSystemPrompt`              | string  | System prompt defining assistant behavior               |
+| `assistantTemperature`               | number  | LLM creativity setting (0.0 to 1.0)                     |
+| `assistantMaxTokens`                 | number  | Maximum tokens per response                             |
+| `assistantAnalysis`                  | object  | Configuration for call analysis features                |
+| `assistantServer`                    | object  | Webhook configuration for this assistant                |
+| `config`                             | object  | Speech-to-text and text-to-speech configurations        |
+
+### Key Subobjects
+
+- **`assistantAnalysis`**: Contains settings for summary generation, success evaluation, and structured data extraction
+- **`assistantServer`**: The webhook configuration that triggered this event
+- **`config.speech`**: STT/TTS vendor settings, voice configuration, and language options
