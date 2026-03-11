@@ -1,0 +1,53 @@
+## Messages Object
+
+The `messages` array contains the conversation history between the user and assistant.
+
+<Info>
+    Each `conversation-update` event includes **all messages** from the start of the call up to that point, not just the latest message. This ensures that if any individual event is missed, you still have the complete conversation context.
+</Info>
+
+### Message Structure
+
+| Field                      | Type   | Description                                               |
+| -------------------------- | ------ | --------------------------------------------------------- |
+| `messageId`                | string | Unique message identifier                                 |
+| `role`                     | string | Message sender: "user" or "assistant"                     |
+| `text`                     | string | Transcribed or generated message content                  |
+| `timestamp`                | number | Unix timestamp in milliseconds                            |
+| `metrics`                  | object | Performance metrics for this message                      |
+| `skippedAssistantMessages` | array  | Assistant messages that were skipped due to interruptions |
+
+### Message Metrics
+
+Each message includes detailed performance metrics:
+
+#### Timeline Metrics
+- `totalElapsedTimeMs`: Total time since call start
+- `offsetFromPreviousTurnMs`: Time gap from previous message
+
+#### Audio Metrics
+- `totalAudioReceivedMs`: Total audio duration received
+- `audioDelayPerTurnMs`: Audio processing delay for this turn
+- `delayedPacketsPerTurnCount`: Count of delayed network packets
+
+#### Speech-to-Text (STT) Metrics
+- `timestampMs`: When transcription was completed
+- `startOffsetMs`/`endOffsetMs`: Audio segment boundaries
+- `confidence`: Transcription confidence score (0.0 to 1.0)
+- `vadMs`: Voice activity detection duration
+
+#### Text-to-Speech (TTS) Metrics
+- `audioDurationMs`: Duration of generated audio
+- `generationTimeMs`: Time to generate audio
+- `queueLatencyMs`: Processing queue delay
+- `isCachePlaying`: Whether audio was served from cache
+
+#### LLM Metrics
+- `responseLatencyMs`: Time for LLM to generate response
+- `queueLatencyMs`: Processing queue delay
+
+### Message Types
+
+- **Welcome Messages**: Have `messageId` starting with "welcome-"
+- **User Messages**: Have `messageId` starting with "user-"
+- **Assistant Messages**: Have complex `messageId` with user reference and timestamp

@@ -1,0 +1,361 @@
+---
+title: "End of Call Report Event"
+description: "Comprehensive call summary with analytics and recordings"
+---
+
+import AnalysisObject from "/snippets/objects/analysis-object.mdx";
+import EndOfCallReportExample from "/snippets/events/end-of-call-report-example.mdx";
+
+The `end-of-call-report` event is triggered when a call completes and contains comprehensive analytics, recordings, cost breakdown, and AI-powered analysis results.
+
+<Info>
+  This is the most data-rich webhook event, containing full call metrics, analysis results, and recording information. It's essential for post-call processing and analytics.
+</Info>
+
+## When It's Triggered
+
+This event is sent once per call when:
+- The call ends naturally (user or assistant hangs up)
+- The call is terminated due to timeout
+- The call is disconnected due to technical issues
+- Call forwarding completes
+
+## Event Structure
+
+```json
+{
+    "message": {
+        "timestamp": 1772702523935,
+        "type": "end-of-call-report",
+        "call": { /* Enhanced Call Object with metrics */ },
+        "assistant": { /* Assistant Object */ },
+        "messages": [ /* Complete conversation history */ ],
+        "phone": { /* Phone Object */ },
+        "customer": { /* Customer Object */ },
+        "analysis": { /* Complete Analysis Results */ }
+    }
+}
+```
+
+## Key Features
+
+### Enhanced Call Object
+The call object includes additional fields only available at call completion:
+
+| Field       | Type   | Description                            |
+| ----------- | ------ | -------------------------------------- |
+| `endAt`     | string | ISO timestamp when call ended          |
+| `cost`      | object | Detailed cost breakdown by service     |
+| `metrics`   | object | Comprehensive call performance metrics |
+| `recording` | object | Recording file location and metadata   |
+
+### Complete Analysis Results
+
+<AnalysisObject />
+
+
+### Cost Breakdown
+Detailed cost tracking across all services:
+
+| Field                 | Type   | Description                        |
+| --------------------- | ------ | ---------------------------------- |
+| `cost.callDuration`   | number | Total call duration in seconds     |
+| `cost.interactlyCost` | number | Interactly platform fee            |
+| `cost.phoneCost`      | number | Telephony provider charges         |
+| `cost.ttsVendorCost`  | number | Text-to-speech generation costs    |
+| `cost.sttVendorCost`  | number | Speech-to-text transcription costs |
+| `cost.llmVendorCost`  | number | Large language model API costs     |
+| `cost.totalCost`      | number | Sum of all costs                   |
+
+### Performance Metrics
+Comprehensive metrics for optimization:
+
+- **Audio Quality**: Packet loss, delays, dropped chunks
+- **Response Timing**: LLM, TTS, STT latency distributions
+- **Turn Statistics**: User/bot turns, interruptions, barge-ins
+- **Error Tracking**: Failed requests, retries, timeout counts
+
+## Example Payload
+
+<CodeGroup>
+
+  ```json Basic Structure
+  {
+    "message": {
+      "timestamp": 1772702523935,
+      "type": "end-of-call-report",
+      "call": {
+        "id": "WC-82015760-c3bd-427d-a23b-ba9b07e4ab85",
+        "status": "finished",
+        "startAt": "2026-03-05T09:21:20.063Z",
+        "endAt": "2026-03-05T09:22:01.739Z",
+        "assistantCallDuration": 41683,
+        "callEndTriggerBy": "bot",
+        "recording": {
+          "s3Bucket": "interactly-qa-us-recordings",
+          "path": "team-id/WC-82015760-c3bd-427d-a23b-ba9b07e4ab85.mp3"
+        },
+        "cost": {
+          "callDuration": 41.676,
+          "interactlyCost": 0.006946,
+          "phoneCost": 0.0165,
+          "ttsVendorCost": 0.010620,
+          "sttVendorCost": 0.005348,
+          "llmVendorCost": 0.0003385,
+          "totalCost": 0.0397529
+        }
+      },
+      "analysis": {
+        "summary": "User contacted Apollo clinic to book an appointment but ended the conversation abruptly.",
+        "successEvaluation": "Poor",
+        "structuredData": {
+          "Name": "",
+          "phone number": "",
+          "serial_number": 0
+        }
+      }
+    }
+  }
+  ```
+
+  ```json Performance Metrics
+  {
+    "call": {
+      "metrics": {
+        "callStats": {
+          "turns": {
+            "user": 4,
+            "bot": 4,
+            "interrupted": 0,
+            "skipped": 0
+          },
+          "ttsStats": {
+            "totalRequests": 4,
+            "latencyAvg": 163.75,
+            "errors": 0,
+            "cacheRequests": 2,
+            "apiRequests": 2
+          },
+          "llmStats": {
+            "responseCount": 1,
+            "responseLatencyAvg": 2557.39,
+            "inputTokens": 485,
+            "outputTokens": 32,
+            "errors": 0
+          },
+          "sttStats": {
+            "responseCount": 5,
+            "confidenceAvg": 0.688,
+            "errors": 0,
+            "connectionRetries": 0
+          }
+        }
+      }
+    }
+  }
+  ```
+
+</CodeGroup>
+
+## Common Use Cases
+
+### Call Analytics & Reporting
+```python
+def process_call_analytics(event_data):
+    call = event_data["message"]["call"]
+    analysis = event_data["message"]["analysis"]
+    metrics = call.get("metrics", {}).get("callStats", {})
+
+    # Store comprehensive call record
+    call_record = {
+        "call_id": call["id"],
+        "duration_seconds": call["assistantCallDuration"] / 1000,
+        "end_trigger": call["callEndTriggerBy"],
+        "total_cost": call["cost"]["totalCost"],
+        "success_rating": analysis["successEvaluation"],
+        "summary": analysis["summary"],
+        "user_turns": metrics.get("turns", {}).get("user", 0),
+        "bot_turns": metrics.get("turns", {}).get("bot", 0),
+        "interruptions": metrics.get("turns", {}).get("interrupted", 0),
+        "avg_response_time": metrics.get("llmStats", {}).get("responseLatencyAvg", 0),
+        "stt_confidence": metrics.get("sttStats", {}).get("confidenceAvg", 0)
+    }
+
+    # Store in analytics database
+    analytics_db.call_records.insert_one(call_record)
+
+    # Generate insights
+    generate_performance_insights(call_record)
+```
+
+### Recording Management
+```python
+def handle_call_recording(event_data):
+    call = event_data["message"]["call"]
+    recording = call.get("recording", {})
+
+    if recording.get("s3Bucket") and recording.get("path"):
+        # Download recording for processing
+        recording_url = f"https://{recording['s3Bucket']}.s3.amazonaws.com/{recording['path']}"
+
+        # Store recording metadata
+        recording_record = {
+            "call_id": call["id"],
+            "s3_bucket": recording["s3Bucket"],
+            "s3_path": recording["path"],
+            "recording_url": recording_url,
+            "duration_ms": call["assistantCallDuration"],
+            "file_size": estimate_file_size(call["assistantCallDuration"]),
+            "created_at": datetime.utcnow()
+        }
+
+        db.recordings.insert_one(recording_record)
+
+        # Queue for additional processing
+        queue_recording_analysis(call["id"], recording_url)
+```
+
+### CRM Integration
+```python
+def sync_to_crm(event_data):
+    call = event_data["message"]["call"]
+    analysis = event_data["message"]["analysis"]
+    customer = event_data["message"]["customer"]
+
+    structured_data = analysis.get("structuredData", {})
+
+    # Extract customer information
+    customer_name = structured_data.get("Name", "")
+    customer_phone = structured_data.get("phone number", "")
+
+    if customer_name or customer_phone:
+        # Create or update contact in CRM
+        crm_contact = {
+            "name": customer_name,
+            "phone": customer_phone,
+            "last_interaction": call["endAt"],
+            "call_summary": analysis["summary"],
+            "call_success": analysis["successEvaluation"],
+            "call_duration": call["assistantCallDuration"],
+            "call_recording_url": get_recording_url(call["recording"])
+        }
+
+        crm_client.upsert_contact(customer_phone, crm_contact)
+
+        # Create activity record
+        crm_client.create_activity({
+            "contact_phone": customer_phone,
+            "type": "phone_call",
+            "subject": f"AI Assistant Call - {analysis['successEvaluation']}",
+            "body": analysis["summary"],
+            "duration_seconds": call["assistantCallDuration"] / 1000,
+            "date": call["endAt"]
+        })
+```
+
+### Cost Tracking & Optimization
+```python
+def track_call_costs(event_data):
+    call = event_data["message"]["call"]
+    cost = call["cost"]
+    metrics = call.get("metrics", {}).get("callStats", {})
+
+    # Store cost breakdown
+    cost_record = {
+        "call_id": call["id"],
+        "assistant_id": call["assistantId"],
+        "duration_seconds": cost["callDuration"],
+        "total_cost": cost["totalCost"],
+        "platform_cost": cost["interactlyCost"],
+        "phone_cost": cost["phoneCost"],
+        "tts_cost": cost["ttsVendorCost"],
+        "stt_cost": cost["sttVendorCost"],
+        "llm_cost": cost["llmVendorCost"],
+        "cost_per_minute": cost["totalCost"] / (cost["callDuration"] / 60),
+        "date": call["endAt"][:10]  # Date for aggregation
+    }
+
+    db.costs.insert_one(cost_record)
+
+    # Analyze cost efficiency
+    tts_usage = metrics.get("ttsStats", {})
+    cache_hit_rate = tts_usage.get("cacheRequests", 0) / max(tts_usage.get("totalRequests", 1), 1)
+
+    # Alert on high costs or low cache efficiency
+    if cost["totalCost"] > COST_THRESHOLD:
+        alert_high_cost(call["id"], cost["totalCost"])
+
+    if cache_hit_rate < 0.5:
+        alert_low_cache_efficiency(call["assistantId"], cache_hit_rate)
+```
+
+### Performance Monitoring
+```python
+def monitor_call_performance(event_data):
+    call = event_data["message"]["call"]
+    metrics = call.get("metrics", {}).get("callStats", {})
+
+    # Check LLM performance
+    llm_stats = metrics.get("llmStats", {})
+    avg_response_time = llm_stats.get("responseLatencyAvg", 0)
+
+    if avg_response_time > LLM_LATENCY_THRESHOLD:
+        alert_performance_issue(
+            "slow_llm_response",
+            call["assistantId"],
+            avg_response_time
+        )
+
+    # Check STT quality
+    stt_stats = metrics.get("sttStats", {})
+    avg_confidence = stt_stats.get("confidenceAvg", 0)
+
+    if avg_confidence < STT_CONFIDENCE_THRESHOLD:
+        alert_performance_issue(
+            "low_stt_confidence",
+            call["assistantId"],
+            avg_confidence
+        )
+
+    # Check for audio quality issues
+    audio_stats = metrics.get("userAudio", {})
+    dropped_chunks = audio_stats.get("droppedChunksCount", 0)
+
+    if dropped_chunks > AUDIO_DROP_THRESHOLD:
+        alert_performance_issue(
+            "audio_quality_degradation",
+            call["id"],
+            dropped_chunks
+        )
+```
+
+## Data Retention
+
+Consider implementing data retention policies for end-of-call reports:
+
+```python
+def cleanup_old_call_data():
+    # Archive calls older than 90 days
+    cutoff_date = datetime.utcnow() - timedelta(days=90)
+
+    old_calls = db.call_reports.find({
+        "call.endAt": {"$lt": cutoff_date.isoformat()}
+    })
+
+    for call_report in old_calls:
+        # Move to archive storage
+        archive_call_report(call_report)
+
+        # Clean up large fields but keep summary
+        db.call_reports.update_one(
+            {"_id": call_report["_id"]},
+            {
+                "$unset": {
+                    "messages": "",
+                    "call.metrics": ""
+                }
+            }
+        )
+```
+
+<EndOfCallReportExample />
