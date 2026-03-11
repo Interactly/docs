@@ -1,0 +1,331 @@
+---
+title: "Conversation Update Event"
+description: "Real-time conversation transcripts and message notifications"
+---
+
+import AssistantObject from "/snippets/objects/assistant-object.mdx";
+import CallObject from "/snippets/objects/call-object.mdx";
+import MessagesObject from "/snippets/objects/messages-object.mdx";
+import ConversationUpdateExample from "/snippets/events/conversation-update-example.mdx";
+
+The `conversation-update` event is triggered whenever a message occurs during the call - both user messages (from speech-to-text) and assistant messages (generated responses).
+
+<Info>
+  Each event includes the **complete conversation history** from the start of the call, not just the latest message. This ensures you never miss context even if some events are lost.
+</Info>
+
+## When It's Triggered
+
+This event is sent for:
+- **User Messages**: When user speech is transcribed by STT
+- **Assistant Messages**: When the assistant generates and speaks a response
+- **Welcome Messages**: When the assistant plays the initial greeting
+
+## Event Structure
+
+```json
+{
+    "message": {
+        "timestamp": 1772702480281,
+        "type": "conversation-update",
+        "call": { /* Call Object */ },
+        "assistant": { /* Assistant Object */ },
+        "messages": [ /* Array of Message Objects */ ],
+        "phone": { /* Phone Object */ },
+        "customer": { /* Customer Object */ },
+        "analysis": { /* Empty during conversation */ }
+    }
+}
+```
+
+## Key Fields
+
+| Field               | Type   | Description                                    |
+| ------------------- | ------ | ---------------------------------------------- |
+| `message.type`      | string | Always "conversation-update" for this event    |
+| `message.timestamp` | number | Unix timestamp when message was processed      |
+| `messages`          | array  | Complete conversation history up to this point |
+| `call.status`       | string | Current call status (usually "ongoing")        |
+
+<MessagesObject />
+
+<CallObject />
+
+<AssistantObject />
+
+## Message Flow Pattern
+
+Events are triggered in this typical sequence:
+
+1. **Welcome Message** → `conversation-update` with assistant greeting
+2. **User Speaks** → `conversation-update` with transcribed user message
+3. **Assistant Responds** → `conversation-update` with assistant reply
+4. **User Replies** → `conversation-update` with new user message
+5. **Cycle Continues** until call ends
+
+<Warning>
+  Messages may be interrupted or skipped if users barge in while the assistant is speaking. Check the `skippedAssistantMessages` field for interrupted responses.
+</Warning>
+
+## Example Payload
+
+<CodeGroup>
+
+  ```json Welcome Message
+  {
+    "message": {
+      "timestamp": 1772702480281,
+      "type": "conversation-update",
+      "call": {
+        "id": "WC-82015760-c3bd-427d-a23b-ba9b07e4ab85",
+        "status": "ongoing"
+      },
+      "messages": [
+        {
+          "messageId": "welcome-1",
+          "role": "assistant",
+          "text": "Welcome to Apollo clinic!!",
+          "timestamp": 1772702480279,
+          "metrics": {
+            "tts": {
+              "audioDurationMs": 1442,
+              "generationTimeMs": 7,
+              "isCachePlaying": true
+            }
+          }
+        }
+      ]
+    }
+  }
+  ```
+
+  ```json User Message
+  {
+    "message": {
+      "timestamp": 1772702485138,
+      "type": "conversation-update",
+      "messages": [
+        {
+          "messageId": "welcome-1",
+          "role": "assistant",
+          "text": "Welcome to Apollo clinic!!",
+          "timestamp": 1772702480279
+        },
+        {
+          "messageId": "user-1",
+          "role": "user",
+          "text": "Hello.",
+          "timestamp": 1772702485138,
+          "metrics": {
+            "stt": {
+              "confidence": 0.7364502,
+              "durationMs": 4200
+            }
+          }
+        }
+      ]
+    }
+  }
+  ```
+
+  ```json Assistant Response
+  {
+    "message": {
+      "timestamp": 1772702495958,
+      "type": "conversation-update",
+      "messages": [
+        {
+          "messageId": "welcome-1",
+          "role": "assistant",
+          "text": "Welcome to Apollo clinic!!",
+          "timestamp": 1772702480279
+        },
+        {
+          "messageId": "user-1",
+          "role": "user",
+          "text": "Hello.",
+          "timestamp": 1772702485138
+        },
+        {
+          "messageId": "user-1-response-1772702495604",
+          "role": "assistant",
+          "text": "Hi there! I'd be happy to help you book an appointment.",
+          "timestamp": 1772702495958,
+          "metrics": {
+            "llm": {
+              "responseLatencyMs": 2557
+            },
+            "tts": {
+              "audioDurationMs": 3207,
+              "generationTimeMs": 353
+            }
+          }
+        }
+      ]
+    }
+  }
+  ```
+
+</CodeGroup>
+
+## Common Use Cases
+
+### Real-Time Conversation Display
+```python
+def handle_conversation_update(event_data):
+    call_id = event_data["message"]["call"]["id"]
+    messages = event_data["message"]["messages"]
+
+    # Update conversation display
+    for message in messages:
+        display_message(
+            call_id=call_id,
+            role=message["role"],
+            text=message["text"],
+            timestamp=message["timestamp"]
+        )
+
+    # Scroll to latest message
+    scroll_to_latest(call_id)
+```
+
+### Live Transcription Storage
+```javascript
+const storeConversation = (eventData) => {
+  const { call, messages } = eventData.message;
+
+  // Store each message with full context
+  messages.forEach(message => {
+    db.conversations.upsert({
+      call_id: call.id,
+      message_id: message.messageId,
+      role: message.role,
+      text: message.text,
+      timestamp: message.timestamp,
+      confidence: message.metrics?.stt?.confidence,
+      created_at: new Date()
+    });
+  });
+
+  // Update call status
+  db.calls.update(call.id, {
+    last_message_at: new Date(),
+    message_count: messages.length,
+    status: call.status
+  });
+};
+```
+
+### Sentiment Analysis Pipeline
+```python
+def analyze_conversation_sentiment(event_data):
+    messages = event_data["message"]["messages"]
+    call_id = event_data["message"]["call"]["id"]
+
+    # Analyze only user messages for sentiment
+    user_messages = [msg for msg in messages if msg["role"] == "user"]
+
+    if user_messages:
+        latest_user_message = user_messages[-1]
+
+        # Run sentiment analysis
+        sentiment = sentiment_analyzer.analyze(latest_user_message["text"])
+
+        # Store sentiment data
+        store_sentiment(
+            call_id=call_id,
+            message_id=latest_user_message["messageId"],
+            sentiment=sentiment,
+            confidence=sentiment.confidence
+        )
+
+        # Trigger alerts for negative sentiment
+        if sentiment.label == "negative" and sentiment.confidence > 0.8:
+            alert_supervisor(call_id, "Negative sentiment detected")
+```
+
+### Message Metrics Tracking
+```python
+def track_message_performance(event_data):
+    messages = event_data["message"]["messages"]
+
+    for message in messages:
+        if message["role"] == "assistant" and "metrics" in message:
+            metrics = message["metrics"]
+
+            # Track TTS performance
+            if "tts" in metrics:
+                track_metric("tts_generation_time",
+                           metrics["tts"]["generationTimeMs"])
+                track_metric("tts_audio_duration",
+                           metrics["tts"]["audioDurationMs"])
+
+            # Track LLM performance
+            if "llm" in metrics:
+                track_metric("llm_response_time",
+                           metrics["llm"]["responseLatencyMs"])
+
+        elif message["role"] == "user" and "metrics" in message:
+            # Track STT confidence
+            stt_metrics = message["metrics"].get("stt", {})
+            if "confidence" in stt_metrics:
+                track_metric("stt_confidence", stt_metrics["confidence"])
+```
+
+## Message Interruptions
+
+When users interrupt assistant responses, the `skippedAssistantMessages` field contains messages that were cut off:
+
+```python
+def handle_interruptions(event_data):
+    messages = event_data["message"]["messages"]
+
+    for message in messages:
+        if message["role"] == "user" and "skippedAssistantMessages" in message:
+            skipped = message["skippedAssistantMessages"]
+
+            if skipped:
+                # Log interrupted responses for analysis
+                for skipped_msg in skipped:
+                    log_interruption(
+                        call_id=event_data["message"]["call"]["id"],
+                        interrupted_text=skipped_msg.get("text", ""),
+                        interruption_time=message["timestamp"]
+                    )
+```
+
+## Performance Considerations
+
+Since conversation-update events can contain large message arrays:
+
+1. **Incremental Processing**: Only process new messages since your last update
+2. **Message Deduplication**: Use `messageId` to avoid processing duplicates
+3. **Efficient Storage**: Consider storing messages individually rather than entire payloads
+4. **Pagination**: For long conversations, implement message pagination in your UI
+
+```python
+def process_incremental_messages(event_data, last_seen_message_id=None):
+    messages = event_data["message"]["messages"]
+
+    if last_seen_message_id:
+        # Find index of last seen message
+        last_index = -1
+        for i, msg in enumerate(messages):
+            if msg["messageId"] == last_seen_message_id:
+                last_index = i
+                break
+
+        # Process only new messages
+        new_messages = messages[last_index + 1:] if last_index >= 0 else messages
+    else:
+        new_messages = messages
+
+    # Process new messages
+    for message in new_messages:
+        process_single_message(message)
+
+    # Return latest message ID for next call
+    return messages[-1]["messageId"] if messages else None
+```
+
+<ConversationUpdateExample />

@@ -1,0 +1,95 @@
+## Hang Event Example
+
+This is a complete example of a hang webhook event payload.
+
+```json
+{
+    "message": {
+        "timestamp": 1772702490000,
+        "type": "hang",
+        "call": {
+            "id": "WC-82015760-c3bd-427d-a23b-ba9b07e4ab85",
+            "teamId": "67c0231ae6880fe48ef929ee",
+            "assistantId": "697769ef5e6d94d5ad83e01e",
+            "callType": "web",
+            "direction": "inbound",
+            "startAt": "2026-03-05T09:21:20.063Z",
+            "userNumber": "web-Ramesh Naik",
+            "assistantNumber": "697769ef5e6d94d5ad83e01e",
+            "status": "ongoing",
+            "phoneCallStatus": "in-progress",
+            "phoneCallStatusReason": "Call is in progress",
+            "callEndTriggerBy": "",
+            "assistantCallDuration": 15000,
+            "analysis": {
+                "summary": "",
+                "successEvaluation": ""
+            },
+            "recording": {
+                "s3Bucket": "",
+                "path": ""
+            },
+            "assistantOverrides": {
+                "dynamicVariables": {
+                    "serial_number": ""
+                },
+                "variablesValidations": {
+                    "serial_number": "none"
+                }
+            },
+            "metadata": {}
+        },
+        "assistant": {
+            "_id": "697769ef5e6d94d5ad83e01e",
+            "name": "Mary Dental - main",
+            "welcomeMessage": "Welcome to Apollo clinic!!",
+            "assistantProvider": "gemini",
+            "assistantModel": "gemini-3-flash-preview",
+            "assistantSystemPrompt": "You here are a voice assistant for Apollo clinic clinic, located at 123 North Face Place, Anaheim, California. Your name is Rachel...",
+            "assistantTemperature": 0,
+            "assistantMaxTokens": 256
+        },
+        "messages": [
+            {
+                "messageId": "welcome-1",
+                "role": "assistant",
+                "text": "Welcome to Apollo clinic!!",
+                "timestamp": 1772702480279,
+                "metrics": {
+                    "tts": {
+                        "audioDurationMs": 1442,
+                        "generationTimeMs": 7,
+                        "isCachePlaying": true
+                    }
+                }
+            },
+            {
+                "messageId": "user-1",
+                "role": "user",
+                "text": "I need to book an appointment for a complex orthopedic procedure that requires consultation with multiple specialists and coordination between different departments.",
+                "timestamp": 1772702485138,
+                "metrics": {
+                    "stt": {
+                        "confidence": 0.7364502,
+                        "durationMs": 4200
+                    }
+                },
+                "skippedAssistantMessages": []
+            }
+        ],
+        "phone": {
+            "provider": {
+                "name": ""
+            }
+        },
+        "customer": {
+            "number": "web-Ramesh Naik"
+        },
+        "analysis": {}
+    }
+}
+```
+
+## Context
+
+This hang event occurred after a user made a complex request that required significant LLM processing time. The assistant failed to respond within the 5-second threshold, triggering the hang event. The system continued processing the request and may eventually deliver a response or trigger an error event if processing ultimately fails.
