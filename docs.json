@@ -56,7 +56,8 @@
                             "webhooks/events/end-of-call-report",
                             "webhooks/events/hang",
                             "webhooks/events/error",
-                            "webhooks/events/testing/ngrok-setup"
+                            "webhooks/events/testing/ngrok-setup",
+                            "webhooks/events/testing/live-events-dashboard"
                         ]
                     },
                     {
