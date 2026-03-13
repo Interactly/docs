@@ -1,0 +1,70 @@
+---
+title: Testing Tools
+subtitle: Verify your tool configuration before going live
+slug: assistant-tools/testing-tools
+description: Use the built-in test runner on the Interactly platform to test your custom tool integrations and troubleshoot configuration issues
+---
+
+# Testing Your Tools
+
+Use the built-in test runner on the Interactly platform to verify your tool is configured correctly before going live.
+
+<Steps>
+  <Step title="Open the Test Panel">
+    Navigate to your tool and click the **Test Tool** tab to open the testing interface.
+
+    <Frame caption="Click to start tool testing">
+      <img src="/images/assistant-tools/test-tool-click.png" />
+    </Frame>
+  </Step>
+
+  <Step title="Review Tool Details & Fill Parameters">
+    You will see a detailed view of your configured tool. Any parameters defined for the tool are listed on the left side — fill in the required values before running the test.
+
+    <Frame caption="Tool details with parameter input fields on the left">
+      <img src="/images/assistant-tools/view-tool-and-give-params-value.png" />
+    </Frame>
+  </Step>
+
+  <Step title="Run the Test">
+    Once all parameters are filled in, click **Run Test** to send a request to your server endpoint.
+
+    <Frame caption="Run test button">
+      <img src="/images/assistant-tools/run-test.png" />
+    </Frame>
+  </Step>
+
+  <Step title="Review the Response">
+    Check the response returned by your endpoint.
+
+    <AccordionGroup>
+      <Accordion title="Success Response" icon="circle-check">
+        A correctly configured tool will return a `200` status with the expected payload from your server.
+
+        <Frame caption="Successful tool response">
+          <img src="/images/assistant-tools/tool-success-response.png" />
+        </Frame>
+      </Accordion>
+
+      <Accordion title="Wrong Method Error" icon="triangle-exclamation">
+        If your endpoint does not accept the HTTP method being used (e.g., sending `GET` instead of `POST`), you will see a method-not-allowed error like below.
+
+        <Frame caption="Wrong HTTP method configuration">
+          <img src="/images/assistant-tools/wrong-configuration-result.png" />
+        </Frame>
+
+        **Fix:** Go back to your tool's server configuration and ensure the correct HTTP method (e.g., `POST`) is selected.
+      </Accordion>
+
+      <Accordion title="Wrong Authorization Header" icon="lock-open">
+        A common mistake is using `authorisation` instead of `authorization` in the header key. This causes authentication to fail.
+
+        <Frame caption="Wrong authorization header spelling">
+          <img src="/images/assistant-tools/wrong-configuration-result-2.png" />
+        </Frame>
+
+        **Fix:** In the **Headers** section of your tool, ensure the key is spelled `authorization` (not `authorisation`).
+      </Accordion>
+    </AccordionGroup>
+  </Step>
+</Steps>
