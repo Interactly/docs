@@ -48,6 +48,13 @@
                         ]
                     },
                     {
+                        "group": "Assistant Tools",
+                        "pages": [
+                            "assistant-tools/introduction",
+                            "assistant-tools/testing-tools"
+                        ]
+                    },
+                    {
                         "group": "Webhooks",
                         "pages": [
                             "webhooks/events/introduction",
