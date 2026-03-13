@@ -50,7 +50,8 @@
                     {
                         "group": "Assistant Tools",
                         "pages": [
-                            "assistant-tools/introduction"
+                            "assistant-tools/introduction",
+                            "assistant-tools/testing-tools"
                         ]
                     },
                     {
