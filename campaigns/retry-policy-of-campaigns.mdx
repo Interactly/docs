@@ -1,0 +1,139 @@
+---
+title: Retry Policy of Campaigns
+subtitle: Automate follow-up calls to maximize connection rates
+slug: campaigns/retry-policy-of-campaigns
+description: A comprehensive guide to understanding, configuring, and optimizing automated retry strategies for your campaigns.
+---
+
+# Overview
+
+Achieving high connection rates often requires multiple attempts, but managing those follow-ups manually is time-consuming and inefficient. The **Retry Policy** feature solves this by automatically scheduling and executing follow-up calls based on customizable intelligence. 
+
+By defining precise rules based on either technical call statuses or AI-determined conversational outcomes, you can orchestrate an automated engagement strategy that respects contact boundaries while maximizing your campaign's reach.
+
+<Info>
+  Retry Policies act as an intelligent safety net. They ensure that hard-to-reach contacts or calls disrupted by network issues are systematically re-engaged at the optimal time, without requiring any manual intervention from your team.
+</Info>
+
+## Key Benefits
+
+<CardGroup cols={2}>
+  <Card title="Increased Connection Rates" icon="arrow-up-right-dots">
+    Automatically attempt to reach contacts who didn't pick up the first time, significantly boosting overall campaign success.
+  </Card>
+
+  <Card title="Tailored Engagement" icon="sliders">
+    Treat a dropped call differently from a voicemail by creating distinct rules and wait times for different scenarios.
+  </Card>
+
+  <Card title="Operational Efficiency" icon="bolt">
+    Free your team from manually monitoring failed calls and uploading new spreadsheets for follow-ups.
+  </Card>
+
+  <Card title="Contact Respect" icon="shield-heart">
+    Built-in limits prevent over-calling and enforce daily boundaries, ensuring you maintain a positive brand experience.
+  </Card>
+</CardGroup>
+
+---
+
+## Defining Retry Rules
+
+The foundation of a retry policy is its rules. A rule tells the system *when* to try again. You can create multiple rules within a single campaign to handle various scenarios.
+
+There are two primary categories of triggers you can use:
+
+<Frame caption="Configuring your policy rules in the dashboard">
+  <img src="/images/campaigns/retry-policy-rules-setup.png" />
+</Frame>
+
+### 1. Call Status Rules
+These rules are activated by the immediate technical condition or network state of the call, typically before any significant conversational interaction begins. 
+
+**Common Status conditions include:**
+- **Call Declined:** The recipient actively rejected the incoming call.
+- **Not Answered:** The phone rang continuously but was never picked up.
+- **Call Dropped:** The call disconnected unexpectedly due to carrier network issues, hardware problems, or timeouts.
+
+**Strategic Use:** Status rules are your primary defense against bad connectivity or bad timing. If someone doesn't answer, setting a rule to try again a few hours later is highly effective.
+
+### 2. Call Outcome Rules
+These advanced rules trigger based on the actual conversation's outcome, which is intelligently determined by the AI assistant after analyzing the content of the call.
+
+**Common Outcome conditions include:**
+- **Voicemail Reached:** The AI detected a voicemail tone and left a message (or hung up).
+- **Callback Requested:** The contact asked to be called back at a later time.
+- **Custom Dispositions:** Any custom logical outcome defined in your campaign's workflow (e.g., `busy_driving`, `requested_more_info`).
+
+**Strategic Use:** Outcome rules allow for deep personalization. For example, if you reach a voicemail, you might set a rule to try again the next day, whereas if the call drops mid-conversation, you might retry almost immediately.
+
+---
+
+## Configuring Your Policy Boundaries
+
+To protect your contacts from being overwhelmed, the Retry Policy requires you to set strict upper limits. These limits act as a global safeguard across all your rules.
+
+<Frame caption="Setting retry boundaries and limits">
+  <img src="/images/campaigns/retry-policy-limits.png" />
+</Frame>
+
+<Steps>
+  <Step title="Global Campaign Limit">
+    Determine the absolute maximum number of automatic retries permitted for a single contact across the entire lifespan of the campaign. Once a contact hits this limit, the system will not call them again, regardless of which rules are triggered.
+  </Step>
+
+  <Step title="Daily Limit">
+    Set a secondary pacing limit restricting the maximum number of retries occurring within a single 24-hour window. This prevents the system from rapidly calling a contact multiple times in one day if they continuously hit a voicemail.
+  </Step>
+
+  <Step title="Add Your Rules">
+    Add your Status and Outcome rules. For each rule, you will select the trigger condition and set a **Wait Time**.
+  </Step>
+</Steps>
+
+---
+
+## Wait Times and Campaign Scheduling
+
+One of the most powerful aspects of the Retry Policy is how it manages time. When a rule is triggered, the system doesn't necessarily call back instantly; it respects the **Wait Time** you define.
+
+<Frame caption="Defining wait times for follow-ups">
+  <img src="/images/campaigns/configure-retry-delays.png" />
+</Frame>
+
+### How Wait Times Function
+When a call triggers a rule, the system initiates a countdown based on your defined wait time. 
+- Example: If a call goes unanswered, and you have set a wait time of 120 minutes, the system will queue the follow-up attempt to occur *at least* two hours later.
+
+### Intelligent Schedule Alignment
+The intelligent scheduler must reconcile your defined wait time with your campaign's global operating hours.
+
+<AccordionGroup>
+  <Accordion title="During Operating Hours" icon="sun">
+    If the wait time finishes while your campaign is currently active (within its running schedule), the retry will be initiated as soon as capacity allows.
+  </Accordion>
+
+  <Accordion title="Outside Operating Hours (Fall Forward)" icon="moon">
+    If the wait time expires while your campaign is paused or outside its daily operating hours (e.g., late at night), the system automatically rolls over and schedules the retry to trigger at the beginning of the **next available operating window** for that campaign.
+  </Accordion>
+  
+  <Accordion title="Campaign Exhaustion" icon="calendar-xmark">
+    If there are no future operational schedule windows remaining for the overall campaign, any pending retry attempts will be gracefully aborted to adhere strictly to your intended organizational timings.
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+  **Important Restriction:** Retry policies securely operate *strictly* within the defined working hours of your campaign. If you have extensive wait times (e.g., waiting 24 hours between attempts), ensure your campaign's schedule spans multiple days to accommodate these delayed follow-ups.
+</Warning>
+
+---
+
+## Industry Best Practices
+
+<Tip>
+  **Respecting Boundaries:** Finding the optimal balance is crucial. Setting limits that are too aggressive can lead to contact frustration and spam flags. Conversely, conservative settings might restrict your reach. A standard, highly successful baseline is limiting total retries to 2-3 attempts dispersed strategically across various active days.
+</Tip>
+
+<Card title="Stagger Your Wait Times" icon="shoe-prints">
+  Implement staggered delays utilizing varying thresholds depending on the trigger. For example, if a call drops due to a bad network, a 15-minute Wait Time is appropriate. But if a call is unanswered, waiting 3 to 4 hours (or trying the next day) often yields better results.
+</Card>
