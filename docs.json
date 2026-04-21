@@ -122,6 +122,13 @@
                             "source": "https://api-dev.interactly.ai/api-docs/prompts/api.json",
                             "directory": "api-reference/prompts"
                         }
+                    },
+                    {
+                        "group": "Accounts and Administration",
+                        "openapi": {
+                            "source": "https://api-qa.interactly.ai/api-docs/admin/api.json",
+                            "directory": "api-reference/admin"
+                        }
                     }
                 ],
                 "global": {
