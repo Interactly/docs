@@ -126,8 +126,8 @@
                     {
                         "group": "Accounts and Administration",
                         "openapi": {
-                            "source": "https://api-qa.interactly.ai/api-docs/admin/api.json",
-                            "directory": "api-reference/admin"
+                            "source": "https://api-dev.interactly.ai/api-docs/admin/api.json",
+                            "directory": "api-reference/administration"
                         }
                     }
                 ],
