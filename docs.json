@@ -45,7 +45,8 @@
                             "campaigns/introduction",
                             "campaigns/single-modal-campaign",
                             "campaigns/multi-modal-campaign",
-                            "campaigns/retry-policy-of-campaigns"
+                            "campaigns/retry-policy-of-campaigns",
+                            "campaigns/dnd-and-callback"
                         ]
                     },
                     {
