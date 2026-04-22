@@ -1,0 +1,286 @@
+---
+title: DND & Callback
+subtitle: Manage contact preferences and automate follow-up scheduling
+slug: campaigns/dnd-and-callback
+description: A comprehensive guide to understanding Do Not Disturb (DND) preferences and automated callback scheduling for your campaigns.
+---
+
+# Overview
+
+Running campaigns at scale means balancing outreach efficiency with contact respect. The **DND & Callback** features ensure your campaigns automatically honor opt-out preferences and intelligently handle follow-up requests — without any manual intervention.
+
+**Do Not Disturb (DND)** prevents your campaigns from reaching contacts who have opted out, while **Callback Scheduling** automatically re-engages contacts who request a follow-up at a specific time during a conversation.
+
+<Info>
+  Both DND and Callback are driven by **post-call analysis**. After every call, the AI assistant analyzes the conversation and can automatically set DND preferences or schedule callbacks based on what the contact said during the call.
+</Info>
+
+## Key Benefits
+
+<CardGroup cols={2}>
+  <Card title="Regulatory Compliance" icon="shield-check">
+    Automatically filter out opted-out contacts to stay compliant with telecom regulations and avoid spam flags.
+  </Card>
+
+  <Card title="Contact Respect" icon="hand">
+    Honor opt-out preferences across calls, SMS, and email — at the channel level and even per individual campaign or assistant.
+  </Card>
+
+  <Card title="Intelligent Follow-Ups" icon="phone-arrow-down-left">
+    When a contact says "call me back tomorrow at 10 AM," the system captures the request and schedules it automatically.
+  </Card>
+
+  <Card title="Operational Efficiency" icon="bolt">
+    Eliminate manual DND filtering and callback tracking — the system handles both seamlessly within the standard campaign flow.
+  </Card>
+</CardGroup>
+
+---
+
+## Do Not Disturb (DND)
+
+DND is a per-contact preference system that prevents campaigns from reaching contacts who have opted out. It is checked automatically at multiple stages of campaign execution — before calls, before pre-call messages, and before post-call messages.
+
+### How DND Works
+
+Every contact has **notification preferences** with three independent communication channels:
+
+<CardGroup cols={3}>
+  <Card title="Call" icon="phone">
+    Controls whether the contact can receive phone calls from your campaigns.
+  </Card>
+
+  <Card title="SMS" icon="message">
+    Controls whether the contact can receive text messages, including pre-call and post-call notifications.
+  </Card>
+
+  <Card title="Email" icon="envelope">
+    Controls whether the contact can receive email notifications.
+  </Card>
+</CardGroup>
+
+A channel is **reachable** when it is enabled and there are no active DND entries for the source trying to reach the contact. By default, all channels are enabled and contacts have no DND entries — meaning they are reachable on all channels.
+
+A channel is **blocked** when either:
+- The channel is **disabled** — this blocks all communication on that channel from every source, OR
+- There is an **active DND entry** (enabled and not expired) matching the source (campaign or assistant) trying to reach the contact
+
+---
+
+### Channel-Level Toggle
+
+Each channel (call, SMS, email) has an enabled/disabled toggle. Disabling a channel is the broadest level of opt-out — it blocks all communication on that channel from every source, regardless of individual DND entries.
+
+### Source-Specific DND Entries
+
+For more granular control, DND entries block specific sources from reaching a contact on a specific channel — while leaving other sources unaffected. A DND entry must be explicitly created and enabled to take effect.
+
+**DND Source Types include:**
+- **Campaign:** Block a specific campaign from reaching the contact.
+- **Assistant:** Block all campaigns using a particular AI assistant.
+- **Workflow:** Block communications triggered by a specific workflow.
+- **Team:** Block all communications from an entire team.
+
+**Strategic Use:** Source-specific DND is ideal when a contact opts out of one type of outreach (e.g., marketing calls) but should still receive others (e.g., appointment reminders).
+
+### DND Expiry
+
+DND entries can optionally include an expiry time. Once the expiry passes, the entry is no longer active and the contact becomes reachable again from that source — no manual action needed. If no expiry is set, the DND entry stays active until it is explicitly disabled or removed.
+
+<AccordionGroup>
+  <Accordion title="Multi-Channel Independence" icon="layer-group">
+    DND is evaluated independently per channel. A contact might have DND active for calls from a specific campaign but still receive SMS messages from that same campaign — unless SMS DND is also set.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### Automatic DND from Post-Call Analysis
+
+DND can be set automatically based on what a contact says during a call. After every call, the AI assistant performs post-call analysis and can detect DND intent — for example, if the contact says "stop calling me" or "remove me from your list."
+
+When a DND disposition is detected, the system automatically creates **two DND entries** for the contact on the call channel:
+
+<Steps>
+  <Step title="Assistant-Level DND">
+    A DND entry is created for the AI assistant that handled the call. This blocks the contact from being called by any campaign using the same assistant.
+  </Step>
+
+  <Step title="Campaign-Level DND">
+    A DND entry is created for the specific campaign. This blocks the contact from being called again by that campaign, even if the assistant changes.
+  </Step>
+</Steps>
+
+<Info>
+  If the contact specifies a time-based opt-out (e.g., "don't call me this week"), the DND entries are created with an appropriate expiry time. Otherwise, they are created as permanent.
+</Info>
+
+---
+
+### When DND is Checked
+
+DND validation occurs at three points during campaign execution:
+
+<Steps>
+  <Step title="Before Placing Calls">
+    When a campaign call is being validated, the system checks whether the contact has an active DND entry on the **call** channel for the current campaign or assistant. If DND is active, the call is marked as **failed** and never placed.
+  </Step>
+
+  <Step title="Before Sending Pre-Call Messages">
+    For multi-modal campaigns with pre-call SMS enabled, the system checks the **SMS** channel for active DND before sending the message. If DND is active, the pre-call message is silently skipped.
+  </Step>
+
+  <Step title="Before Sending Post-Call Messages">
+    After a call ends, multi-modal campaigns can send outcome-based SMS messages (e.g., a follow-up message if the call was answered, or a different message if it went to voicemail). The system checks the **SMS** channel for active DND before sending these messages as well. If DND is active, the post-call message is skipped.
+  </Step>
+</Steps>
+
+<Warning>
+  DND filtering happens automatically — there is no way to override or bypass it for individual calls. If a contact has DND active, the only way to reach them is to remove or update their DND preference.
+</Warning>
+
+---
+
+### DND in Campaign Reports
+
+Contacts blocked by DND appear in your campaign reports with a **failed** status. This gives you full visibility into how many contacts were filtered and why.
+
+### Contact Statistics
+
+Your contact dashboard provides a quick summary of DND across your organization:
+
+<CardGroup cols={3}>
+  <Card title="Total Contacts" icon="users">
+    The total number of contacts in your organization.
+  </Card>
+
+  <Card title="DND Active" icon="phone-slash">
+    Contacts where any channel is disabled or has at least one active (enabled and not expired) DND entry.
+  </Card>
+
+  <Card title="Reachable" icon="phone">
+    Contacts with all channels enabled and no active DND entries — the contacts your campaigns can currently reach.
+  </Card>
+</CardGroup>
+
+---
+
+## Callback Scheduling
+
+The callback system automatically schedules follow-up calls when a contact requests to be called back. After every call, the AI assistant performs post-call analysis and detects callback intent — for example, "call me back tomorrow at 10 AM" or "I'm busy, try again later."
+
+### How Callbacks Work
+
+<Steps>
+  <Step title="Post-Call Analysis Detects Callback">
+    After the call ends, the AI assistant analyzes the conversation and extracts callback details: whether a callback was requested, the reason, and the preferred time window(s).
+  </Step>
+
+  <Step title="DND Check">
+    Before scheduling, the system checks whether the contact has active DND on the call channel for the campaign or assistant. If DND is active, the callback is **not scheduled**.
+  </Step>
+
+  <Step title="Original Campaign Check">
+    The system first tries to schedule the callback within the **original campaign** — but only if the campaign is still active (processing or pending) and the requested callback time falls within the campaign's schedule.
+  </Step>
+
+  <Step title="Internal Callback Campaign (Fallback)">
+    If the original campaign is no longer active or the callback time falls outside its schedule, the system falls back to an **Internal Callback Campaign**. This is a dedicated campaign that runs on a **7-day rolling window**, ensuring callbacks can be fulfilled even after the original campaign has ended.
+  </Step>
+
+  <Step title="Call is Queued with Override Schedule">
+    The callback call is added to the campaign with an **override schedule** — a specific time window matching the contact's request. The campaign scheduler places the call only within that window.
+  </Step>
+
+  <Step title="Callback Executes Automatically">
+    When the scheduled time arrives, the system places the callback. Dynamic variables and context from the original call are carried forward so the AI assistant has full context.
+  </Step>
+</Steps>
+
+---
+
+### Internal Callback Campaign
+
+When a callback can't be fulfilled by the original campaign, the system uses an **Internal Callback Campaign** — a dedicated, system-managed campaign that ensures no callback request is lost.
+
+<AccordionGroup>
+  <Accordion title="Automatic Creation" icon="wand-magic-sparkles">
+    An Internal Callback Campaign is automatically created the first time a callback overflows from a specific source campaign. It is named `Internal Callback of {source_campaign_id}` and requires no manual setup.
+  </Accordion>
+
+  <Accordion title="7-Day Rolling Window" icon="calendar-week">
+    Each Internal Callback Campaign runs on a **7-day schedule window**. When a new callback arrives and the existing window doesn't cover the requested time, the system appends a new 7-day window while preserving any still-valid windows for pending callbacks.
+  </Accordion>
+
+  <Accordion title="Smart Reactivation" icon="rotate">
+    If the Internal Callback Campaign has already completed or been aborted, the system automatically reactivates it when a new callback arrives. This ensures the campaign is always ready to handle follow-ups.
+  </Accordion>
+
+  <Accordion title="Inherits Source Campaign Settings" icon="copy">
+    The Internal Callback Campaign inherits settings from the original campaign, including assistant phone numbers, timezone, retry policies, and review requirements. If the original campaign is unavailable, sensible defaults are used.
+  </Accordion>
+
+  <Accordion title="Controlled Concurrency" icon="sliders">
+    Internal Callback Campaigns run with a maximum of **2 parallel calls** by default, ensuring callbacks are handled without overwhelming the system.
+  </Accordion>
+</AccordionGroup>
+
+<Info>
+  The Internal Callback Campaign is fully automatic — it is created, launched, reactivated, and extended without any manual intervention. You may see these campaigns in your campaign list with names starting with "Internal Callback of."
+</Info>
+
+---
+
+### Callback Window Defaults
+
+When the AI assistant detects a callback request, it extracts specific time windows from the conversation. However, not every contact specifies an exact time:
+
+<AccordionGroup>
+  <Accordion title="Specific Time Requested" icon="clock">
+    If the contact says "call me at 3 PM tomorrow," the system creates a callback window starting at the requested time with a **default duration of 60 minutes**. The callback will be placed within this window.
+  </Accordion>
+
+  <Accordion title="No Specific Time" icon="question">
+    If the contact simply says "call me back later" without specifying a time, the AI assistant determines an appropriate window based on the conversation context.
+  </Accordion>
+</AccordionGroup>
+
+### Context Carry-Forward
+
+Dynamic variables from the original call are automatically carried forward to the callback. This means the AI assistant can pick up where the previous conversation left off — referencing the contact's name, appointment details, or any data collected during the first call.
+
+---
+
+## How DND & Callback Work Together
+
+DND and Callback interact at multiple points in the campaign flow:
+
+<Steps>
+  <Step title="During Post-Call Analysis">
+    If the AI detects both a DND request and a callback request in the same call, the DND entries are created first. The callback scheduling then checks DND — and if the newly created DND blocks the callback, it is **not scheduled**.
+  </Step>
+
+  <Step title="Before Callback Execution">
+    When a callback campaign call is about to be placed, it goes through the same validation pipeline as any other campaign call — including DND checks. If the contact has opted out via DND since the callback was scheduled, the callback is blocked.
+  </Step>
+</Steps>
+
+<Warning>
+  DND preferences always take precedence over pending callbacks. If a contact requests a callback during a call but also opts out (or opts out later before the callback executes), the callback will be blocked.
+</Warning>
+
+---
+
+## Best Practices
+
+<Tip>
+  **Keep DND Lists Current:** Regularly sync your organization's DND preferences with your CRM or contact management system. Stale DND data can lead to compliance issues or missed outreach opportunities.
+</Tip>
+
+<Card title="Monitor DND Rates" icon="chart-line">
+  If your DND exclusion rate is unusually high, review your contact sourcing. A high DND rate may indicate stale or improperly sourced contact lists that need cleaning.
+</Card>
+
+<Card title="Leverage Context Carry-Forward" icon="message">
+  Callbacks where the AI assistant has full context from the previous call deliver a significantly better contact experience. Ensure your campaigns use dynamic variables so the callback conversation can pick up where the original left off.
+</Card>
