@@ -52,7 +52,8 @@
                     {
                         "group": "Workflows",
                         "pages": [
-                            "workflows/introduction"
+                            "workflows/introduction",
+                            "workflows/building-a-workflow"
                         ]
                     },
                     {
