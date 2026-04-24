@@ -50,6 +50,12 @@
                         ]
                     },
                     {
+                        "group": "Workflows",
+                        "pages": [
+                            "workflows/introduction"
+                        ]
+                    },
+                    {
                         "group": "Assistant Tools",
                         "pages": [
                             "assistant-tools/introduction",
