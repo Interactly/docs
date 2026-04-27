@@ -1,0 +1,211 @@
+---
+title: Tools & Integrations
+subtitle: Extend your workflow's capabilities with tools, external APIs, and Knowledge Bases
+slug: workflows/tools-and-integrations
+description: Learn how to register and attach tools to workflow nodes — inbuilt functions, inline Python, external REST APIs, and Knowledge Base queries — and configure LLM provider integrations
+---
+
+# About
+
+Tools extend what LLM nodes can do beyond generating text. When a tool is attached to a node, the LLM can decide to invoke it mid-conversation — fetching data from an external system, running a calculation, querying a Knowledge Base, or executing a custom script — and incorporate the result into its response.
+
+<Info>
+Tools are attached to individual LLM nodes. The LLM decides at runtime whether to call a tool based on the conversation context and the tool's description.
+</Info>
+
+## Tool Types
+
+Interactly supports four tool types, each designed for a different integration pattern:
+
+<CardGroup cols={2}>
+  <Card title="Inbuilt Function" icon="bolt">
+    Pre-built functions provided by Interactly. Ready to use without any setup — select from the available catalogue and attach directly to a node.
+  </Card>
+
+  <Card title="Inline Python" icon="code">
+    Write a Python function directly in the tool configuration. The function runs in a sandboxed environment and can process inputs and return structured outputs.
+  </Card>
+
+  <Card title="External API" icon="globe">
+    Call any external REST endpoint. Configure the URL, method, headers, and request body — with support for dynamic variables in all fields.
+  </Card>
+
+  <Card title="Knowledge Base" icon="book-open">
+    Query a Knowledge Base configured for your team. The tool performs a semantic search and returns the most relevant content for the LLM to use in its response.
+  </Card>
+</CardGroup>
+
+## Tool Type Comparison
+
+| | Inbuilt Function | Inline Python | External API | Knowledge Base |
+|---|---|---|---|---|
+| Setup required | None | Write function | URL + auth | KB must exist |
+| Custom logic | No | Yes | Limited | No |
+| External calls | Sometimes | Yes | Yes | No |
+| Structured output | Yes | Yes | Yes | Text chunks |
+| Best for | Common actions | Custom processing | Third-party APIs | Document lookup |
+
+## Registering a Tool
+
+All tools are managed in the **Tools** registry, accessible from **Settings → Tools** in the dashboard. Once registered, a tool is available to attach to any LLM node across all your workflows.
+
+<Steps>
+  <Step title="Open the Tools Registry">
+    Navigate to **Settings → Tools** and click **New Tool**.
+  </Step>
+
+  <Step title="Choose the Tool Type">
+    Select from Inbuilt Function, Inline Python, External API, or Knowledge Base.
+  </Step>
+
+  <Step title="Configure the Tool">
+    Fill in the tool's name, description, and type-specific settings. The description is important — the LLM uses it to decide when to call the tool.
+
+    <Tip>
+    Write tool descriptions as clear, action-oriented statements: `"Look up a patient's upcoming appointments by their phone number"` rather than `"Appointment lookup"`. The more specific the description, the more reliably the LLM will invoke it in the right context.
+    </Tip>
+  </Step>
+
+  <Step title="Define Input & Output Schema">
+    Specify the inputs the tool expects and the output fields it returns. These are used to map workflow variables into the tool call and extract results back out.
+  </Step>
+
+  <Step title="Save and Attach">
+    Save the tool. It is now available to attach to any SAY_LLM or WORKER_LLM node in the workflow builder.
+  </Step>
+</Steps>
+
+## Attaching Tools to Nodes
+
+Tools are attached at the node level in the workflow builder:
+
+<Steps>
+  <Step title="Open the Node Configuration">
+    Click on a SAY_LLM or WORKER_LLM node in the builder to open its configuration panel.
+  </Step>
+
+  <Step title="Select Tools">
+    In the **Tools** section of the node, click **Add Tool** and select from the registered tools available to your team.
+  </Step>
+
+  <Step title="Configure Input Mapping">
+    Map the tool's input fields to workflow variables or conversation context. For example, map `{{patient_phone}}` to the tool's `phone_number` input field.
+  </Step>
+
+  <Step title="Review Output Mapping">
+    Define how the tool's response fields are stored as workflow variables for use in downstream nodes.
+  </Step>
+</Steps>
+
+<Note>
+A single LLM node can have multiple tools attached. The LLM decides at runtime which tool (if any) to invoke based on the conversation context and each tool's description.
+</Note>
+
+## Tool Configuration Details
+
+<AccordionGroup>
+  <Accordion title="Inbuilt Function" icon="bolt">
+    Select from Interactly's catalogue of pre-built functions. Each inbuilt function has a fixed input/output schema — no additional configuration is required beyond selecting it and mapping inputs.
+
+    Inbuilt functions cover common actions such as date and time operations, basic data formatting, and platform-native capabilities.
+  </Accordion>
+
+  <Accordion title="Inline Python" icon="code">
+    Write a Python function in the tool editor. The function receives the tool's input fields as arguments and must return a dictionary matching the defined output schema.
+
+    - The function runs in a sandboxed environment with limited library access
+    - Execution is subject to a timeout — keep functions lightweight
+    - Use this type for custom data transformation, validation logic, or calculations that don't require an external call
+
+    <Warning>
+    Inline Python runs in a restricted sandbox. Network calls, file system access, and most third-party libraries are not available. For external API calls, use the External API tool type instead.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="External API" icon="globe">
+    Configure a REST API call with full control over the request:
+
+    - **URL** — the endpoint to call; supports `{{variable}}` substitution for dynamic paths or query parameters
+    - **Method** — GET, POST, PUT, PATCH, or DELETE
+    - **Headers** — add authentication tokens or content-type headers; reference secrets via global variables marked as `is_secret`
+    - **Request Body** — JSON body with `{{variable}}` substitution
+    - **Response Mapping** — extract specific fields from the API response and expose them as tool outputs
+
+    <Tip>
+    Store API keys and tokens as Global Variables with `is_secret` enabled and reference them in headers as `{{your_api_key}}`. This keeps credentials out of the tool configuration UI.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Knowledge Base" icon="book-open">
+    Select a Knowledge Base configured for your team. At runtime the tool performs a semantic search against the KB using the LLM's query and returns the most relevant content chunks.
+
+    - **Knowledge Base** — select from your team's available Knowledge Bases
+    - **Result Count** — configure how many chunks to return per query
+    - The returned content is passed directly to the LLM as context for its response
+  </Accordion>
+</AccordionGroup>
+
+## LLM Provider Support
+
+Interactly supports six LLM providers. Tools with JSON schema are supported across all providers — the LLM receives the tool definitions and decides when to invoke them.
+
+| Provider | Tool Calling | Structured Output | Streaming |
+|---|---|---|---|
+| Azure OpenAI | Yes | Yes | Yes |
+| OpenAI | Yes | Yes | Yes |
+| Google (Gemini) | Yes | Yes | Yes |
+| Anthropic (Claude) | Yes | Yes | Yes |
+| AWS Bedrock | Yes | Yes | Yes |
+| Custom | Depends on model | Depends on model | Depends on model |
+
+<AccordionGroup>
+  <Accordion title="LLM Fallback Groups" icon="shield-check">
+    Instead of a single provider, you can configure an LLM group — an ordered list of providers with fallback logic. If the primary provider fails or is unavailable, the runtime automatically retries with the next provider in the group.
+
+    This ensures your workflow remains operational even if a single provider experiences downtime.
+  </Accordion>
+</AccordionGroup>
+
+## API Reference
+
+<CardGroup cols={2}>
+  <Card title="List Tools" icon="list" href="/api-reference/workflows/tools/list-tools">
+    **GET /tools**
+    Retrieve all registered tools for your team
+  </Card>
+
+  <Card title="Create Tool" icon="plus" href="/api-reference/workflows/tools/create-tool">
+    **POST /tools**
+    Register a new tool in the tool registry
+  </Card>
+
+  <Card title="Update Tool" icon="pen" href="/api-reference/workflows/tools/update-tool">
+    **PATCH /tools/:id**
+    Modify an existing tool's configuration
+  </Card>
+
+  <Card title="Delete Tool" icon="trash" href="/api-reference/workflows/tools/delete-tool">
+    **DELETE /tools/:id**
+    Remove a tool from the registry
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Node Types" icon="circle-nodes" href="/workflows/node-types">
+    See which node types support tool attachment
+  </Card>
+
+  <Card title="Building a Workflow" icon="hammer" href="/workflows/building-a-workflow">
+    Learn how to attach tools to nodes in the workflow builder
+  </Card>
+
+  <Card title="Scheduled Workflows" icon="calendar-clock" href="/workflows/scheduled-and-triggered-workflows">
+    Set up time-based and event-driven workflow triggers
+  </Card>
+
+  <Card title="Simulation" icon="flask" href="/workflows/workflow-simulation">
+    Test tool calls in a safe sandbox before going live
+  </Card>
+</CardGroup>

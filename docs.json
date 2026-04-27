@@ -50,6 +50,19 @@
                         ]
                     },
                     {
+                        "group": "Workflows",
+                        "pages": [
+                            "workflows/introduction",
+                            "workflows/building-a-workflow",
+                            "workflows/node-types",
+                            "workflows/workflow-versioning",
+                            "workflows/workflow-simulation",
+                            "workflows/tools-and-integrations",
+                            "workflows/scheduled-and-triggered-workflows",
+                            "workflows/workflow-webhooks"
+                        ]
+                    },
+                    {
                         "group": "Assistant Tools",
                         "pages": [
                             "assistant-tools/introduction",

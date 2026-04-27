@@ -1,0 +1,199 @@
+---
+title: Scheduled & Triggered Workflows
+subtitle: Automate workflow execution with one-time scheduled runs and event-driven triggers
+slug: workflows/scheduled-and-triggered-workflows
+description: Learn how to run workflows automatically using a scheduled datetime trigger or event-driven SQS and inbound webhook triggers, with concurrency and execution controls
+---
+
+# About
+
+Beyond manual execution, Interactly workflows can run automatically — either at a specific scheduled time or in response to an external event. Scheduled workflows fire once at a configured future datetime without any human intervention. Triggered workflows respond to events from external systems, enabling real-time integration with your existing infrastructure.
+
+## Execution Modes
+
+<CardGroup cols={3}>
+  <Card title="Manual Execution" icon="play">
+    Run a workflow on demand from the dashboard or via the Execute API. Useful for testing, one-off tasks, and operator-initiated processes.
+  </Card>
+
+  <Card title="Scheduled Execution" icon="calendar-clock">
+    Run a workflow once at a specific future date and time. No human trigger required — the platform fires the run automatically at the configured time.
+  </Card>
+
+  <Card title="Triggered Execution" icon="bolt">
+    Run a workflow in response to an external event — an SQS message or an inbound webhook — enabling real-time, event-driven automation.
+  </Card>
+</CardGroup>
+
+---
+
+## Scheduled Workflows
+
+Scheduled workflows execute automatically at a specific future datetime. Once a schedule is created, the platform fires the workflow run at the configured time via AWS EventBridge — no manual action required.
+
+<Info>
+Each schedule triggers the workflow once at the specified datetime. To run a workflow repeatedly, create multiple schedules with different datetimes.
+</Info>
+
+### Setting Up a Schedule
+
+Schedules are created via the API. Use the `POST /workflows/{workflow_id}/schedules` endpoint with the following fields:
+
+- **`scheduled_time`** — the exact datetime (UTC) when the workflow should run; must be in the future
+- **`run_input`** — optional input variables to inject into the workflow execution
+- **`version`** — optional version number to run; defaults to the active version if not specified
+- **`scheduled_by_name`** — optional display name of the person creating the schedule
+
+<Warning>
+`scheduled_time` must be provided in UTC. The schedule fires exactly once at the specified time.
+</Warning>
+
+### Schedule Status
+
+<AccordionGroup>
+  <Accordion title="Pending" icon="clock">
+    The schedule has been created and is waiting for its trigger time. It can still be modified or cancelled at this stage.
+  </Accordion>
+
+  <Accordion title="In Progress" icon="spinner">
+    The scheduled time has arrived and the workflow run has been initiated.
+  </Accordion>
+
+  <Accordion title="Completed" icon="circle-check">
+    The workflow run triggered by this schedule has finished successfully.
+  </Accordion>
+
+  <Accordion title="Failed" icon="circle-xmark">
+    The workflow run triggered by this schedule encountered an error. Check the run details for diagnostics.
+  </Accordion>
+
+  <Accordion title="Cancelled" icon="ban">
+    The schedule was cancelled before its trigger time. No workflow run was initiated.
+  </Accordion>
+</AccordionGroup>
+
+### Managing Schedules
+
+<AccordionGroup>
+  <Accordion title="Modifying a Schedule" icon="pen">
+    Only **Pending** schedules can be modified. You can update the scheduled time, input variables, or target version before the trigger fires.
+  </Accordion>
+
+  <Accordion title="Cancelling a Schedule" icon="ban">
+    Only **Pending** schedules can be cancelled. Once cancelled, the schedule will not trigger a workflow run. Deletion is permanent.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Triggered Workflows
+
+Triggered workflows execute in response to an external event. Interactly supports two trigger sources: AWS SQS messages and inbound webhooks.
+
+<CardGroup cols={2}>
+  <Card title="SQS Trigger" icon="cloud">
+    The workflow service listens to an AWS SQS queue. When a message arrives, a workflow run is initiated with the message payload as the input. Ideal for integrating with internal event-driven architectures.
+  </Card>
+
+  <Card title="Inbound Webhook Trigger" icon="webhook">
+    An external system calls a webhook endpoint on the Interactly platform. The request payload is passed directly to the workflow as input. Ideal for integrating with third-party platforms and CRMs.
+  </Card>
+</CardGroup>
+
+<Info>
+Triggered workflow configuration — queue bindings and webhook endpoint setup — is managed at the platform level. Contact your Interactly administrator to configure trigger sources for your team.
+</Info>
+
+---
+
+## Concurrency & Execution Controls
+
+All workflow execution modes share the same concurrency model. Understanding these limits is important when configuring schedules or triggered workflows that may fire frequently.
+
+<AccordionGroup>
+  <Accordion title="Team-Level Concurrency Limit" icon="users">
+    Your organisation has a maximum number of workflow runs that can execute simultaneously across all workflows. This limit is set by Interactly and visible in **My Organisation → License**.
+
+    When the team limit is reached, new execution requests are queued until a slot becomes available.
+  </Accordion>
+
+  <Accordion title="Per-Workflow Concurrency Limit" icon="sliders">
+    You can set an additional cap on a specific workflow — for example, to ensure a particular workflow never consumes more than a fixed number of concurrent slots regardless of how frequently it is triggered.
+
+    Configure this under the workflow's **Settings → Concurrency**. Setting it to `0` removes the per-workflow cap and defers to the team limit.
+  </Accordion>
+
+  <Accordion title="Stale Run Reaper" icon="broom">
+    The platform automatically detects and cleans up workflow runs that have been in progress for longer than expected — typically caused by a node hanging, a tool call timing out, or an unexpected platform interruption.
+
+    Stale runs are marked as **Failed** with a timeout reason, freeing up concurrency slots for new executions. This runs automatically in the background and requires no configuration.
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+If you have workflows that need to run repeatedly at regular intervals, create multiple schedules in advance — one for each intended run time.
+</Tip>
+
+## Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Daily Patient Follow-Ups" icon="calendar-check">
+    Schedule a workflow to run at a specific time to follow up with patients after their appointment.
+  </Card>
+
+  <Card title="CRM Event Processing" icon="building">
+    Trigger a workflow via SQS whenever a new lead is created in your CRM to initiate an automated intake process.
+  </Card>
+
+  <Card title="Appointment Reminders" icon="bell">
+    Schedule a reminder workflow to run 24 hours before a specific appointment by setting the trigger time accordingly.
+  </Card>
+
+  <Card title="Real-Time Inbound Routing" icon="phone-incoming">
+    Trigger a workflow via inbound webhook when a new support ticket arrives, automatically qualifying and routing it based on the ticket content.
+  </Card>
+</CardGroup>
+
+## API Reference
+
+<CardGroup cols={2}>
+  <Card title="Create Schedule" icon="plus" href="/api-reference/workflows/workflow-schedules/create-workflow-schedule">
+    **POST /workflows/:id/schedules**
+    Schedule a one-time workflow run at a specific future datetime
+  </Card>
+
+  <Card title="List Schedules" icon="list" href="/api-reference/workflows/workflow-schedules/list-workflow-schedules">
+    **GET /workflow-schedules**
+    Retrieve all schedules configured for your team
+  </Card>
+
+  <Card title="Execute Workflow" icon="play" href="/api-reference/workflows/workflow-execution/execute-workflow">
+    **POST /workflows/:id/execute**
+    Trigger a workflow run manually via API
+  </Card>
+
+  <Card title="List Workflow Runs" icon="clock-rotate-left" href="/api-reference/workflows/workflow-runs/list-workflow-runs">
+    **GET /workflow-runs**
+    View the history of all runs across execution modes
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Workflow Versioning" icon="code-branch" href="/workflows/workflow-versioning">
+    Pin schedules to a specific version for stable automated execution
+  </Card>
+
+  <Card title="Workflow Webhooks" icon="webhook" href="/workflows/workflow-webhooks">
+    Subscribe to run completion events from scheduled and triggered executions
+  </Card>
+
+  <Card title="Simulation" icon="flask" href="/workflows/workflow-simulation">
+    Test the workflow before scheduling a live run
+  </Card>
+
+  <Card title="Building a Workflow" icon="hammer" href="/workflows/building-a-workflow">
+    Go back to the workflow builder guide
+  </Card>
+</CardGroup>
