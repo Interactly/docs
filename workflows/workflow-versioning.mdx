@@ -1,0 +1,207 @@
+---
+title: Workflow Versioning
+subtitle: Track changes, manage versions, and publish updates safely without disrupting live executions
+slug: workflows/workflow-versioning
+description: Learn how Interactly's workflow versioning system works — creating versions, activating them for live use, comparing changes, importing and exporting, and rolling back when needed
+---
+
+# About
+
+Every workflow in Interactly is version-controlled from the moment it is created. Version 0 is generated automatically on creation and serves as your working baseline. As your workflow evolves, you can snapshot the current state into a new named version, activate it for live execution, and roll back instantly if something goes wrong — all without disrupting runs already in progress.
+
+<Info>
+In-flight workflow runs always complete on the version they started with. Activating a new version only affects executions that begin after the activation.
+</Info>
+
+## How Versioning Works
+
+<CardGroup cols={2}>
+  <Card title="Version 0 — Working Draft" icon="pencil">
+    Created automatically when you first create a workflow. This is your editable baseline. All changes made in the builder apply here until you snapshot a new version.
+  </Card>
+
+  <Card title="Named Versions — Snapshots" icon="camera">
+    Each new version is an immutable snapshot of your workflow's nodes, edges, and configuration at a point in time. Snapshots can be named, activated, compared, exported, and restored.
+  </Card>
+
+  <Card title="Active Version — Live Execution" icon="play">
+    Only one version is active at a time. All workflow executions — triggered manually, via schedule, or via webhook — run on the active version by default unless a specific version is requested.
+  </Card>
+
+  <Card title="Independent Editing" icon="code-branch">
+    Each version can be edited independently. You can refine a future version while the current active version continues serving live traffic.
+  </Card>
+</CardGroup>
+
+## Creating a New Version
+
+<Steps>
+  <Step title="Open Version Management">
+    Navigate to your workflow in the dashboard and click the **Versions** panel or the version indicator at the top of the builder.
+
+    <Frame caption="Version management panel">
+      <img src="/images/workflows/version-management.png" />
+    </Frame>
+  </Step>
+
+  <Step title="Create a Snapshot">
+    Click **New Version**. You will be prompted to:
+    - Give the version a meaningful name — e.g. `"v1 — Initial Release"` or `"v2 — Add Callback Branch"`
+    - Optionally check **Mark new version as active** to immediately make this version live upon creation
+
+    <Tip>
+    Use descriptive version names that reflect what changed — this makes it easy to identify the right version when reviewing history or rolling back.
+    </Tip>
+  </Step>
+
+  <Step title="Edit the New Version">
+    After creation, select the new version in the builder. All edits — adding nodes, changing edge conditions, updating prompts — apply only to this version until you activate it.
+  </Step>
+
+  <Step title="Mark as Active When Ready">
+    Once you are satisfied with the new version, click **Mark as Active**. All subsequent executions will use this version. Running executions are not affected.
+
+    <Frame caption="Activating a version">
+      <img src="/images/workflows/activate-version.png" />
+    </Frame>
+  </Step>
+</Steps>
+
+## Viewing Version History
+
+Navigate to the **Versions** panel on any workflow to see its full version history.
+
+For each version you can see:
+- Version number and name
+- Created date and author
+- Whether it is the currently active version
+
+<AccordionGroup>
+  <Accordion title="Comparing Two Versions" icon="arrows-left-right">
+    Select any two versions and click **Compare** to see a side-by-side diff of their configurations — nodes added or removed, edge conditions changed, prompt updates, and setting differences.
+
+    This is useful before activating a new version to verify exactly what will change in live execution.
+  </Accordion>
+
+  <Accordion title="Editing a Specific Version" icon="pen">
+    Select any version from the history list and open it in the builder. Changes are isolated to that version and do not affect other versions or the currently active one.
+
+    <Note>
+    Editing an older version does not automatically make it active. You must explicitly activate it to route live traffic to it.
+    </Note>
+  </Accordion>
+</AccordionGroup>
+
+## Import & Export
+
+Workflow versions can be exported as a portable bundle and imported into the same or a different environment — useful for promoting workflows from a staging workspace to production, or for backing up configurations.
+
+<CardGroup cols={2}>
+  <Card title="Export" icon="arrow-up-from-bracket">
+    Export one or more versions of a workflow as a bundle. You can choose to include specific version numbers or export all versions at once.
+  </Card>
+
+  <Card title="Import" icon="arrow-down-to-bracket">
+    Import a previously exported bundle to restore a workflow or bring it into a new environment. The imported workflow retains its version history from the bundle.
+  </Card>
+</CardGroup>
+
+<Warning>
+Imported workflows are created as new workflows in the target environment. They do not overwrite existing workflows with the same name.
+</Warning>
+
+## Rolling Back
+
+If a newly activated version causes unexpected behaviour, rolling back is straightforward:
+
+<Steps>
+  <Step title="Open Version History">
+    Go to the **Versions** panel on the affected workflow.
+  </Step>
+
+  <Step title="Select the Previous Version">
+    Identify the version that was working correctly before the change.
+  </Step>
+
+  <Step title="Mark as Active">
+    Click **Mark as Active** on the previous version. Live traffic is immediately routed back to it.
+  </Step>
+</Steps>
+
+<Info>
+Runs that started on the problematic version will continue to completion on that version. Only new executions are affected by the rollback.
+</Info>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Name versions clearly" icon="tag">
+    Use version names that describe the change, not just a number. `"v3 — Fix callback routing condition"` is far more useful than `"Version 3"` when scanning history under pressure.
+  </Accordion>
+
+  <Accordion title="Test before activating" icon="flask">
+    Use the [Simulation](/workflows/workflow-simulation) feature to validate a new version interactively before activating it for live traffic.
+  </Accordion>
+
+  <Accordion title="Keep a known-good version" icon="shield-check">
+    Avoid overwriting the last known-good version. Create a new snapshot for every meaningful change so you always have a rollback target.
+  </Accordion>
+
+  <Accordion title="Use export for environment promotion" icon="arrow-up-from-bracket">
+    Export a validated version from your staging workflow and import it to production rather than rebuilding manually. This eliminates configuration drift between environments.
+  </Accordion>
+</AccordionGroup>
+
+## API Reference
+
+<CardGroup cols={2}>
+  <Card title="List Versions" icon="list" href="/api-reference/workflows/workflow-versions/list-workflow-versions">
+    **GET /workflows/:id/versions**
+    Retrieve the full version history for a workflow
+  </Card>
+
+  <Card title="Create Version" icon="plus" href="/api-reference/workflows/workflow-versions/create-workflow-version">
+    **POST /workflows/:id/versions**
+    Snapshot the current configuration as a new named version
+  </Card>
+
+  <Card title="Activate Version" icon="play" href="/api-reference/workflows/workflow-versions/activate-workflow-version">
+    **POST /workflows/:id/versions/:version/activate**
+    Set a version as active for all subsequent executions
+  </Card>
+
+  <Card title="Compare Versions" icon="arrows-left-right" href="/api-reference/workflows/workflow-versions/diff-workflow-versions">
+    **GET /workflows/:id/versions/:version/diff/:version2**
+    Compare two versions of a workflow side by side
+  </Card>
+
+  <Card title="Export Workflow" icon="arrow-up-from-bracket" href="/api-reference/workflows/workflows/export-workflow">
+    **POST /workflows/:id/export**
+    Export one or more versions as a portable bundle
+  </Card>
+
+  <Card title="Import Workflow" icon="arrow-down-to-bracket" href="/api-reference/workflows/workflows/import-workflow-bundle">
+    **POST /workflows/import/bundle**
+    Import a previously exported workflow bundle
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Simulation" icon="flask" href="/workflows/workflow-simulation">
+    Test a new version interactively before activating it for live traffic
+  </Card>
+
+  <Card title="Building a Workflow" icon="hammer" href="/workflows/building-a-workflow">
+    Go back to the workflow builder guide
+  </Card>
+
+  <Card title="Scheduled Workflows" icon="calendar-clock" href="/workflows/scheduled-and-triggered-workflows">
+    Set up scheduled and event-driven workflow triggers
+  </Card>
+
+  <Card title="Workflow Webhooks" icon="webhook" href="/workflows/workflow-webhooks">
+    Subscribe to lifecycle events including version activation
+  </Card>
+</CardGroup>

@@ -73,30 +73,13 @@ Nodes are the building blocks of a workflow. Each node performs one discrete act
     - `SEND_SMS` — send an SMS to the contact
   </Card>
 
-  <Card title="Healthcare (EHR) Nodes" icon="heart-pulse">
-    **Athena EHR integrations**
-    - `ATHENA_PATIENTS_SEARCH`
-    - `ATHENA_PATIENTS_CREATE`
-    - `ATHENA_PATIENTS_UPDATE`
-    - `ATHENA_APPOINTMENTS_CREATE`
-  </Card>
-
   <Card title="Workflow Control Nodes" icon="shuffle">
     **Internal execution management**
     - `WORKFLOW_RUN_FETCH` — retrieve a previous workflow run
     - `WORKFLOW_RUN_EVALUATOR` — evaluate run outputs
   </Card>
-
-  <Card title="Conversation Boundary Nodes" icon="arrow-right-to-bracket">
-    **Start and end points**
-    - `START_CONVERSATION` — entry point for every workflow
-    - `END_CONVERSATION` — exit point to cleanly close execution
-  </Card>
 </CardGroup>
 
-<Tip>
-Every workflow must have exactly one `START_CONVERSATION` node and at least one `END_CONVERSATION` node. All execution paths must terminate at an end node.
-</Tip>
 
 ### Configuring a Node
 
@@ -306,7 +289,7 @@ Once a workflow is executing, runs progress through the following states:
     An unrecoverable error occurred during execution. Error details are logged in the run record.
   </Step>
 
-  <Step title="Interrupted">
+  <Step title="Cancelled">
     Execution was manually stopped before reaching an end node.
   </Step>
 </Steps>

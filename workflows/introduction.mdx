@@ -26,7 +26,7 @@ Workflows are the backbone of Interactly's agentic capabilities. Whether you're 
 
   <Card title="Scheduled Workflow" icon="calendar-clock" href="/workflows/scheduled-and-triggered-workflows">
     **Time-based automatic execution**
-    - Cron-based trigger configuration
+    - Schedule a one-time run at a specific future datetime
     - Runs without manual intervention
     - Supports all node and tool types
     - Concurrency-controlled execution
@@ -86,7 +86,7 @@ Workflows are the backbone of Interactly's agentic capabilities. Whether you're 
   </Card>
 
   <Card title="Simulation" icon="flask">
-    Test workflows interactively before publishing. Run two workflows side-by-side in a sandboxed simulation environment to validate logic and outputs.
+    Compare two workflow configurations head-to-head across multiple automated runs. Evaluate outputs and scores side by side before activating a new version.
   </Card>
 
   <Card title="Webhook Lifecycle Events" icon="webhook">
@@ -114,7 +114,7 @@ graph TD
     E -->|Yes| F[Publish Version]
     F --> G{Trigger Type}
     G -->|Agentic| H[Event-Driven Execution]
-    G -->|Scheduled| I[Cron Execution]
+    G -->|Scheduled| I[Scheduled Execution]
     G -->|Triggered| J[SQS / Webhook Execution]
     H --> K[Monitor Runs]
     I --> K
@@ -138,7 +138,7 @@ graph TD
   </Step>
 
   <Step title="Simulate Before Publishing">
-    Use the Simulation feature to run your workflow interactively. Validate branching logic, tool responses, and conversation flow in a safe sandbox.
+    Use the Simulation feature to compare two workflow configurations across multiple automated runs, evaluate outputs, and confirm your changes perform as expected.
   </Step>
 
   <Step title="Publish & Monitor">
