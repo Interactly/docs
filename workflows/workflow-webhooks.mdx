@@ -1,0 +1,239 @@
+---
+title: Workflow Webhooks
+subtitle: Subscribe to workflow lifecycle events and receive real-time notifications for every run
+slug: workflows/workflow-webhooks
+description: Learn how to configure outbound webhooks for workflow lifecycle events — workflow created, updated, deleted, run started, and run completed — with payload examples and retry behaviour
+---
+
+# About
+
+Workflow webhooks deliver real-time notifications to your application when key events occur in the workflow lifecycle. Subscribe to the events you care about, point them at your endpoint, and Interactly will POST a structured payload to your system — immediately, reliably, and with automatic retry on failure.
+
+<Info>
+Workflow webhooks are outbound — Interactly sends events to your endpoint. For triggering workflows from external events, see [Scheduled & Triggered Workflows](/workflows/scheduled-and-triggered-workflows).
+</Info>
+
+## Available Events
+
+<CardGroup cols={2}>
+  <Card title="workflow_created" icon="plus-circle">
+    Fired when a new workflow is created in your team's account.
+  </Card>
+
+  <Card title="workflow_updated" icon="pen-circle">
+    Fired when a workflow's configuration, version, or settings are modified.
+  </Card>
+
+  <Card title="workflow_deleted" icon="trash">
+    Fired when a workflow is permanently deleted.
+  </Card>
+
+  <Card title="workflow_run_started" icon="play">
+    Fired the moment a workflow execution begins — regardless of trigger type (manual, scheduled, or triggered).
+  </Card>
+
+  <Card title="workflow_run_completed" icon="circle-check">
+    Fired when a workflow run reaches a final state — completed, failed, or cancelled — with full run output included.
+  </Card>
+</CardGroup>
+
+## Configuring a Webhook
+
+Webhooks are configured via the API. Use the `POST /workflow-webhooks` endpoint with the following fields:
+
+- **`name`** — a label for this webhook (required)
+- **`url`** — the HTTPS endpoint where Interactly should deliver event payloads; must be publicly accessible and return a `2xx` status to acknowledge receipt
+- **`actions`** — list of lifecycle events to subscribe to; choose one or all five
+- **`enabled`** — whether the webhook is active (default: `true`)
+- **`bearer_token`** — optional token sent as an `Authorization: Bearer` header on every request, allowing your endpoint to verify the request originated from Interactly
+- **`timeout_seconds`** — how long Interactly waits for a response before treating it as a failure (1–60 seconds, default 10)
+- **`max_retries`** — how many times to retry a failed delivery (0–10, default 3)
+- **`retry_backoff_seconds`** — wait time in seconds between retries (1–300 seconds, default 10)
+
+## Event Payload Examples
+
+<AccordionGroup>
+  <Accordion title="workflow_created" icon="plus-circle">
+    ```json
+    {
+      "event": "workflow_created",
+      "workflow": {
+        "id": "wf_abc123",
+        "teamId": "team_001",
+        "name": "Patient Intake Flow",
+        "activeVersionNumber": 0,
+        "createdAt": "2026-04-01T09:00:00.000Z",
+        "updatedAt": "2026-04-01T09:00:00.000Z"
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="workflow_updated" icon="pen-circle">
+    ```json
+    {
+      "event": "workflow_updated",
+      "workflow": {
+        "id": "wf_abc123",
+        "teamId": "team_001",
+        "name": "Patient Intake Flow",
+        "activeVersionNumber": 2,
+        "createdAt": "2026-04-01T09:00:00.000Z",
+        "updatedAt": "2026-04-15T14:32:00.000Z"
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="workflow_deleted" icon="trash">
+    ```json
+    {
+      "event": "workflow_deleted",
+      "workflow": {
+        "id": "wf_abc123",
+        "teamId": "team_001",
+        "name": "Patient Intake Flow",
+        "deletedAt": "2026-04-20T11:00:00.000Z"
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="workflow_run_started" icon="play">
+    ```json
+    {
+      "event": "workflow_run_started",
+      "workflow": {
+        "id": "wf_abc123",
+        "teamId": "team_001",
+        "name": "Patient Intake Flow"
+      },
+      "run": {
+        "id": "run_xyz789",
+        "versionNumber": 2,
+        "status": "in_progress",
+        "triggeredBy": "manual",
+        "startedAt": "2026-04-20T10:15:00.000Z"
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="workflow_run_completed" icon="circle-check">
+    ```json
+    {
+      "event": "workflow_run_completed",
+      "workflow": {
+        "id": "wf_abc123",
+        "teamId": "team_001",
+        "name": "Patient Intake Flow"
+      },
+      "run": {
+        "id": "run_xyz789",
+        "versionNumber": 2,
+        "status": "completed",
+        "triggeredBy": "manual",
+        "startedAt": "2026-04-20T10:15:00.000Z",
+        "completedAt": "2026-04-20T10:17:32.000Z",
+        "output": {
+          "collectedInformation": {
+            "patientName": "Jane Doe",
+            "appointmentDate": "2026-05-01",
+            "insuranceProvider": "BlueCross"
+          }
+        }
+      }
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Retry Behaviour
+
+If your endpoint does not return a `2xx` status — or does not respond within the timeout window — Interactly will automatically retry the delivery using exponential backoff.
+
+<AccordionGroup>
+  <Accordion title="Retry Schedule" icon="clock-rotate-left">
+    Retries are spaced with increasing intervals — the first retry happens quickly, with subsequent retries spaced progressively further apart. This prevents overwhelming a temporarily unavailable endpoint while still ensuring eventual delivery.
+
+    All delivery attempts — successful and failed — are logged in the webhook's **Delivery Logs** for inspection.
+  </Accordion>
+
+  <Accordion title="Delivery Logs" icon="list">
+    Every delivery attempt is recorded with:
+    - Timestamp of the attempt
+    - HTTP status code returned by your endpoint
+    - Response body (truncated if large)
+    - Whether the delivery succeeded or will be retried
+
+    Access delivery logs from the **Webhooks** tab on your workflow.
+  </Accordion>
+
+  <Accordion title="Handling Duplicates" icon="copy">
+    In rare cases — such as a network timeout where your server processed the request but the acknowledgement was lost — Interactly may deliver the same event more than once. Design your webhook handler to be idempotent, using the `run.id` or `workflow.id` as a deduplication key.
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+Use a bearer token to verify that payloads are genuinely from Interactly before processing them. Reject any requests that do not include the expected token in the `Authorization` header.
+</Tip>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Respond quickly, process asynchronously" icon="bolt">
+    Return a `200 OK` immediately upon receiving a webhook payload, then process the event asynchronously. If your handler takes too long to respond, Interactly will treat it as a timeout and retry.
+  </Accordion>
+
+  <Accordion title="Use run_completed for downstream automation" icon="circle-check">
+    The `workflow_run_completed` event includes the full run output and collected information. This is the most useful event for triggering downstream actions — updating a CRM record, sending a notification, or initiating a follow-up workflow.
+  </Accordion>
+
+  <Accordion title="Monitor delivery logs regularly" icon="eye">
+    Check delivery logs periodically to catch silent failures — cases where your endpoint is returning errors and retries are being exhausted without anyone noticing.
+  </Accordion>
+</AccordionGroup>
+
+## API Reference
+
+<CardGroup cols={2}>
+  <Card title="List Workflow Webhooks" icon="list" href="/api-reference/workflows/workflow-webhooks/list-workflow-webhooks">
+    **GET /workflow-webhooks**
+    Retrieve all webhook subscriptions for your team
+  </Card>
+
+  <Card title="Create Webhook" icon="plus" href="/api-reference/workflows/workflow-webhooks/create-workflow-webhook">
+    **POST /workflow-webhooks**
+    Register a new webhook endpoint and subscribe to events
+  </Card>
+
+  <Card title="Update Webhook" icon="pen" href="/api-reference/workflows/workflow-webhooks/update-workflow-webhook">
+    **PATCH /workflow-webhooks/:id**
+    Modify an existing webhook's URL, events, or headers
+  </Card>
+
+  <Card title="Delete Webhook" icon="trash" href="/api-reference/workflows/workflow-webhooks/delete-workflow-webhook">
+    **DELETE /workflow-webhooks/:id**
+    Remove a webhook subscription
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Scheduled & Triggered Workflows" icon="calendar-clock" href="/workflows/scheduled-and-triggered-workflows">
+    Set up automated execution so webhook events fire without manual runs
+  </Card>
+
+  <Card title="Workflow Versioning" icon="code-branch" href="/workflows/workflow-versioning">
+    Receive version activation events to track deployments
+  </Card>
+
+  <Card title="Building a Workflow" icon="hammer" href="/workflows/building-a-workflow">
+    Go back to the workflow builder guide
+  </Card>
+
+  <Card title="Simulation" icon="flask" href="/workflows/workflow-simulation">
+    Test your workflow before enabling live webhook delivery
+  </Card>
+</CardGroup>
