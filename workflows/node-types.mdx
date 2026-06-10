@@ -31,6 +31,10 @@ Every workflow is built from nodes. Choose the right node type for each step and
   <Card title="Workflow Control Nodes" icon="shuffle" href="#workflow-control-nodes">
     Retrieve and evaluate previous workflow runs internally
   </Card>
+
+  <Card title="Data Transformation Nodes" icon="filter" href="#data-transformation-nodes">
+    Reshape, filter, and project structured data between steps — no LLM required
+  </Card>
 </CardGroup>
 
 ---
@@ -170,6 +174,70 @@ These nodes are used internally to inspect and evaluate other workflow runs as p
     - **Target Run** — the run to evaluate; can reference the current run or a fetched run
     - **Evaluation Criteria** — define the metrics or conditions to assess
     - **Output** — evaluation results are stored as variables for downstream use
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Data Transformation Nodes
+
+Data Transformation nodes reshape data as it flows between steps — without invoking an LLM. They take a value from a runtime variable, transform it deterministically, and write the result back for downstream nodes to consume. Because they run no model, they add no latency or LLM cost.
+
+<AccordionGroup>
+  <Accordion title="FIELD_EXTRACTOR — Filter & Project JSON" icon="filter">
+    Takes a JSON object or array from a runtime variable and returns a filtered copy containing only the keys you choose to retain — everything else is dropped. Supports nested objects and arrays via a compact key-path syntax, preserving the original shape. The projection is fully deterministic and runs no LLM.
+
+    **Use when:** A previous tool call, HTTP request, or EHR integration returned a large structured response and you only need a few fields downstream — slim the payload before feeding it into a prompt, tool input, or request body.
+
+    **Key configuration:**
+    - **Input Variable Name** — runtime variable holding the JSON to filter (required)
+    - **Keys to Retain** — static list of key paths to keep; supports dot and bracket notation (see below)
+    - **Keys to Retain Variable Name** — runtime variable holding the key-path list; takes priority over the static list when set
+    - **Output Variable Name** — where the filtered result is stored (defaults to `field_extractor_result`)
+
+    **Key-path syntax:**
+
+    | Pattern | Meaning |
+    |---------|---------|
+    | `name` | A top-level key |
+    | `address.city` | A nested key — keep `city` inside `address` |
+    | `orders[].id` | The `id` of **every** element in the `orders` array |
+    | `orders[1].id` | The `id` of the element at **index 1** only |
+    | `orders[].items[].name` | A field nested through multiple arrays |
+
+    A path ending at an object or array with no trailing field (e.g. `orders[0]`) retains that whole element unchanged.
+
+    **Example** — retaining `["name", "address.city", "orders[].id"]`:
+
+    ```json
+    // Input (api_response)              
+    {                                    
+      "name": "Alice",                     
+      "age": 30,                           
+      "address": {                        
+        "city": "NYC", "zip": "10001"
+      },
+      "orders": [
+        { "id": 1, "price": 10 },
+        { "id": 2, "price": 20 }
+      ]
+    }
+    ```
+
+    ```json
+    // Output (field_extractor_result)
+    {
+      "name": "Alice",
+      "address": { "city": "NYC" },
+      "orders": [{ "id": 1 }, { "id": 2 }]
+    }
+    ```
+
+    Alongside the result, the node also writes `<output>_success` (`true`/`false`) and, on failure, `<output>_error` — so downstream nodes can branch on the outcome. Missing key paths are skipped silently; out-of-bounds array indices are dropped rather than raising an error.
+
+    <Warning>
+    If the **Input Variable Name** is missing or `null` at runtime, the node fails gracefully — it emits a workflow warning, sets `<output>_success` to `false`, and records the reason in `<output>_error` while execution continues. Guard downstream nodes on the `_success` flag when the input may be absent.
+    </Warning>
   </Accordion>
 </AccordionGroup>
 
