@@ -1,0 +1,288 @@
+---
+title: Node Types
+subtitle: Complete reference for all available node types across every category
+slug: workflows/node-types
+description: Explore every node type available in Interactly workflows — LLM nodes, tool and HTTP nodes, communication nodes, and workflow control nodes — with configuration details and use cases
+---
+
+# About
+
+Nodes are the building blocks of every workflow. Each node performs one discrete action — from generating an LLM response to calling an external API or sending an SMS. Nodes are connected by edges to form the full execution graph.
+
+<Info>
+Every workflow is built from nodes. Choose the right node type for each step and connect them with edges to define how execution flows.
+</Info>
+
+## Node Categories
+
+<CardGroup cols={2}>
+  <Card title="LLM Nodes" icon="brain-circuit" href="#llm-nodes">
+    Conversational responses, background reasoning, and static message delivery
+  </Card>
+
+  <Card title="Tool & HTTP Nodes" icon="wrench" href="#tool-and-http-nodes">
+    Execute registered tools and call external REST APIs
+  </Card>
+
+  <Card title="Communication Nodes" icon="message" href="#communication-nodes">
+    Send SMS messages to contacts mid-workflow
+  </Card>
+
+  <Card title="Workflow Control Nodes" icon="shuffle" href="#workflow-control-nodes">
+    Retrieve and evaluate previous workflow runs internally
+  </Card>
+
+  <Card title="Data Transformation Nodes" icon="filter" href="#data-transformation-nodes">
+    Reshape, filter, and project structured data between steps — no LLM required
+  </Card>
+</CardGroup>
+
+---
+
+## LLM Nodes
+
+LLM nodes power the conversational and reasoning capabilities of your workflow. They connect to any supported LLM provider and can be augmented with tools for extended actions.
+
+<AccordionGroup>
+  <Accordion title="SAY_LLM — Conversational Response" icon="comments">
+    The primary node for LLM-driven conversations. Generates a response using the configured provider and model, speaks or sends it to the user, and waits for a reply before proceeding.
+
+    **Use when:** You need the AI to engage with the user — ask a question, collect information, or provide a dynamic response based on context.
+
+    **Key configuration:**
+    - **LLM Provider** — Azure OpenAI, OpenAI, Google, Anthropic, AWS Bedrock, or Custom
+    - **Model** — select the model for this node
+    - **System Prompt** — instructions for the LLM; supports `{{variable}}` substitution
+    - **Tools** — attach tools the LLM can call during this step
+    - **Max Turns** — limit how many conversation turns this node handles before moving on
+    - **Temperature / Max Tokens** — generation parameters
+
+    <Tip>
+    Use `{{variable_name}}` in your system prompt to inject patient names, appointment details, or any global variable dynamically at runtime.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="WORKER_LLM — Background Reasoning" icon="brain">
+    Runs an LLM task in the background without exposing it directly to the user. Designed for structured data extraction, classification, or any reasoning step that produces an output consumed by the next node.
+
+    **Use when:** You need the AI to process information silently — extract structured data from a conversation, classify an intent, or prepare a payload for a tool call.
+
+    **Key configuration:**
+    - **LLM Provider & Model** — same options as SAY_LLM
+    - **System Prompt** — task instructions for the worker
+    - **Output Schema** — define a JSON schema to enforce structured output format
+    - **Tools** — attach tools for extended capabilities during reasoning
+  </Accordion>
+
+  <Accordion title="SAY_STATIC — Static Message" icon="megaphone">
+    Delivers a predefined message without invoking an LLM. Can be configured with a single fixed message or a list of messages to pick from randomly.
+
+    **Use when:** The response is always the same — an opening greeting, a standard disclaimer, a confirmation phrase, or a fallback message.
+
+    **Key configuration:**
+    - **Message** — the static text to deliver; supports `{{variable}}` substitution
+    - **Random Selection** — provide multiple message options and the node picks one at random per execution
+
+    <Note>
+    SAY_STATIC is significantly faster and cheaper than SAY_LLM since it does not invoke an LLM. Use it wherever the response does not need to be dynamic.
+    </Note>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Tool & HTTP Nodes
+
+These nodes extend your workflow's reach beyond conversation — executing registered tools or calling external services directly.
+
+<AccordionGroup>
+  <Accordion title="TOOL_NODE — Execute a Tool" icon="wrench">
+    Executes a tool from the workflow's tool registry. Supports all four tool types: inbuilt functions, inline Python scripts, external REST API tools, and Knowledge Base queries.
+
+    **Use when:** You need to run a specific action that is already registered as a tool — look up data, run a calculation, query a Knowledge Base, or call a pre-configured API wrapper.
+
+    **Key configuration:**
+    - **Tool** — select from registered tools available to your team
+    - **Input Mapping** — map workflow variables or conversation context to the tool's input fields
+    - **Output Mapping** — map the tool's response fields back into workflow variables for use in downstream nodes
+
+    See [Tools & Integrations](/workflows/tools-and-integrations) for the full guide on tool types and registration.
+  </Accordion>
+
+  <Accordion title="HTTP_REQUEST — Call External APIs" icon="globe">
+    Makes a direct HTTP request to any REST endpoint. Useful for one-off integrations that don't warrant a full registered tool.
+
+    **Use when:** You need to call an external service — a CRM, a scheduling system, a notification API — without setting up a formal tool registration.
+
+    **Key configuration:**
+    - **URL** — target endpoint; supports `{{variable}}` substitution for dynamic paths
+    - **Method** — GET, POST, PUT, PATCH, or DELETE
+    - **Headers** — key-value pairs; use global variables to inject secrets safely
+    - **Body** — JSON payload with `{{variable}}` support
+    - **Response Mapping** — extract fields from the response and store them as workflow variables
+
+    <Warning>
+    Never hardcode API keys or secrets directly in the URL or body. Use Global Variables marked as `is_secret` and reference them via `{{variable_name}}`.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Communication Nodes
+
+<AccordionGroup>
+  <Accordion title="SEND_SMS — Send a Text Message" icon="message">
+    Sends an SMS message to a specified phone number mid-workflow. Runs inline as part of the execution graph and can be paired with a Companion Edge to send without blocking the main conversation flow.
+
+    **Use when:** You need to deliver a confirmation, reminder, or follow-up message via SMS at a specific point in the workflow — for example, after an appointment is scheduled or when a callback is requested.
+
+    **Key configuration:**
+    - **To** — recipient phone number or `{{variable}}` reference
+    - **Message** — SMS body; supports `{{variable}}` substitution for personalised content
+    - **Provider** — the SMS provider configured for your team
+
+    <Tip>
+    Pair SEND_SMS with a Companion Edge so the SMS is dispatched in parallel without pausing the conversation for the user.
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Workflow Control Nodes
+
+These nodes are used internally to inspect and evaluate other workflow runs as part of a larger orchestration.
+
+<AccordionGroup>
+  <Accordion title="WORKFLOW_RUN_FETCH — Retrieve a Previous Run" icon="clock-rotate-left">
+    Fetches the details of a previous workflow run — its inputs, outputs, collected data, and status — and makes them available as variables in the current workflow.
+
+    **Use when:** The current workflow needs context from a prior interaction. For example, fetching the outcome of a previous intake call before deciding how to route the current conversation.
+
+    **Key configuration:**
+    - **Run ID** — the identifier of the workflow run to fetch; can be a `{{variable}}` reference
+    - **Output Mapping** — map fields from the fetched run into variables for use in subsequent nodes
+  </Accordion>
+
+  <Accordion title="WORKFLOW_RUN_EVALUATOR — Evaluate Run Outputs" icon="chart-bar">
+    Runs an evaluation against a completed workflow run's outputs, scoring or classifying the result according to configured criteria.
+
+    **Use when:** You need to assess the quality or outcome of a workflow run — for QA scoring, outcome classification, or triggering downstream actions based on performance thresholds.
+
+    **Key configuration:**
+    - **Target Run** — the run to evaluate; can reference the current run or a fetched run
+    - **Evaluation Criteria** — define the metrics or conditions to assess
+    - **Output** — evaluation results are stored as variables for downstream use
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Data Transformation Nodes
+
+Data Transformation nodes reshape data as it flows between steps — without invoking an LLM. They take a value from a runtime variable, transform it deterministically, and write the result back for downstream nodes to consume. Because they run no model, they add no latency or LLM cost.
+
+<AccordionGroup>
+  <Accordion title="FIELD_EXTRACTOR — Filter & Project JSON" icon="filter">
+    Takes a JSON object or array from a runtime variable and returns a filtered copy containing only the keys you choose to retain — everything else is dropped. Supports nested objects and arrays via a compact key-path syntax, preserving the original shape. The projection is fully deterministic and runs no LLM.
+
+    **Use when:** A previous tool call, HTTP request, or EHR integration returned a large structured response and you only need a few fields downstream — slim the payload before feeding it into a prompt, tool input, or request body.
+
+    **Key configuration:**
+    - **Input Variable Name** — runtime variable holding the JSON to filter (required)
+    - **Keys to Retain** — static list of key paths to keep; supports dot and bracket notation (see below)
+    - **Keys to Retain Variable Name** — runtime variable holding the key-path list; takes priority over the static list when set
+    - **Output Variable Name** — where the filtered result is stored (defaults to `field_extractor_result`)
+
+    **Key-path syntax:**
+
+    | Pattern | Meaning |
+    |---------|---------|
+    | `name` | A top-level key |
+    | `address.city` | A nested key — keep `city` inside `address` |
+    | `orders[].id` | The `id` of **every** element in the `orders` array |
+    | `orders[1].id` | The `id` of the element at **index 1** only |
+    | `orders[].items[].name` | A field nested through multiple arrays |
+
+    A path ending at an object or array with no trailing field (e.g. `orders[0]`) retains that whole element unchanged.
+
+    **Example** — retaining `["name", "address.city", "orders[].id"]`:
+
+    ```json
+    // Input (api_response)              
+    {                                    
+      "name": "Alice",                     
+      "age": 30,                           
+      "address": {                        
+        "city": "NYC", "zip": "10001"
+      },
+      "orders": [
+        { "id": 1, "price": 10 },
+        { "id": 2, "price": 20 }
+      ]
+    }
+    ```
+
+    ```json
+    // Output (field_extractor_result)
+    {
+      "name": "Alice",
+      "address": { "city": "NYC" },
+      "orders": [{ "id": 1 }, { "id": 2 }]
+    }
+    ```
+
+    Alongside the result, the node also writes `<output>_success` (`true`/`false`) and, on failure, `<output>_error` — so downstream nodes can branch on the outcome. Missing key paths are skipped silently; out-of-bounds array indices are dropped rather than raising an error.
+
+    <Warning>
+    If the **Input Variable Name** is missing or `null` at runtime, the node fails gracefully — it emits a workflow warning, sets `<output>_success` to `false`, and records the reason in `<output>_error` while execution continues. Guard downstream nodes on the `_success` flag when the input may be absent.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## API Reference
+
+<CardGroup cols={2}>
+  <Card title="List Node Types" icon="list" href="/api-reference/workflows/nodes/list-node-types">
+    **GET /nodes/types**
+    Retrieve all available node types with their categories
+  </Card>
+
+  <Card title="Get Node Schema" icon="code" href="/api-reference/workflows/nodes/get-node-schema">
+    **GET /nodes/schema/:node_type**
+    Get the full configuration schema for a specific node type
+  </Card>
+
+  <Card title="Create Node" icon="circle-plus" href="/api-reference/workflows/nodes/create-node">
+    **POST /nodes**
+    Add a node to your workflow
+  </Card>
+
+  <Card title="Update Node" icon="pen" href="/api-reference/workflows/nodes/update-node">
+    **PATCH /nodes/:id**
+    Modify an existing node's configuration
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Building a Workflow" icon="hammer" href="/workflows/building-a-workflow">
+    Learn how to add and connect nodes in the workflow builder
+  </Card>
+
+  <Card title="Tools & Integrations" icon="plug" href="/workflows/tools-and-integrations">
+    Attach tools, external APIs, and Knowledge Bases to LLM nodes
+  </Card>
+
+  <Card title="Workflow Versioning" icon="code-branch" href="/workflows/workflow-versioning">
+    Manage versions and publish changes safely
+  </Card>
+
+  <Card title="Simulation" icon="flask" href="/workflows/workflow-simulation">
+    Test your workflow interactively before going live
+  </Card>
+</CardGroup>

@@ -1,0 +1,349 @@
+---
+title: Building a Workflow
+subtitle: Step-by-step guide to creating, configuring, and publishing your first workflow
+slug: workflows/building-a-workflow
+description: Learn how to build a workflow from scratch — adding nodes, connecting edges, attaching tools, setting global variables, and publishing a version for live execution
+---
+
+# About
+
+Workflows are built as a graph of connected nodes and edges in the Interactly dashboard. Each workflow starts with a blank canvas — you add nodes for each step of your process, connect them with edges to define the execution flow, and publish a version when ready.
+
+<Info>
+Every workflow is version-controlled from the moment it's created. Version 0 is automatically generated on creation — you can iterate freely and publish new versions without affecting live executions.
+</Info>
+
+## Creating Your Workflow
+
+<Steps>
+  <Step title="Access the Workflow Dashboard">
+    1. Navigate to your Interactly dashboard
+    2. Click the **Workflows** tab
+    3. Click **New Workflow** to begin
+
+    <Frame caption="Creating a new workflow">
+      <img src="/images/workflows/create-new-workflow.png" />
+    </Frame>
+  </Step>
+
+  <Step title="Name Your Workflow">
+    Enter a descriptive name that reflects the workflow's purpose:
+
+    <Card title="Naming Examples" icon="tag">
+      - "Patient Intake — Appointment Scheduling"
+      - "Post-Call Follow-Up Sequence"
+      - "Insurance Verification Flow"
+      - "Outbound Reminder — Prescription Refill"
+    </Card>
+
+    Optionally add a description and assign a category for organisation. Click **Create** to proceed.
+  </Step>
+
+  <Step title="Open the Workflow Builder">
+    You'll be taken to the visual workflow canvas. This is where you add and connect all nodes.
+
+    <Frame caption="Workflow builder canvas">
+      <img src="/images/workflows/workflow-builder.png" />
+    </Frame>
+  </Step>
+</Steps>
+
+## Adding Nodes
+
+Nodes are the building blocks of a workflow. Each node performs one discrete action — generating an LLM response, calling an API, sending an SMS, or controlling conversation flow.
+
+### Node Categories
+
+<CardGroup cols={2}>
+  <Card title="LLM Nodes" icon="brain-circuit">
+    **Conversational and reasoning steps**
+    - `SAY_LLM` — generate a conversational response via LLM
+    - `WORKER_LLM` — structured output or background reasoning
+    - `SAY_STATIC` — output a predefined or random static message
+  </Card>
+
+  <Card title="Tool & HTTP Nodes" icon="wrench">
+    **External actions and API calls**
+    - `TOOL_NODE` — execute a registered tool (function, Python, API, KB)
+    - `HTTP_REQUEST` — call any REST endpoint directly
+  </Card>
+
+  <Card title="Communication Nodes" icon="message">
+    **Messaging and call control**
+    - `SEND_SMS` — send an SMS to the contact
+  </Card>
+
+  <Card title="Workflow Control Nodes" icon="shuffle">
+    **Internal execution management**
+    - `WORKFLOW_RUN_FETCH` — retrieve a previous workflow run
+    - `WORKFLOW_RUN_EVALUATOR` — evaluate run outputs
+  </Card>
+</CardGroup>
+
+
+### Configuring a Node
+
+Click **Add Node** on the canvas or drag a node type from the palette. Each node type has its own configuration panel:
+
+<AccordionGroup>
+  <Accordion title="SAY_LLM Node Configuration">
+    The primary node for LLM-driven conversational responses.
+
+    - **Name** — label for this node on the canvas
+    - **LLM Provider** — select from Azure OpenAI, OpenAI, Google, Anthropic, AWS Bedrock, or Custom
+    - **Model** — choose the model for this node
+    - **System Prompt** — instructions for the LLM (supports `{{variable}}` syntax)
+    - **Tools** — attach tools the LLM can call during this step
+    - **Max Turns** — limit conversation turns at this node
+    - **Temperature / Max Tokens** — generation parameters
+  </Accordion>
+
+  <Accordion title="WORKER_LLM Node Configuration">
+    For background reasoning or structured data extraction — not exposed directly to the user.
+
+    - **Name**, **LLM Provider**, **Model** — same as SAY_LLM
+    - **System Prompt** — task instructions for the worker
+    - **Output Schema** — define a JSON schema for structured outputs
+    - **Tools** — attach tools for extended capabilities
+  </Accordion>
+
+  <Accordion title="HTTP_REQUEST Node Configuration">
+    Call any external REST API from within your workflow.
+
+    - **URL** — target endpoint (supports `{{variable}}` substitution)
+    - **Method** — GET, POST, PUT, PATCH, DELETE
+    - **Headers** — key-value pairs (supports secrets via global variables)
+    - **Body** — JSON payload (supports `{{variable}}` substitution)
+    - **Response Mapping** — map response fields to workflow variables
+  </Accordion>
+
+  <Accordion title="SEND_SMS Node Configuration">
+    Send an SMS message to the contact mid-workflow.
+
+    - **To** — phone number or `{{variable}}` reference
+    - **Message** — SMS body with `{{variable}}` support
+    - **Provider** — configured SMS provider for your team
+  </Accordion>
+
+  <Accordion title="TOOL_NODE Configuration">
+    Execute a tool from the tool registry.
+
+    - **Tool** — select from registered tools (inbuilt, inline Python, external API, or Knowledge Base)
+    - **Input Mapping** — map workflow variables to tool input fields
+    - **Output Mapping** — map tool output fields back to workflow variables
+  </Accordion>
+</AccordionGroup>
+
+## Connecting Nodes with Edges
+
+Edges define how execution flows between nodes. After placing your nodes, connect them by drawing edges on the canvas.
+
+### Edge Types
+
+<AccordionGroup>
+  <Accordion title="Direct Edge" icon="arrow-right">
+    **Unconditional transition** — execution moves from the source node to the target node immediately after the source completes.
+
+    **Use when:** The next step is always the same, regardless of what happened at the source node.
+  </Accordion>
+
+  <Accordion title="Conditional Edge" icon="split">
+    **LLM-evaluated routing** — a natural language condition is evaluated at runtime by an LLM. Execution only proceeds along this edge if the condition is satisfied.
+
+    **Use when:** The next step depends on conversation context, collected data, or a specific outcome.
+
+    - **Condition** — write the condition in plain English, e.g. `"The patient confirmed their appointment"` or `"The user requested a callback"`
+    - **Priority** — when multiple conditional edges leave a node, priority determines evaluation order
+
+    <Tip>
+    Write conditions as complete, specific statements about what must be true for the edge to activate. The runtime LLM evaluates these against the full conversation context.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Companion Edge" icon="layers">
+    **Parallel execution** — the target node runs alongside the primary flow without blocking it. The source node does not wait for the companion to complete before continuing.
+
+    **Use when:** You want to trigger a background action (e.g., logging, sending an SMS) while the main conversation continues.
+  </Accordion>
+</AccordionGroup>
+
+## Global Variables
+
+Global Variables are team-level key-value pairs automatically injected into every workflow execution. Use them in prompts, messages, and tool inputs via `{{variable_name}}` syntax.
+
+<CardGroup cols={2}>
+  <Card title="Define Variables" icon="plus">
+    Navigate to **Settings → Global Variables** and click **New Variable**.
+    Set a name, value, optional description, and category for grouping.
+  </Card>
+
+  <Card title="Use in Workflows" icon="brackets-curly">
+    Reference any global variable inside a node's system prompt, message body, or HTTP request using `{{variable_name}}`.
+  </Card>
+</CardGroup>
+
+<AccordionGroup>
+  <Accordion title="Global Variable Fields">
+    | Field | Description |
+    |-------|-------------|
+    | `name` | Unique identifier — alphanumeric and underscores only, must start with a letter or underscore |
+    | `value` | The variable's value — can be plain text, JSON, or a full system prompt |
+    | `description` | Human-readable description (max 1024 chars) |
+    | `category` | Grouping label, e.g. `Prompts`, `Config`, `Credentials` |
+    | `is_secret` | If enabled, value is masked in list responses |
+  </Accordion>
+
+  <Accordion title="Reserved Variable Names">
+    The following names are reserved and cannot be used for custom global variables:
+
+    `now`, `date`, `time`, `year`, `month`, `day`, `hour`, `minute`, `workflow_invoke_count`
+
+    These are automatically injected by the runtime with current date/time context and execution metadata.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+If a user-provided dynamic variable shares the same name as a global variable, the user-provided value takes precedence at execution time.
+</Note>
+
+## Publishing a Version
+
+Interactly tracks every change to your workflow as a version. Version 0 is created automatically when you first create the workflow. When you're ready to go live, activate the version you want to use for execution.
+
+<Steps>
+  <Step title="Save Your Changes">
+    All node and edge changes are saved automatically. Use the **Save** button to explicitly commit the current canvas state to the active version.
+  </Step>
+
+  <Step title="Create a New Version (Optional)">
+    To snapshot the current state before making further changes, click **New Version**. Give it a meaningful name like `"v1 — Initial Release"` or `"v2 — Add Callback Branch"`.
+
+    <Frame caption="Creating a new version">
+      <img src="/images/workflows/create-version.png" />
+    </Frame>
+  </Step>
+
+  <Step title="Activate the Version">
+    Click **Activate** on the version you want to use for live execution. All subsequent executions — triggered manually, via schedule, or via webhook — will run this version by default.
+
+    <Warning>
+    Activating a version does not interrupt runs already in progress. In-flight executions continue on the version they started with.
+    </Warning>
+  </Step>
+</Steps>
+
+## Workflow Management
+
+### Clone a Workflow
+
+Duplicate an existing workflow to use it as a starting point:
+
+- Click the **three-dot menu** on a workflow card and select **Clone Workflow**
+- Choose to clone all versions or specific version numbers
+- Give the clone a new name — all nodes, edges, and configuration are copied
+
+### Edit a Workflow
+
+- Click the **three-dot menu** and select **Edit** to re-open the builder
+- Changes apply to the currently selected version
+- Activate the updated version when ready to go live
+
+### Delete a Workflow
+
+- Click the **three-dot menu** and select **Delete**
+- All versions and run history associated with the workflow are permanently removed
+
+<Warning>
+Workflow deletion is irreversible. All versions and historical run data will be lost.
+</Warning>
+
+### Concurrency Limits
+
+Control how many instances of a workflow can run simultaneously:
+
+- **Team-level limit** — set by Interactly for your organisation (default: 50 concurrent runs)
+- **Per-workflow limit** — optionally configure a lower cap for a specific workflow via **Settings → Concurrency**
+
+<Info>
+Per-workflow limits are always within your team-level ceiling. Setting a per-workflow limit to `0` removes the per-workflow cap and falls back to the team limit.
+</Info>
+
+## Workflow Run Status
+
+Once a workflow is executing, runs progress through the following states:
+
+<Steps>
+  <Step title="Started">
+    Execution has been initiated and the runtime is initializing the workflow graph.
+  </Step>
+
+  <Step title="In Progress">
+    The workflow is actively traversing nodes and processing the conversation or task.
+  </Step>
+
+  <Step title="Completed">
+    Execution reached an `END_CONVERSATION` node successfully. All outputs and events are recorded.
+  </Step>
+
+  <Step title="Failed">
+    An unrecoverable error occurred during execution. Error details are logged in the run record.
+  </Step>
+
+  <Step title="Cancelled">
+    Execution was manually stopped before reaching an end node.
+  </Step>
+</Steps>
+
+## API Reference
+
+<CardGroup cols={2}>
+  <Card title="Create Workflow" icon="rocket" href="/api-reference/workflows/workflows/create-workflow">
+    **POST /workflows**
+    Create a new workflow programmatically with full configuration
+  </Card>
+
+  <Card title="Update Workflow" icon="pen" href="/api-reference/workflows/workflows/update-workflow">
+    **PATCH /workflows/:id**
+    Update nodes, edges, and settings for a specific version
+  </Card>
+
+  <Card title="Create Node" icon="circle-plus" href="/api-reference/workflows/nodes/create-node">
+    **POST /nodes**
+    Add a node to your workflow configuration
+  </Card>
+
+  <Card title="Create Edge" icon="arrow-right" href="/api-reference/workflows/edges/create-edge">
+    **POST /edges**
+    Connect two nodes with a direct, conditional, or companion edge
+  </Card>
+
+  <Card title="Execute Workflow" icon="play" href="/api-reference/workflows/workflow-execution/execute-workflow">
+    **POST /workflows/:id/execute**
+    Trigger a workflow run with optional version and input overrides
+  </Card>
+
+  <Card title="Global Variables API" icon="brackets-curly" href="/api-reference/workflows/global-variables/list-global-variables">
+    **GET /global-variables**
+    List, create, and manage team-level global variables
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Node Types" icon="circle-nodes" href="/workflows/node-types">
+    Full reference for all node types, configuration fields, and use cases
+  </Card>
+
+  <Card title="Tools & Integrations" icon="plug" href="/workflows/tools-and-integrations">
+    Attach tools, external APIs, and Knowledge Bases to LLM nodes
+  </Card>
+
+  <Card title="Workflow Versioning" icon="code-branch" href="/workflows/workflow-versioning">
+    Manage versions, compare diffs, and roll back safely
+  </Card>
+
+  <Card title="Simulation" icon="flask" href="/workflows/workflow-simulation">
+    Test your workflow interactively before going live
+  </Card>
+</CardGroup>

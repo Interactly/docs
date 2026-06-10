@@ -1,0 +1,156 @@
+---
+title: Workflow Simulation
+subtitle: Compare and evaluate two workflows side by side across multiple automated runs
+slug: workflows/workflow-simulation
+description: Learn how to use Interactly's workflow simulation feature to run two workflows in parallel, compare their outputs, and evaluate performance before activating a version for live traffic
+---
+
+# About
+
+Simulation lets you compare two workflow configurations — a selected workflow and a counter workflow — by running them in parallel across multiple automated iterations. Each simulation batch produces individual run results for both workflows, which are then evaluated and scored so you can objectively measure the impact of changes before activating a new version for live traffic.
+
+<Info>
+Simulation is designed for comparing workflow versions or configurations head-to-head. Each simulation run executes both workflows independently and captures their outputs for side-by-side evaluation.
+</Info>
+
+## How Simulation Works
+
+<CardGroup cols={2}>
+  <Card title="Two Workflows in Parallel" icon="arrows-left-right">
+    Each simulation run executes two workflows simultaneously — the **selected workflow** (your candidate) and the **counter workflow** (your baseline). Both receive the same inputs.
+  </Card>
+
+  <Card title="Multiple Iterations" icon="repeat">
+    You configure how many simulation iterations to run. The platform spawns that many parallel run pairs, giving you a statistically meaningful sample of results.
+  </Card>
+
+  <Card title="Automated Evaluation" icon="chart-bar">
+    Each individual run can be evaluated automatically using a configured evaluation workflow, which scores the output against defined criteria and contributes to the overall simulation summary.
+  </Card>
+
+  <Card title="Comparison Summary" icon="table">
+    After all iterations complete, the simulation produces a summary — total runs, success and failure counts, average scores, and score distribution — for both the selected and counter workflows side by side.
+  </Card>
+</CardGroup>
+
+## Setting Up a Simulation
+
+<Steps>
+  <Step title="Open the Simulations Panel">
+    Navigate to your workflow in the dashboard and click the **Simulations** tab. Click **Create Simulation** to begin.
+
+    <Frame caption="Simulation configuration">
+      <img src="/images/workflows/simulation-open.png" />
+    </Frame>
+  </Step>
+
+  <Step title="Select the Two Workflows">
+    Choose the **selected workflow** (the version or configuration you want to test) and the **counter workflow** (the baseline you are comparing against). These can be different versions of the same workflow or two entirely different workflows.
+  </Step>
+
+  <Step title="Configure the Number of Runs">
+    Set how many simulation iterations to execute. Each iteration creates one run pair — one run for the selected workflow and one for the counter. More iterations give you more reliable comparison data.
+  </Step>
+
+  <Step title="Run the Simulation">
+    Click **Run Simulation**. The platform creates a simulation batch and begins spawning run pairs in the background.
+
+    <Frame caption="Active simulation batch">
+      <img src="/images/workflows/simulation-active.png" />
+    </Frame>
+  </Step>
+</Steps>
+
+## Simulation Run States
+
+### Batch Status
+
+<AccordionGroup>
+  <Accordion title="Pending" icon="clock">
+    The simulation batch has been created and the platform is beginning to spawn individual run pairs.
+  </Accordion>
+
+  <Accordion title="In Progress" icon="spinner">
+    Run pairs are actively executing. You can monitor progress as individual runs complete.
+  </Accordion>
+
+  <Accordion title="Completed" icon="circle-check">
+    All configured iterations have finished. The evaluation summary is available for review.
+  </Accordion>
+
+  <Accordion title="Cancelled" icon="ban">
+    The simulation batch was stopped before all iterations completed. Runs already in progress finish, but no new pairs are spawned.
+  </Accordion>
+
+  <Accordion title="Failed" icon="circle-xmark">
+    An error prevented the batch from completing. Check individual run details for diagnostics.
+  </Accordion>
+</AccordionGroup>
+
+## Reviewing Simulation Results
+
+Once a simulation batch completes, navigate to the batch to view its results.
+
+<AccordionGroup>
+  <Accordion title="Evaluation Summary" icon="chart-bar">
+    The summary compares both workflows across all iterations:
+
+    - **Total runs** — number of iterations executed
+    - **Success / Failure counts** — how many runs completed vs. failed for each workflow
+    - **Average evaluation score** — mean score across all evaluated runs
+    - **Score distribution** — breakdown of scores across defined ranges
+
+  </Accordion>
+
+  <Accordion title="Individual Run Details" icon="list">
+    Drill into any individual iteration to see the full run details for both the selected and counter workflow — every node that fired, the outputs produced, variables collected, and the evaluation result for that specific run.
+  </Accordion>
+
+  <Accordion title="Comparing Batches" icon="arrows-left-right">
+    You can run multiple simulation batches against the same simulation configuration. Compare batch summaries over time to track how your workflows evolve across iterations of improvement.
+  </Accordion>
+</AccordionGroup>
+
+## Stopping a Simulation
+
+If you need to stop a simulation batch before it completes:
+
+- Click **Stop** on the running batch
+- The batch status changes to **Cancelled**
+- Run pairs already in progress finish naturally — no new pairs are spawned after the stop
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use a stable counter workflow" icon="shield-check">
+    The counter workflow is your baseline. Keep it pinned to a known-good version so that differences in evaluation scores are attributable to your selected workflow changes, not baseline drift.
+  </Accordion>
+
+  <Accordion title="Run enough iterations" icon="repeat">
+    A small number of runs may not produce reliable comparison data. Run at least enough iterations to cover the expected variability in inputs and LLM outputs.
+  </Accordion>
+
+  <Accordion title="Review failures before activating" icon="circle-xmark">
+    If the selected workflow has a higher failure rate than the counter workflow, investigate the individual failed runs before activating it for live traffic.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Workflow Versioning" icon="code-branch" href="/workflows/workflow-versioning">
+    Create and activate versions once simulation confirms your changes perform better
+  </Card>
+
+  <Card title="Building a Workflow" icon="hammer" href="/workflows/building-a-workflow">
+    Go back to the workflow builder to refine nodes and edges
+  </Card>
+
+  <Card title="Node Types" icon="circle-nodes" href="/workflows/node-types">
+    Reference for all node types to help diagnose simulation run failures
+  </Card>
+
+  <Card title="Workflow Webhooks" icon="webhook" href="/workflows/workflow-webhooks">
+    Subscribe to run completion events for automated post-simulation reporting
+  </Card>
+</CardGroup>
