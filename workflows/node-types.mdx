@@ -210,17 +210,26 @@ Data Transformation nodes reshape data as it flows between steps — without inv
     **Example** — retaining `["name", "address.city", "orders[].id"]`:
 
     ```json
-    // Input (api_response)              // Output (field_extractor_result)
-    {                                    {
-      "name": "Alice",                     "name": "Alice",
-      "age": 30,                           "address": { "city": "NYC" },
-      "address": {                         "orders": [{ "id": 1 }, { "id": 2 }]
-        "city": "NYC", "zip": "10001"    }
+    // Input (api_response)              
+    {                                    
+      "name": "Alice",                     
+      "age": 30,                           
+      "address": {                        
+        "city": "NYC", "zip": "10001"
       },
       "orders": [
         { "id": 1, "price": 10 },
         { "id": 2, "price": 20 }
       ]
+    }
+    ```
+
+    ```json
+    // Output (field_extractor_result)
+    {
+      "name": "Alice",
+      "address": { "city": "NYC" },
+      "orders": [{ "id": 1 }, { "id": 2 }]
     }
     ```
 
