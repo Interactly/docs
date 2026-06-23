@@ -90,6 +90,12 @@
                             "vendors/models",
                             "vendors/elevenlabs-TTS-recommended-configurations"
                         ]
+                    },
+                    {
+                        "group": "Prompts",
+                        "pages": [
+                            "prompts/tags"
+                        ]
                     }
                 ]
             },
