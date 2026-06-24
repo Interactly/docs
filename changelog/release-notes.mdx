@@ -28,10 +28,15 @@ Workflows are now generally available for assistant-driven voice calls. You can 
 - **Warm-Transfer Context** — Transferred calls now receive full conversation history and runtime tool hydration.
 - **Stateful REST Execution** — A stateful turn-by-turn REST endpoint supports non-voice (REST-driven) workflow execution.
 - **Multi-Version Export/Import** — Workflows can be exported and imported as versioned bundles for backup, migration, and deployment.
-- **Managed Prompts & Knowledge** — Introduced a managed prompt and knowledge system with just-in-time placeholder substitution (`<<<...>>>` syntax) and a pre-built adult triage workflow.
 - **Workflow Run Metrics** — LLM latency, token usage, and operational metrics are captured per workflow iteration and per parallel condition evaluator.
-- **Cross-Linking Runs to Conversations** — Workflow runs are now linked to their originating voice conversations for end-to-end traceability.
-- **LLM Latency Optimization** — Reduced LLM-node response latency by racing the main LLM call against parallel global-condition evaluators.
+
+---
+
+## Bandwidth Deprecation Notice
+
+<Callout type="warning">
+  **Deprecation Notice**: Bandwidth telephony support will be deprecated in a future release. Please migrate your numbers to Twilio, Vonage, or Telnyx.
+</Callout>
 
 ---
 
@@ -43,9 +48,6 @@ Telnyx is now a fully supported telephony provider for inbound and outbound voic
 - **Call Recording** — Recordings are stored automatically for Telnyx calls.
 - **Number Management** — Import Telnyx phone numbers and manage call hooks directly from the dashboard.
 
-<Callout type="warning">
-  **Deprecation Notice**: Bandwidth telephony support will be deprecated in a future release. Please migrate your numbers to Twilio, Vonage, or Telnyx.
-</Callout>
 
 ---
 
@@ -76,7 +78,7 @@ These sections give a richer picture of call outcomes beyond standard transcript
 New streaming TTS providers are now available:
 
 - **Cartesia TTS Streaming** — Streaming audio generation using Cartesia's latest models, with built-in retry logic.
-- **Deepgram TTS WebSocket Streaming** — Deepgram TTS now streams audio over WebSocket with full web-call integration, barge-in support, caching, and retries.
+- **Deepgram TTS Streaming** — Deepgram TTS now streams audio with full web-call integration, barge-in support, caching, and retries.
 
 ---
 
@@ -93,7 +95,7 @@ A new **Developer** role has been added to the role hierarchy, sitting between U
 #### Role hierarchy
 
 ```
-Super Admin → Admin → Developer → User
+Admin → Developer → User
 ```
 
 The Developer role is designed for engineering teams who need to build and operate platform resources without access to sensitive administrative controls.
