@@ -1,0 +1,81 @@
+---
+title: Tags
+subtitle: LLM prompt tags for voice assistant responses
+slug: tags
+description: Special XML tags supported in LLM prompt responses to control speech, call behavior, and audio playback.
+---
+When configuring an assistant, the LLM can include special XML tags in its responses. These tags are parsed at runtime to control how the assistant speaks, behaves during a call, and interacts with telephony features.
+## Supported Tags
+The following tags are supported in LLM prompt responses:
+| Tag | Purpose | Example |
+|-----|---------|---------|
+| `<interactly_spellout>` | Spell out letters and numbers (NATO phonetic alphabet for letters, word digits for numbers) | `The number is <interactly_spellout>991123456</interactly_spellout>` |
+| `<silence>` | No speech; the assistant stays silent | `<silence>` |
+| `<dtmf>` | Send DTMF tones | `<dtmf>01</dtmf>` |
+| `<hold_call>` | Put the call on hold. Optional message | `<hold_call>Please hold the line</hold_call>` or `<hold_call/>` |
+| `<play_type>` + `<play_duration>` | Play a sound for N seconds | `<play_type>keyboard</play_type><play_duration>0.5</play_duration>` |
+| `<end_call>` | End the call | `Goodbye<end_call>` or `<end_call>` |
+| `<nonInterruptible>` | Playback that must not be interrupted | `Please hold while I look that up. <nonInterruptible>` |
+### Spell out
+Use `<interactly_spellout>` when the assistant should read individual characters clearly — for example, phone numbers, confirmation codes, or spelled names.
+```text
+The number is <interactly_spellout>+1 248 780 9823</interactly_spellout>
+```
+The above example will be spoken as:
+```text
+"The number is + One -   Two - Four - Eight.   Seven - Eight. Zero -   Nine. Eight - Two - Three"
+```
+On the other hand, if you use the following example,
+```text
+Hello this is <interactly_spellout> Ram </interactly_spellout>."
+```
+ it will be spoken as:
+```text
+"Hello this is  R:, as in Romeo. A:, as in Alpha. M: ."
+```
+Letters are spoken using the NATO phonetic alphabet. Numbers are spoken as word digits (for example, `9` becomes "Nine").
+### Silence
+Use `<silence>` when the assistant should not speak. The assistant remains silent for that turn.
+```text
+<silence>
+```
+### DTMF
+Use `<dtmf>` to send touch-tone signals during a call — for example, to navigate an IVR menu.
+```text
+<dtmf>01</dtmf>
+```
+### Hold call
+Use `<hold_call>` to place the caller on hold. You can include an optional message that is spoken before the hold begins, or use a self-closing tag to hold without a message.
+```text
+<hold_call>Please hold the line</hold_call>
+```
+```text
+<hold_call/>
+```
+### Play sound
+Use `<play_type>` together with `<play_duration>` to play a background sound for a specified number of seconds while allowing the caller to barge in.
+Supported `play_type` values:
+| Value | Description |
+|-------|-------------|
+| `keyboard` | Keyboard typing sound |
+| `music-1` | Background music track |
+| `office-keyboard` | Office keyboard typing sound |
+| `office` | Office ambient sound |
+```text
+<play_type>keyboard</play_type><play_duration>0.5</play_duration>
+```
+You can combine `<hold_call/>` with play tags to hold the call while a sound plays. User can't barge in during the hold time. This is useful for playing a sound for a specific duration and then putting the call on hold:
+```text
+<hold_call/><play_type>keyboard</play_type><play_duration>0.5</play_duration>
+```
+In the above example, the assistant put the call on hold for 0.5 seconds (play_duration value) and while on hold, it will play the keyboard typing sound for 0.5 seconds. User can't barge in during the hold time.
+### End call
+Use `<end_call>` to end the call after the assistant finishes speaking.
+```text
+<end_call>
+```
+### Non-interruptible
+Use `<nonInterruptible>` for playback that must not be interrupted. For example, disclosures, hold flows, or critical tool execution.
+```text
+Please hold while I look that up. <nonInterruptible>
+```
