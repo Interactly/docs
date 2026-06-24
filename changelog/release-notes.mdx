@@ -6,6 +6,148 @@ noindex: true
 mode: center
 ---
 
+<Update label="June 24 2026" description="v1.16.6">
+
+## What's new in v1.16.6
+
+🚀 Updates & Improvements
+
+### 🔄 Workflows — Now Live for Assistant Calls
+
+Workflows are now generally available for assistant-driven voice calls. You can build multi-step, branching conversation flows that execute deterministically alongside live calls — replacing single-prompt assistants with structured, auditable pipelines.
+
+#### What's new in the workflow engine
+
+- **Conditional Exit Edges & Global Routing** — Super nodes now support conditional exit edges, reverse edges, global routing, and guardrail propagation for fine-grained control over conversation branching and escalation paths.
+- **Guardrail Strike System** — Automatic guardrail-strike counting with configurable escalation thresholds and auto-finish behavior prevents runaway conversations.
+- **Resume from Any Node** — Workflows can be resumed from any node with an initial state context, enabling retry and recovery flows without a full restart.
+- **Workflow Lock** — Lock a workflow to prevent concurrent modification while it is in active use.
+- **Field Extractor Node** — Extract structured fields from unstructured data using the new Field Extractor node (Data Transformation category).
+- **Deduplicate Node** — Remove duplicate records in data pipelines using the new Deduplicate node (Data Extraction category).
+- **Dynamic Messages on Conditional Edges** — Conditional edge transitions can trigger dynamic narration messages for smoother conversational transitions.
+- **Warm-Transfer Context** — Transferred calls now receive full conversation history and runtime tool hydration.
+- **Stateful REST Execution** — A stateful turn-by-turn REST endpoint supports non-voice (REST-driven) workflow execution.
+- **Multi-Version Export/Import** — Workflows can be exported and imported as versioned bundles for backup, migration, and deployment.
+- **Managed Prompts & Knowledge** — Introduced a managed prompt and knowledge system with just-in-time placeholder substitution (`<<<...>>>` syntax) and a pre-built adult triage workflow.
+- **Workflow Run Metrics** — LLM latency, token usage, and operational metrics are captured per workflow iteration and per parallel condition evaluator.
+- **Cross-Linking Runs to Conversations** — Workflow runs are now linked to their originating voice conversations for end-to-end traceability.
+- **LLM Latency Optimization** — Reduced LLM-node response latency by racing the main LLM call against parallel global-condition evaluators.
+
+---
+
+### 📞 Telnyx Telephony Support
+
+Telnyx is now a fully supported telephony provider for inbound and outbound voice calls.
+
+- **Inbound & Outbound Calls** — Full call handling via Telnyx TeXML applications.
+- **Call Recording** — Recordings are stored automatically for Telnyx calls.
+- **Number Management** — Import Telnyx phone numbers and manage call hooks directly from the dashboard.
+
+<Callout type="warning">
+  **Deprecation Notice**: Bandwidth telephony support will be deprecated in a future release. Please migrate your numbers to Twilio, Vonage, or Telnyx.
+</Callout>
+
+---
+
+### 🔁 Twilio Warm Transfer (Human Agent Handoff)
+
+Outbound calls forwarded via Twilio now support **warm transfer** — a three-way handoff that lets an agent speak with the human recipient before the caller is connected.
+
+- Bi-directional context passing so the receiving agent has full conversation history.
+- Configurable timeouts and caller ID fixes.
+- Welcome messages are suppressed during warm transfer to avoid confusing the receiving party.
+- Calls can be recorded through the entire warm-transfer flow.
+
+---
+
+### 📊 Assistant Analysis — DND & Callback
+
+Two new analysis sections have been added to post-call conversation analytics:
+
+- **DND (Do Not Disturb)** — Surfaces DND signals detected during the call with configurable expiration windows and timezone-aware logic.
+- **Callback** — Tracks callback intent and scheduling outcomes, including automatic campaign-based callback scheduling after analysis is generated.
+
+These sections give a richer picture of call outcomes beyond standard transcription.
+
+---
+
+### 🎙️ Voice Engine — Cartesia & Deepgram TTS Streaming
+
+New streaming TTS providers are now available:
+
+- **Cartesia TTS Streaming** — Streaming audio generation using Cartesia's latest models, with built-in retry logic.
+- **Deepgram TTS WebSocket Streaming** — Deepgram TTS now streams audio over WebSocket with full web-call integration, barge-in support, caching, and retries.
+
+---
+
+### 🗣️ Deepgram Multilingual STT — Flux Multi Model
+
+The **Deepgram Flux Multi** model is now available as a selectable speech-to-text option, bringing multilingual speech recognition to assistants that serve non-English speakers.
+
+---
+
+### 👤 User Management — Developer Role
+
+A new **Developer** role has been added to the role hierarchy, sitting between User and Admin.
+
+#### Role hierarchy
+
+```
+Super Admin → Admin → Developer → User
+```
+
+The Developer role is designed for engineering teams who need to build and operate platform resources without access to sensitive administrative controls.
+
+#### What developers can do
+
+| Module / Feature | Access |
+|---|:---:|
+| Assistants | ✅ |
+| Workflows | ✅ |
+| Conversations & Outbound Calls | ✅ |
+| Campaigns | ✅ |
+| Integrations & Knowledge Bases | ✅ |
+| Call / Chat / Customer / Webhook Logs | ✅ |
+| Workflow Runs & Audit Logs | ✅ |
+
+#### What developers cannot do
+
+| Module / Feature | Access |
+|---|:---:|
+| Users Management | ❌ |
+| Phone Numbers Management | ❌ |
+| API Keys Management | ❌ |
+| Provider Credentials Management | ❌ |
+| Feature Settings | ❌ |
+| Organizations Management | ❌ |
+
+Admins retain full control over sensitive configurations — credentials, API keys, user management, and organization-level settings remain restricted to Admin and above.
+
+---
+
+### 🔒 Workflow & Assistant Lock
+
+Both workflows and assistants can now be **locked** to prevent concurrent edits while they are in active use.
+
+- Lock/unlock via a dedicated API (admin users only).
+- Full audit trail for lock state changes.
+
+---
+
+### 🐛 Bug Fixes & Enhancements
+
+- Fixed a race condition where concurrent requests could silently overwrite conversation update data.
+- Fixed the hold command (`playAndBargein`) not behaving correctly in certain playback states.
+- Fixed audio being incorrectly stopped on dialout after a hold or during background sound playback.
+- Fixed post-call transcript speaker labels being incorrectly assigned.
+- Added automatic retries and duplicate-prevention for failed post-call transcript processing.
+- Fixed ElevenLabs WebSocket streaming reliability including background sound handling.
+- Fixed Twilio bulk schedule call 500 errors.
+- Added strict Twilio webhook signature validation.
+- Upgraded aiohttp, cryptography, litellm, and libssl3/curl to address known CVEs.
+
+</Update>
+
 <Update label="April 21 2026" description="v1.13.0">
 
 ## What's new in v1.13.0
