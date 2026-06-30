@@ -10,7 +10,7 @@ import CustomerObject from "/snippets/objects/customer-object.mdx";
 import StatusUpdateEventExample from "/snippets/events/status-update-example.mdx";
 
 
-The `status-update` event is triggered whenever a call status changes occur, such as when a call transitions between queued, ongoing, finished, or forwarded states.
+The `status-update` event is triggered whenever a call status changes occur, such as when a call transitions between initiated, queued, ongoing, finished, or forwarded states.
 
 <Info>
   This event provides real-time visibility into call progression and is essential for tracking call lifecycle in your systems.
@@ -22,7 +22,8 @@ Status update events are sent when the call moves through these states:
 
 | Status      | Description                                         | Timing             |
 | ----------- | --------------------------------------------------- | ------------------ |
-| `queued`    | The call has been initiated and is waiting to start | Call initiation    |
+| `initiated` | The call has been created and is waiting to be processed | Call creation |
+| `queued`    | The call has been initiated and is waiting to start | Call processing    |
 | `ongoing`   | The call has started and conversation is active     | Call pickup/answer |
 | `finished`  | The call has ended successfully                     | Call termination   |
 | `forwarded` | The call has been forwarded to another destination  | Call forwarding    |
@@ -49,7 +50,7 @@ Status update events are sent when the call moves through these states:
 | ---------------------------- | ------ | ------------------------------------------------------------- |
 | `message.type`               | string | Always "status-update" for this event                         |
 | `message.timestamp`          | number | Unix timestamp when status change occurred (milliseconds)     |
-| `call.status`                | string | New call status: "queued", "ongoing", "finished", "forwarded" |
+| `call.status`                | string | New call status: "initiated", "queued", "ongoing", "finished", "forwarded" |
 | `call.phoneCallStatus`       | string | Detailed phone system status                                  |
 | `call.phoneCallStatusReason` | string | Human-readable explanation of the status                      |
 
@@ -68,6 +69,51 @@ Status update events are sent when the call moves through these states:
 ## Example Payload
 
 <CodeGroup>
+
+  ```json Initiated Status
+  {
+      "message": {
+        "timestamp": 1782216859297,
+        "type": "status-update",
+        "call": {
+          "id": "CA2244062c7ecd4b440b8b025a31baxxxx",
+          "teamId": "67c0231ae6880fe48ef929ee",
+          "assistantId": "697769ef5e6d94d5ad83e01e",
+          "callType": "phone",
+          "direction": "",
+          "startAt": "2026-06-23T12:14:19.260Z",
+          "endAt": null,
+          "userNumber": "+91916052xxxx",
+          "assistantNumber": "+1559550xxxx",
+          "status": "initiated",
+          "phoneCallStatus": "",
+          "phoneCallStatusReason": "",
+          "callEndTriggerBy": "",
+          "assistantCallDuration": 0,
+          "analysis": {
+            "summary": "",
+            "successEvaluation": ""
+          },
+          "recording": {
+            "s3Bucket": "",
+            "path": ""
+          },
+          "cost": null,
+          "assistantOverrides": {
+          },
+          "metadata": {
+          },
+          "metrics": {
+          }
+        },
+        "assistant": {
+          "_id": "697769ef5e6d94d5ad83e01e",
+          "name": "Mary Dental - main",
+          "welcomeMessage": "Welcome to Apollo clinic!!",
+        }
+      }
+    }
+  ```
 
   ```json Queued Status
   {
