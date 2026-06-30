@@ -294,6 +294,38 @@ Get a comprehensive summary when your entire campaign completes.
   ```
 </Accordion>
 
+#### Campaign Status Events
+Receive notifications whenever a campaign transitions to a new lifecycle status — processing, paused, or aborted.
+
+<Accordion title="Campaign Status Payload Example">
+  ```json
+  {
+      "event": "campaign_status",
+      "campaign": {
+          "id": "cmp_123456",
+          "teamId": "team_001",
+          "name": "November Outreach",
+          "createdAt": "2025-11-05T08:10:11.129Z",
+          "updatedAt": "2025-11-05T08:10:19.242Z",
+          "processTimings": {
+              "launchAt": "2025-11-05T08:10:19.242Z",
+              "resumeAt": null,
+              "completedAt": null
+          }
+      },
+      "status": "processing"
+  }
+  ```
+</Accordion>
+
+The `status` field reflects the campaign's new state at the time of the event. Possible values:
+
+| Status | Trigger |
+|---|---|
+| `processing` | Campaign launched or resumed |
+| `paused` | Campaign manually paused |
+| `aborted` | Campaign manually stopped |
+
 #### Custom HTTP Headers
 Add additional headers like `Authorization` for enhanced security and integration with your systems.
 
