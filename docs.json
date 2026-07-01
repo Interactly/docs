@@ -142,6 +142,13 @@
                             "source": "https://api-qa.interactly.ai/api-docs/prompts/api.json",
                             "directory": "api-reference/prompts"
                         }
+                    },
+                    {
+                        "group": "SMS",
+                        "openapi": {
+                            "source": "https://api-dev.interactly.ai/api-docs/sms/api.json",
+                            "directory": "api-reference/sms"
+                        }
                     }
                 ],
                 "global": {
