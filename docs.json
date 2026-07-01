@@ -121,6 +121,20 @@
                             "source": "https://api-prod.interactly.ai/api-docs/campaigns/api.json",
                             "directory": "api-reference/campaigns"
                         }
+                    },
+                    {
+                        "group": "Workflows",
+                        "openapi": {
+                            "source": "https://api-prod.interactly.ai/api-docs/workflows/api.json",
+                            "directory": "api-reference/workflows"
+                        }
+                    },
+                    {
+                        "group": "SMS",
+                        "openapi": {
+                            "source": "https://api-prod.interactly.ai/api-docs/sms/api.json",
+                            "directory": "api-reference/sms"
+                        }
                     }
                 ],
                 "global": {
