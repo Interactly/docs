@@ -146,7 +146,7 @@
                     {
                         "group": "SMS",
                         "openapi": {
-                            "source": "https://api-dev.interactly.ai/api-docs/sms/api.json",
+                            "source": "https://api-qa.interactly.ai/api-docs/sms/api.json",
                             "directory": "api-reference/sms"
                         }
                     }
