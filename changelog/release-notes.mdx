@@ -6,6 +6,86 @@ noindex: true
 mode: center
 ---
 
+<Update label="July 13 2026" description="v1.17.7">
+
+## What's new in v1.17.7
+
+🚀 Updates & Improvements
+
+### 🤖 AI Models & Voice
+
+- **Broader Gemini support** — Added Gemini 3.5 Flash and additional real-time/Audio model variants, improved model selection logic, thought-signature tracking, and assistant thinking-budget configuration (including a fix for thinking-budget not saving on new assistants).
+- **Native streaming improvements** — Rolled out native response streaming for more model providers with a proactive fallback path, plus sequential LLM fallback groups for more resilient model selection.
+- **Named LLM configurations** — Teams can create and manage reusable, named LLM configs with team-level defaults and per-node overrides.
+
+---
+
+### 🎙️ Voice, TTS & Telephony
+
+- **Telnyx warm transfer & call forwarding** — Telnyx calls now support warm transfers and call forwarding, alongside workflow-level call-forwarding detection.
+- **New Deepgram voices** — Added TTS voices for more languages, a specialized medical STT model for self-hosted transcription, and adjustable Aura 2 speech speed (0.7x–1.5x) for English and Spanish.
+- **Streaming reliability fixes** — Smoother call termination and barge-in handling mid-stream, fixed background sound playback during streamed calls, and resolved Vonage audio streaming issues.
+- **Updated ElevenLabs & Cartesia** — Improved ElevenLabs streaming reliability with concurrency tracking, and an updated default Cartesia voice model for better quality.
+
+---
+
+### 🔄 Workflows
+
+- **Favorites & filters** — Mark workflows as favorites and filter/search by creator, favorites, or workflow ID.
+- **More reliable conditions** — Fixed condition expressions with quotes evaluating incorrectly.
+- **Runtime language variable** — Workflow nodes can reference the conversation's language at runtime.
+- **Better diagnostics** — Improved tracking for calls that end or error out mid-workflow.
+
+---
+
+### 🏥 Integrations (EHR / Scheduling)
+
+- **Scheduling accuracy fixes** — Resolved several appointment scheduling/rescheduling issues (date/time handling, patient gender field, coverage eligibility, slot references).
+- **Patient appointments support** — Added EHR gateway support for retrieving patient appointments directly.
+- **Richer coverage details** — Coverage lookups now include payor name and additional plan details.
+- **Faster imports** — Bulk integrations imports now run in the background to prevent timeouts on large imports.
+- **Scheduling page** — The web scheduling flow now displays privacy policy and terms of service links.
+
+---
+
+### 💬 SMS
+
+- **New SMS sending API** — Added a public API for sending SMS messages, with rate limiting to prevent abuse.
+- **Log lookup & tracking** — Retrieve SMS logs by ID, with improved tracking for inbound and outbound messages, and SMS logs now configurable as a user role feature.
+
+---
+
+### 📣 Campaigns
+
+- **Soft delete** — Deleting a campaign or call now soft-deletes it; hard deletion is restricted to admins.
+- **Pause policy groundwork** — Added evaluation logic for automatically pausing campaigns based on policy rules.
+- **Removed auto-timeout** — Campaigns no longer time out automatically after a few hours.
+- **Enhanced webhooks** — Improved webhook support for campaign events.
+- **Cloning fix** — Cloning a campaign no longer fails when a source call has a missing or empty outcome.
+
+---
+
+### 📊 Analytics & Usage
+
+- **Organization usage stats** — Added monthly per-organization usage tracking (calls and minutes), with a read API and scheduled reporting.
+- **Outcome-based filtering** — Conversations can now be filtered by empty/null/missing outcome, outcome stats support more filter options, and a new endpoint returns conversation stats grouped by outcome.
+- **Audit log statistics** — Added new statistics endpoints for audit logs.
+- **More accurate call data** — Improved end-of-call metadata capture for accurate outcomes, fixed incorrect call duration in stats, and added call duration/cost stats at the assistant level.
+- **Webhook visibility** — Added APIs to view webhook delivery stats and latency.
+- **Call end attribution** — Call end events now record who or what ended the call.
+
+---
+
+### 🐛 Bug Fixes & Platform
+
+- Fixed a call-pricing issue where missing data could cause errors in cost calculations.
+- Reduced server startup CPU load and optimized several backend queries (tag-based stats, workflow run cleanup).
+- Fixed a communication preferences issue, an internal ID-handling bug in the admin service, and a caching serialization issue.
+- Reduced unnecessary text-to-speech calls for silent responses, improving latency.
+- Added TTS streaming performance metrics.
+
+</Update>
+
 <Update label="June 24 2026" description="v1.16.6">
 
 ## What's new in v1.16.6
