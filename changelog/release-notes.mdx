@@ -6,6 +6,65 @@ noindex: true
 mode: center
 ---
 
+<Update label="November 25 2026" description="v1.28.0">
+
+## What's new in v1.28.0
+
+🚀 Updates & Improvements
+
+### 🤖 AI Models & Voice
+
+- **gpt-live-1.1** — Assistants can use gpt-live-1.1 as a Live (realtime) model.
+- **Gemini Live improvements** — Callers can cut off a Gemini Live assistant by speaking. Stalled turns and route lines that were never spoken are recovered, and call setup, tool handling and caller audio are more robust.
+- **Fewer failed replies** — A say node retries its model call once when the provider has a temporary error.
+- **Cleaner barge-ins** — An LLM node stops speaking as soon as the caller interrupts it.
+
+---
+
+### 🎙️ Voice, TTS & Telephony
+
+- **Cartesia Spanish voices** — New Spanish voices from Cartesia, with Fernanda as the default.
+- **Noise suppression defaults** — New assistants get the same noise suppression defaults in every screen (suppression on, strength 50), so suppression applies as soon as the feature is turned on.
+- **Opening and closing lines** — On realtime workflow calls, the opening line plays in full before the call goes on, and you can choose whether callers may interrupt it. Calls now hang up only after the closing line has played.
+- **Call handling** — A queued or ringing call can be ended without an error. Deepgram voices no longer stall on calls with background sound. Twilio numbers with no voice URL can now be attached.
+
+---
+
+### 🔄 Workflows
+
+- **Pause and resume runs** — Scheduled, background and re-run workflow runs can be paused and resumed by a person, with an optional reason. The run shows who paused or resumed it, and a new `workflow_run_resumed` webhook event fires on resume.
+- **Pauses panel** — See a run's open pauses first with relative deadlines, approve them all at once, and send a signal to a waiting pause (including Ask Emily). The editors' Logs panels show pause events, and a Pause Workflow node announces its pause while the run waits.
+- **Run list and run view** — Paused runs get their own colour and status chip, with approval badges and a needs-attention filter. The run view links to its workflow, shows start and end times and an external jobs table, and the Run By column shows people's names.
+- **Clearer errors** — When a save or run action is refused, the editor shows the reason and recovers from a refused node save. Error and warning toasts stay up until you close them.
+
+---
+
+### 📣 Campaigns
+
+- **Reliable dispatch** — Each call is dialed once and only inside the campaign's call window. Dispatch stops when a campaign is paused, and parallel campaigns share dialing fairly instead of throttling each other.
+- **Concurrency and scheduling** — Only campaigns with active calls count toward the concurrent call limit. Campaigns scheduled at the same time no longer fail.
+- **Clearer results** — Failed dials record the real reason, and a patient asking for a callback is no longer treated as Do Not Disturb.
+- **Retry policy** — Max Retries and Max Per Day can be set to 1 again.
+
+---
+
+### 📊 Dashboard
+
+- **Viewer role** — Admins can give team members a read-only Viewer role. Viewers can see call logs, integrations and knowledge bases but can't change anything. Pages they can't use are hidden, and every refusal names the role needed.
+- **Tighter role checks** — Editing workflows, runs, knowledge bases and outcome mappings needs Developer access or higher. Users can't change their own role, and a team can't be left without an admin.
+- **API keys** — The API keys list shows who created each key and whether it still works with its original access. Keys follow their creator's current role and team membership.
+- **Campaign run status** — Campaigns show their latest run's status, and you can filter by status across runs.
+- **Appointment status tabs** — The customer dashboard's appointments page has status tabs with counts and columns for each status. Appointments booked on a call link to that conversation.
+
+---
+
+### 🧩 Integrations & EHR
+
+- **Integration credentials** — Integrations show whether credentials are set but never show their values. Saving with a credential field left blank keeps the stored value.
+- **Appointments** — Today's appointments that have started stay in past appointments when the patient hasn't arrived.
+
+</Update>
+
 <Update label="November 25 2026" description="v1.27.2">
 
 ## What's new in v1.27.2
