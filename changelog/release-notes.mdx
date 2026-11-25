@@ -6,6 +6,79 @@ noindex: true
 mode: center
 ---
 
+<Update label="November 25 2026" description="v1.27.2">
+
+## What's new in v1.27.2
+
+🚀 Updates & Improvements (includes v1.27.0 and v1.27.1)
+
+### 🤖 AI Models & Voice
+
+- **New OpenAI models** — Workflows can use GPT-6.1 (gpt-6.1-sol, gpt-6.1-terra) and gpt-6-luna.
+- **Decisions node** — Ask typed questions about the conversation and get structured JSON answers from any model, with support for custom model endpoints.
+- **Gemini Live on Vertex** — Realtime workflow calls can run Gemini Live on Vertex AI, with smoother turn-taking: replies the caller cuts off are recovered, missed caller turns are picked up, and routes wait for the caller's final words.
+- **Faster model fallback** — A model group now switches to its fallback as soon as the first model fails.
+
+---
+
+### 🎙️ Voice, TTS & Telephony
+
+- **SIP forwarding** — Calls can be forwarded to a SIP URL.
+- **Telnyx transfers** — Inbound transfers no longer fail when the caller's number is not in international format.
+- **Language handling** — Silence check-ins use the language the caller is speaking, and language detection errors in conversations are fixed.
+- **Call reliability** — Fixed DTMF tones being sent after the caller hangs up, an uncaught Vonage error, and stray whitespace in Twilio credentials breaking API calls.
+- **Cartesia voices** — Voice settings set through the API are kept when the voice dialog is saved in the dashboard.
+
+---
+
+### 🔄 Workflows
+
+- **Run in background** — Start a workflow run from the editors without waiting for it to finish.
+- **Clearer editor feedback** — The editor shows why a node or edge save was refused, unnamed edges are no longer labelled "User responded", and the classic editor shows the chosen Voice Config.
+- **Re-runs** — The re-run wizard shows readable choices, records who started the re-run, and labels re-run sources in the run view.
+- **Conversation variables** — Workflow steps can use conversation variables.
+- **Fixes** — The copied curl command now runs as-is, and calls stay up through errors the workflow is set to tolerate.
+
+---
+
+### 📣 Campaigns
+
+- **Smarter call picking** — Fresh calls are placed before retries, and retries are scheduled only within the campaign's remaining call windows.
+- **Accurate concurrency limits** — Deleted and stale campaigns no longer count toward the concurrent call limit, and deleting a campaign completes it.
+- **Email unsubscribe** — Patient emails include an unsubscribe link; patients who opt out stop receiving them, and can opt back in.
+
+---
+
+### 📊 Dashboard
+
+- **Conversation view** — A clearer header on the conversation screen.
+- **Add Integration** — The form now shows required fields and field-level errors.
+- **Always up to date** — The dashboard no longer keeps an old version cached after an update.
+
+---
+
+### 📚 Knowledge Base & Documents
+
+- **Documents library** — A Drive-style library in the customer dashboard for HTML, Markdown and PDF documents.
+- **Faster knowledge base search** — New knowledge base collections are indexed per team for faster filtered search.
+
+---
+
+### 🧩 Integrations & EHR
+
+- **Insurance plan types** — Payers can be configured with the plan types they accept, and the web scheduling flow lets patients pick a plan type and see the matching payers.
+- **eCW appointment notes** — Cancellations and confirmations keep the cancellation reason and the correct note.
+
+---
+
+### 🐛 Fixes & Reliability
+
+- **Web-session feedback** — Submitting feedback without a rating returns a clear validation error instead of a server error.
+- **Call events** — Call event listeners reconnect cleanly after a Redis failover.
+- **STT playground** — Latency values are shown correctly.
+
+</Update>
+
 <Update label="July 13 2026" description="v1.17.7">
 
 ## What's new in v1.17.7
